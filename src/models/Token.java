@@ -5,9 +5,9 @@ public class Token {
 	private Integer codigo;
 	private String token;
 	private String descricao;
-	private int linha;
+	private Integer linha;
 
-	public Token(Integer codigo, String token, String descricao, int linha) {
+	public Token(Integer codigo, String token, String descricao, Integer linha) {
 		this.codigo = codigo;
 		this.token = token;
 		this.descricao = descricao;
@@ -26,14 +26,12 @@ public class Token {
 		return descricao;
 	}
 	
-	public int getLinha() {
+	public Integer getLinha() {
 		return linha;
 	}
 
-	public void setLinha(int linha) {
+	public void setLinha(Integer linha) {
 		this.linha = linha;
 	}
 	
-	
-
 }

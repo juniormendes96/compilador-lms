@@ -4,16 +4,16 @@ import java.util.List;
 
 public class ResultadoAnalise {
 
-	private List<Token> models;
+	private List<Token> tokens;
 	private List<Erro> erros;
 
-	public ResultadoAnalise(List<Token> models, List<Erro> erros) {
-		this.models = models;
+	public ResultadoAnalise(List<Token> tokens, List<Erro> erros) {
+		this.tokens = tokens;
 		this.erros = erros;
 	}
 
-	public List<Token> getModels() {
-		return models;
+	public List<Token> getTokens() {
+		return tokens;
 	}
 
 	public List<Erro> getErros() {

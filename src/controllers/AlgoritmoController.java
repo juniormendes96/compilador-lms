@@ -30,7 +30,7 @@ public class AlgoritmoController {
 			Parent root = loader.load();
 
 			AnaliseLexicaController controller = (AnaliseLexicaController) loader.getController();
-			controller.populaTabela(resultado.getModels());
+			controller.populaTabela(resultado.getTokens());
 			controller.populaErros(resultado.getErros());
 
 			stage.setScene(new Scene(root));
