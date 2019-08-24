@@ -1,0 +1,178 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Full
+Input = Stream
+Parser = LL
+#RegularDefinitions
+L  : [A-Za-z]
+D  : [0-9]
+WS : [\ \t\n\r] //simbolos especiais e branco
+COMMENT : "(*" [^ "*" ]* "*)"  //comentário
+
+#Tokens
+"+"
+"-"
+"*"
+"/"
+"="
+">"
+">="
+"<"
+"<="
+"<>"
+":="
+":"
+";"
+","
+"."
+"("
+")"
+IDENT
+INTEIRO
+LITERAL
+"PROGRAM"
+"CONST"
+"VAR"
+"PROCEDURE"
+"BEGIN"
+"END"
+"INTEGER"
+"OF"
+"CALL"
+"IF"
+"THEN"
+"ELSE"
+"WHILE"
+"DO"
+"REPEAT"
+"UNTIL"
+"READLN"
+"WRITELN"
+"OR"
+"AND"
+"NOT" 
+"FOR"
+"TO"
+"CASE"
+ 
+//tokens
+IDENT : {L} ( {L} | {D} | _ )*
+LITERAL : {L}+ | {D}+ | _ 
+INTEIRO : {D}+ //um ou mais dígitos
+
+//ignorar espaços em branco, caracteres especiais e comentários
+ : {WS}*
+ :! {COMMENT}
+#NonTerminals
+<PROGRAMA>
+<BLOCO>
+<LID>
+<REPIDENT>
+<DCLCONST>
+<LDCONST>
+<DCLVAR>
+<LDVAR>
+<TIPO>
+<DCLPROC>
+<DEFPAR>
+<CORPO>
+<REPCOMANDO>
+<COMANDO>
+<PARAMETROS>
+<REPPAR>
+<ELSEPARTE>
+<VARIAVEL>
+<REPVARIAVEL>
+<ITEMSAIDA>
+<REPITEM>
+<EXPRESSAO>
+<REPEXPSIMP>
+<EXPSIMP>
+<REPEXP>
+<TERMO>
+<REPTERMO>
+<FATOR>
+<CONDCASE>
+<CONTCASE>
+<RPINTEIRO>
+#Grammar
+<PROGRAMA> ::= "PROGRAM"  IDENT ";" <BLOCO> "."                    ; 
+<BLOCO>  ::= <DCLCONST> <DCLVAR> <DCLPROC> <CORPO>       ; 
+<LID>  ::= IDENT <REPIDENT>                                    ; 
+<REPIDENT> ::=  î                                                  ; 
+<REPIDENT> ::= "," IDENT  <REPIDENT>                               ; 
+<DCLCONST>  ::= "CONST" IDENT "=" INTEIRO ";" <LDCONST>             ; 
+<LDCONST>    ::=  î                                                  ; 
+<LDCONST>    ::= IDENT "=" INTEIRO ";" <LDCONST>                     ; 
+<DCLCONST>   ::=  î                                                  ; 
+<DCLVAR>     ::= "VAR" <LID> ":" <TIPO> ";" <LDVAR>                  ; 
+<LDVAR>      ::=  î                                                  ; 
+<LDVAR>      ::= <LID> ":" <TIPO> ";" <LDVAR>                        ; 
+<DCLVAR>     ::=  î                                                  ; 
+<TIPO>       ::= "INTEGER"                                           ; 
+<DCLPROC>    ::= "PROCEDURE" IDENT <DEFPAR> ";" <BLOCO> ";" <DCLPROC> ; 
+<DCLPROC>    ::=  î                                                  ; 
+<DEFPAR>     ::=  î                                                  ; 
+<DEFPAR>     ::= "(" <LID> ":" "INTEGER" ")"                         ; 
+<CORPO>      ::= "BEGIN" <COMANDO> <REPCOMANDO> "END"                 ; 
+<REPCOMANDO> ::=  î                                                  ; 
+<REPCOMANDO> ::= ";" <COMANDO> <REPCOMANDO>                          ; 
+<COMANDO>    ::= IDENT  ":=" <EXPRESSAO>                                        ; 
+<COMANDO>    ::= <CORPO>                                             ; 
+<COMANDO>    ::=  î                                                  ; 
+<COMANDO>    ::= "CALL" IDENT <PARAMETROS>                          ; 
+<PARAMETROS> ::=  î                                                  ; 
+<PARAMETROS> ::= "(" <EXPRESSAO> <REPPAR> ")"                        ; 
+<REPPAR>     ::=  î                                                  ; 
+<REPPAR>     ::= "," <EXPRESSAO> <REPPAR>                            ; 
+<COMANDO>    ::= "IF" <EXPRESSAO> "THEN" <COMANDO> <ELSEPARTE>       ; 
+<ELSEPARTE>  ::=  î                                                  ; 
+<ELSEPARTE>  ::= "ELSE" <COMANDO>                                    ; 
+<COMANDO>    ::= "WHILE" <EXPRESSAO> "DO" <COMANDO>                  ; 
+<COMANDO>    ::= "REPEAT" <COMANDO> "UNTIL" <EXPRESSAO>              ; 
+<COMANDO>    ::= "READLN" "(" <VARIAVEL> <REPVARIAVEL> ")"               ; 
+<VARIAVEL>   ::= IDENT                                                          ; 
+<REPVARIAVEL>::= î                                                   ; 
+<REPVARIAVEL>::= "," <VARIAVEL> <REPVARIAVEL>                        ; 
+<COMANDO>    ::= "WRITELN" "(" <ITEMSAIDA> <REPITEM> ")"             ; 
+<ITEMSAIDA>  ::= LITERAL                                             ; 
+<ITEMSAIDA>  ::= <EXPRESSAO>                                         ; 
+<REPITEM>    ::= î                                                   ; 
+<REPITEM>    ::= "," <ITEMSAIDA> <REPITEM>                           ; 
+<COMANDO>    ::= "CASE" <EXPRESSAO> "OF" <CONDCASE> "END"            ; 
+<CONDCASE>   ::= INTEIRO <RPINTEIRO> ":" <COMANDO> <CONTCASE>        ; 
+<RPINTEIRO>  ::= "," INTEIRO <RPINTEIRO>                             ; 
+<RPINTEIRO>  ::= î                                                   ; 
+<CONTCASE>   ::= î                                                   ; 
+<CONTCASE>   ::= ";" <CONDCASE>                                      ; 
+<COMANDO>    ::= "FOR" IDENT ":=" <EXPRESSAO> "TO" <EXPRESSAO> "DO"  <COMANDO>    ; 
+<EXPRESSAO>  ::= <EXPSIMP> <REPEXPSIMP>                              ; 
+<REPEXPSIMP> ::= î                                                   ; 
+<REPEXPSIMP> ::= "=" <EXPSIMP>                                       ; 
+<REPEXPSIMP> ::= "<" <EXPSIMP>                                       ; 
+<REPEXPSIMP> ::= ">" <EXPSIMP>                                       ; 
+<REPEXPSIMP> ::= ">=" <EXPSIMP>                                      ; 
+<REPEXPSIMP> ::= "<=" <EXPSIMP>                                      ; 
+<REPEXPSIMP> ::= "<>" <EXPSIMP>                                      ; 
+<EXPSIMP>    ::= "+" <TERMO> <REPEXP>                                ; 
+<EXPSIMP>    ::= "-" <TERMO> <REPEXP>                                ; 
+<EXPSIMP>    ::= <TERMO> <REPEXP>                                    ; 
+<REPEXP>     ::= "+" <TERMO> <REPEXP>                                ; 
+<REPEXP>     ::= "-" <TERMO> <REPEXP>                                ; 
+<REPEXP>     ::= "OR" <TERMO> <REPEXP>                               ; 
+<REPEXP>     ::= î                                                   ; 
+<TERMO>      ::= <FATOR> <REPTERMO>                                 ; 
+<REPTERMO>   ::= î                                                   ; 
+<REPTERMO>   ::= "*" <FATOR> <REPTERMO>                              ; 
+<REPTERMO>   ::= "/" <FATOR> <REPTERMO>                             ; 
+<REPTERMO>   ::= "AND" <FATOR> <REPTERMO>                           ; 
+<FATOR>      ::= INTEIRO                                             ; 
+<FATOR>      ::= "(" <EXPRESSAO> ")"                                 ; 
+<FATOR>      ::= "NOT" <FATOR>                                       ; 
+<FATOR> ::= <VARIAVEL>; 

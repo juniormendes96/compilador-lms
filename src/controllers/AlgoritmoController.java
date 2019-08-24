@@ -1,12 +1,14 @@
 package controllers;
 
 import analisadores.AnalisadorLexico;
+import analisadores.AnalisadorSintatico;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import models.Erro;
 import models.ResultadoAnalise;
 
 public class AlgoritmoController {
@@ -14,12 +16,19 @@ public class AlgoritmoController {
 	@FXML
 	private TextArea txtAreaAlgoritmo;
 
-	private ResultadoAnalise resultado;
+	private ResultadoAnalise resultadoLexico;
+	private String resultadoSintatico;
 
 	@FXML
 	public void analisarAlgoritmo() {
+		
 		AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
-		resultado = analisadorLexico.iniciarAnalise();
+		resultadoLexico = analisadorLexico.iniciarAnalise();
+		
+		resultadoSintatico = AnalisadorSintatico.iniciarAnalise(resultadoLexico.getTokens());
+		if(resultadoSintatico != "")
+			resultadoLexico.getErros().add(new Erro(resultadoSintatico));
+		
 		abrirResultadoView();
 	}
 
@@ -30,8 +39,8 @@ public class AlgoritmoController {
 			Parent root = loader.load();
 
 			AnaliseLexicaController controller = (AnaliseLexicaController) loader.getController();
-			controller.populaTabela(resultado.getTokens());
-			controller.populaErros(resultado.getErros());
+			controller.populaTabela(resultadoLexico.getTokens());
+			controller.populaErros(resultadoLexico.getErros());
 
 			stage.setScene(new Scene(root));
 			stage.setTitle("Resultado");

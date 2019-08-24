@@ -7,9 +7,13 @@ public class Erro {
 	
 	
 	public Erro(String mensagem, int linha) {
-		this.mensagem = mensagem;
+		this.mensagem = mensagem + " na linha "+linha;
 		this.linha = linha;
 	}
+	
+	public Erro(String mensagem) {
+		this.mensagem = mensagem;
+	}	
 	
 	public String getMensagem() {
 		return mensagem;

@@ -1,6 +1,7 @@
 package controllers;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -46,6 +47,8 @@ public class AnaliseLexicaController implements Initializable {
 			textAreaErros.setStyle("-fx-text-inner-color: red;");
 			textAreaErros.setText("");
 			erros.stream().forEach(erro -> textAreaErros.setText(textAreaErros.getText() + erro.getMensagem() + "\n"));
+		} else {
+			textAreaErros.setText("Código sem erro. Compilado com sucesso!");
 		}
 	}
 
