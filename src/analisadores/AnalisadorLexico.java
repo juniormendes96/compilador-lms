@@ -24,6 +24,7 @@ public class AnalisadorLexico {
 	}
 	
 	public ResultadoAnalise iniciarAnalise() {
+		this.removerComentarios();
 		this.formatarAlgoritmo();
 		this.setCaracteresELinhas();
 		this.gerarListaDeTokens();
@@ -35,6 +36,10 @@ public class AnalisadorLexico {
 	private void setCaracteresELinhas() {
 		this.caracteres = this.algoritmo.split("\\s+");
 		this.linhas = this.algoritmo.split("\r?\n");
+	}
+	
+	private void removerComentarios() {
+		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\\\*\\)", "");
 	}
 	
 	private void formatarAlgoritmo() {
@@ -82,7 +87,6 @@ public class AnalisadorLexico {
 	}
 	
 	private void gerarListaDeTokens() {
-		boolean comentario = false;
 		boolean literal = false;
 		String textoLiteral = "";
 		int numeroDaLinha = 0;
@@ -108,16 +112,6 @@ public class AnalisadorLexico {
 				}
 				continue;
 			}
-			
-			if((isInicioComentario(i))) {
-				comentario = true;
-				continue;
-			}
-			
-			if((i > 0 && isFimComentario(i))) {
-				comentario = false;
-				continue;
-			}
 
 			if (literal) {
 				textoLiteral += String.format(" %s", this.caracteres[i]);
@@ -130,39 +124,24 @@ public class AnalisadorLexico {
 				continue;
 			}
 
-			if(isInteger(this.caracteres[i]) && !comentario) {
+			if(isInteger(this.caracteres[i])) {
 				this.tokens.add(new Token(TokenEnum.INTEIRO.getCod(), this.caracteres[i], TokenEnum.INTEIRO.getDescricao(), numeroDaLinha));
 				continue;
 			}
 			
-			if (!comentario) {
-				boolean tokenEncontrado = false;
-				for (TokenEnum token : TokenEnum.values()) {
-					if (token.getSimbolo().equals(this.caracteres[i])) {
-						this.tokens.add(new Token(token.getCod(), token.getSimbolo(), token.getDescricao(), numeroDaLinha));
-						tokenEncontrado = !tokenEncontrado;
-					}
-				}
-				if(!tokenEncontrado) {
-					this.tokens.add(new Token(TokenEnum.ID.getCod(), this.caracteres[i], TokenEnum.ID.getDescricao(), numeroDaLinha));
+			boolean tokenEncontrado = false;
+			for (TokenEnum token : TokenEnum.values()) {
+				if (token.getSimbolo().equals(this.caracteres[i])) {
+					this.tokens.add(new Token(token.getCod(), token.getSimbolo(), token.getDescricao(), numeroDaLinha));
 					tokenEncontrado = !tokenEncontrado;
-				}				
+				}
 			}
+			if (!tokenEncontrado) {
+				this.tokens.add(new Token(TokenEnum.ID.getCod(), this.caracteres[i], TokenEnum.ID.getDescricao(),
+						numeroDaLinha));
+				tokenEncontrado = !tokenEncontrado;
+			}			
 		}
-	}
-	
-	private boolean isInicioComentario(int indice) {
-		if ((this.caracteres[indice].equals("(") && this.caracteres[indice + 1].equals("*"))) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isFimComentario(int indice) {
-		if((this.caracteres[indice - 1].equals("*") && this.caracteres[indice].equals(")"))) {
-			return true;
-		}
-		return false;
 	}
 	
 	private boolean hasInicioLiteral(String s) {
