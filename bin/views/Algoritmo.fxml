@@ -23,7 +23,7 @@
       </TextArea>
    </center>
    <top>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Analisador Léxico" BorderPane.alignment="CENTER">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compilador" BorderPane.alignment="CENTER">
          <font>
             <Font name="System Bold" size="34.0" />
          </font>
