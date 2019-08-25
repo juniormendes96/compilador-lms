@@ -18,14 +18,26 @@ public class Token {
 		return codigo;
 	}
 
+	public void setCodigo(Integer codigo) {
+		this.codigo = codigo;
+	}
+
 	public String getToken() {
 		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public String getDescricao() {
 		return descricao;
 	}
-	
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
 	public Integer getLinha() {
 		return linha;
 	}

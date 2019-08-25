@@ -1,9 +1,11 @@
 package analisadores;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
-import enums.ErroEnum;
 import enums.TokenEnum;
 import models.Erro;
 import models.ResultadoAnalise;
@@ -11,11 +13,12 @@ import models.Token;
 
 public class AnalisadorLexico {
 	
+	private static final String ASPAS_SIMPLES = "'";
+	private static final String ASPAS_DUPLAS = "\"";
+	
 	private String algoritmo;
 	private List<Token> tokens;
 	private List<Erro> erros;
-	private String[] linhas;
-	private String[] caracteres;
 
 	public AnalisadorLexico(String algoritmo) {
 		this.algoritmo = algoritmo;
@@ -25,178 +28,109 @@ public class AnalisadorLexico {
 	
 	public ResultadoAnalise iniciarAnalise() {
 		this.removerComentarios();
-		this.formatarAlgoritmo();
-		this.setCaracteresELinhas();
-		this.gerarListaDeTokens();
-		this.tratarListaDeTokens();
-		this.identificarErros();
+		this.adicionarEspacosNosTokens();
+		this.adicionarTokensNaLista();
+		this.handleSinaisDeAtribuicao();
+		this.handleLiterais();
 		return new ResultadoAnalise(this.tokens, this.erros);
-	}
-	
-	private void setCaracteresELinhas() {
-		this.caracteres = this.algoritmo.split("\\s+");
-		this.linhas = this.algoritmo.split("\r?\n");
 	}
 	
 	private void removerComentarios() {
 		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\\\*\\)", "");
 	}
 	
-	private void formatarAlgoritmo() {
+	private void adicionarTokensNaLista() {
+		Scanner scanner = new Scanner(this.algoritmo);
+		int linha = 1;
+		while (scanner.hasNextLine()) {
+			String caracteres[] = scanner.nextLine().split("\\s+");
+			for (int i = 0; i < caracteres.length; i++) {
+				this.adicionarToken(caracteres[i], linha);
+			}
+			linha++;
+		}
+		scanner.close();
+	}
+	
+	private void adicionarToken(String caractere, int linha) {
+		Token token = null;
+		for (TokenEnum tokenEnum : TokenEnum.values()) {
+			if (tokenEnum.getSimbolo().equalsIgnoreCase(caractere)) {
+				token = new Token(tokenEnum.getCod(), caractere, tokenEnum.getDescricao(), linha);
+				break;
+			}
+		}
+		if (Objects.isNull(token)) {
+			token = new Token(TokenEnum.ID.getCod(), caractere, TokenEnum.ID.getDescricao(), linha);
+		}
+		this.tokens.add(token);
+	}
+	
+	private void adicionarEspacosNosTokens() {
 		this.algoritmo = this.algoritmo.toUpperCase();
 		for (TokenEnum token : TokenEnum.values()) {
 			if (token.getCod() != 0 && token.getCod() != TokenEnum.OR.getCod() && token.getDescricao() != "Palavra Reservada") {
-				this.algoritmo = this.algoritmo.replace(token.getSimbolo(), String.format(" %s ", token.getSimbolo()));
+				final String replacement = String.format(" %s ", token.getSimbolo());
+				this.algoritmo = this.algoritmo.replace(token.getSimbolo(), replacement);
 			}
 		}
 	}
 	
-	private void identificarErros() {
-		int numeroDaLinha = 0;
-		for(Token token : tokens) {
-			numeroDaLinha = this.encontrarLinhaDoToken(token.getToken());
-			if(token.getCodigo() == TokenEnum.INTEIRO.getCod()) {
-				if(Integer.parseInt(token.getToken()) >= 32767) {
-			    	this.erros.add(new Erro(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro() + " (Token linha da tabela: "+ numeroDaLinha+")", numeroDaLinha));
-			    }
-			} else if (token.getCodigo() == TokenEnum.LIT.getCod()) {
-				if(token.getToken().length() > 255) {
-					this.erros.add(new Erro(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro() + " (Token linha da tabela: "+ numeroDaLinha+")", numeroDaLinha));
-				}
-			} else if (token.getCodigo() == TokenEnum.ID.getCod()) {
-				if(token.getToken().length() > 30) {
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro() + " (Token linha da tabela: "+ numeroDaLinha+")", numeroDaLinha));
-				}
-				if(isInteger(String.valueOf(token.getToken().charAt(0)))){
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro() + " (Token linha da tabela: "+ numeroDaLinha+")", numeroDaLinha));
-				}
+	private void handleSinaisDeAtribuicao() {
+		Iterator<Token> tokensIterator = this.tokens.iterator();
+		Token previousToken = null;
+		Token currentToken = null;
+		while (tokensIterator.hasNext()) {
+			currentToken = tokensIterator.next();
+			if (Objects.nonNull(previousToken) && previousToken.getCodigo() == TokenEnum.DOIS_PONTOS.getCod() && currentToken.getCodigo() == TokenEnum.IGUAL.getCod()) {
+				tokensIterator.remove();
+				this.tokens.set(this.tokens.indexOf(previousToken),
+						new Token(TokenEnum.ATRIBUICAO.getCod(), TokenEnum.ATRIBUICAO.getSimbolo(),
+								TokenEnum.ATRIBUICAO.getDescricao(), previousToken.getLinha()));
 			}
+			previousToken = currentToken;
 		}
 	}
 	
-	private int encontrarLinhaDoToken(String token) {
-		int linha = 0;
-		for (String c : linhas) {
-			linha++;
-			if (c.contains(token)) {
-				linhas[linha - 1] = c.substring(c.indexOf("") + token.length());
-				return linha;
-			}
-		}
-		return 0;
-	}
-	
-	private void gerarListaDeTokens() {
+	private void handleLiterais() {
+		Iterator<Token> tokensIterator = this.tokens.iterator();
+		Token currentToken = null;
+		int index = 0;
 		boolean literal = false;
-		String textoLiteral = "";
-		int numeroDaLinha = 0;
-
-		for (int i = 0; i < this.caracteres.length; i++) {
-			numeroDaLinha = this.encontrarLinhaDoToken(this.caracteres[i]);
-			if(this.hasInicioLiteral(this.caracteres[i])) {
-				if(this.caracteres[i].length() == 1) {
-					textoLiteral += String.format(" %s", this.caracteres[i]);
-					literal = !literal;
-					if(!literal) {
-						this.tokens.add(new Token(TokenEnum.LIT.getCod(), textoLiteral, TokenEnum.LIT.getDescricao(), numeroDaLinha));
-						textoLiteral = "";
-					}	
-				} else {
-					textoLiteral += this.caracteres[i];
-					if (this.hasFimLiteral(this.caracteres[i])) {
-						this.tokens.add(new Token(TokenEnum.LIT.getCod(), textoLiteral, TokenEnum.LIT.getDescricao(), numeroDaLinha));
-						textoLiteral = "";
-						literal = false;
-					}
-					literal = true;
-				}
-				continue;
-			}
-
+		String texto = "";
+		while (tokensIterator.hasNext()) {
+			currentToken = tokensIterator.next();
 			if (literal) {
-				textoLiteral += String.format(" %s", this.caracteres[i]);
-				if (this.hasFimLiteral(this.caracteres[i])) {
-					this.tokens.add(new Token(TokenEnum.LIT.getCod(), textoLiteral, TokenEnum.LIT.getDescricao(), numeroDaLinha));
-					textoLiteral = "";
+				texto += currentToken.getToken() + " ";
+				if (this.hasFimLiteral(currentToken)) {
 					literal = false;
-					continue;
+					this.tokens.get(index).setCodigo(TokenEnum.LIT.getCod());
+					this.tokens.get(index).setDescricao(TokenEnum.LIT.getDescricao());
+					this.tokens.get(index).setToken(texto);
+					texto = "";
 				}
-				continue;
-			}
-
-			if(isInteger(this.caracteres[i])) {
-				this.tokens.add(new Token(TokenEnum.INTEIRO.getCod(), this.caracteres[i], TokenEnum.INTEIRO.getDescricao(), numeroDaLinha));
-				continue;
-			}
-			
-			boolean tokenEncontrado = false;
-			for (TokenEnum token : TokenEnum.values()) {
-				if (token.getSimbolo().equals(this.caracteres[i])) {
-					this.tokens.add(new Token(token.getCod(), token.getSimbolo(), token.getDescricao(), numeroDaLinha));
-					tokenEncontrado = !tokenEncontrado;
+				tokensIterator.remove();
+			} else if (this.hasInicioLiteral(currentToken)) {
+				literal = true;
+				index = this.tokens.indexOf(currentToken);
+				if (currentToken.getToken().length() > 1 && this.hasFimLiteral(currentToken)) {
+					currentToken.setCodigo(TokenEnum.LIT.getCod());
+					currentToken.setDescricao(TokenEnum.LIT.getDescricao());
+					literal = false;
+					texto = "";
+				} else {
+					texto += currentToken.getToken() + " ";
 				}
 			}
-			if (!tokenEncontrado) {
-				this.tokens.add(new Token(TokenEnum.ID.getCod(), this.caracteres[i], TokenEnum.ID.getDescricao(),
-						numeroDaLinha));
-				tokenEncontrado = !tokenEncontrado;
-			}			
 		}
 	}
 	
-	private boolean hasInicioLiteral(String s) {
-		if (s.startsWith("'") || s.startsWith("\"")) {
-			return true;
-		}
-		return false;
+	private boolean hasInicioLiteral(Token token) {
+		return token.getToken().startsWith(ASPAS_DUPLAS) || token.getToken().startsWith(ASPAS_SIMPLES);
 	}
 	
-	private boolean hasFimLiteral(String s) {
-		if (s.endsWith("'") || s.endsWith("\"")) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isInteger(String s) {
-	    try { 
-	        Integer.parseInt(s); 
-	    } catch(NumberFormatException e) { 
-	        return false; 
-	    } catch(NullPointerException e) {
-	        return false;
-	    }
-	    return true;
-	}
-	
-	private void tratarListaDeTokens() {
-		int numeroDaLinha = 0;
-		for (int i = 0; i < this.tokens.size() - 1; i++) {
-			if (this.tokens.get(i).getToken().equals(":") && this.tokens.get(i + 1).getToken().equals("=")) {
-				numeroDaLinha = encontrarLinhaDoToken(":=");
-				this.tokens.set(i, new Token(TokenEnum.ATRIBUICAO.getCod(), TokenEnum.ATRIBUICAO.getSimbolo(),
-						TokenEnum.ATRIBUICAO.getDescricao(), numeroDaLinha));
-				this.tokens.remove(i + 1);
-			}
-			if (this.tokens.get(i).getToken().equals(">") && this.tokens.get(i + 1).getToken().equals("=")) {
-				numeroDaLinha = encontrarLinhaDoToken(">=");
-				this.tokens.set(i, new Token(TokenEnum.MAIOR_OU_IGUAL.getCod(), TokenEnum.MAIOR_OU_IGUAL.getSimbolo(),
-						TokenEnum.MAIOR_OU_IGUAL.getDescricao(), numeroDaLinha));
-				this.tokens.remove(i + 1);
-			}
-			if (this.tokens.get(i).getToken().equals("<") && this.tokens.get(i + 1).getToken().equals("=")) {
-				numeroDaLinha = encontrarLinhaDoToken("<=");
-				this.tokens.set(i, new Token(TokenEnum.MENOR_OU_IGUAL.getCod(), TokenEnum.MENOR_OU_IGUAL.getSimbolo(),
-						TokenEnum.MENOR_OU_IGUAL.getDescricao(), numeroDaLinha));
-				this.tokens.remove(i + 1);
-			}
-			if (this.tokens.get(i).getToken().equals("<") && this.tokens.get(i + 1).getToken().equals(">")) {
-				numeroDaLinha = encontrarLinhaDoToken("<>");
-				this.tokens.set(i, new Token(TokenEnum.DIFERENTE.getCod(), TokenEnum.DIFERENTE.getSimbolo(),
-						TokenEnum.DIFERENTE.getDescricao(), numeroDaLinha));
-				this.tokens.remove(i + 1);
-			}
-		}
+	private boolean hasFimLiteral(Token token) {
+		return token.getToken().endsWith(ASPAS_DUPLAS) || token.getToken().endsWith(ASPAS_SIMPLES);
 	}
 
 }
