@@ -56,10 +56,14 @@ public class AnalisadorLexico {
 	
 	private void adicionarToken(String caractere, int linha) {
 		Token token = null;
-		for (TokenEnum tokenEnum : TokenEnum.values()) {
-			if (tokenEnum.getSimbolo().equalsIgnoreCase(caractere)) {
-				token = new Token(tokenEnum.getCod(), caractere, tokenEnum.getDescricao(), linha);
-				break;
+		if (this.isInteger(caractere)) {
+			token = new Token(TokenEnum.INTEIRO.getCod(), caractere, TokenEnum.INTEIRO.getDescricao(), linha);
+		} else {
+			for (TokenEnum tokenEnum : TokenEnum.values()) {
+				if (tokenEnum.getSimbolo().equalsIgnoreCase(caractere)) {
+					token = new Token(tokenEnum.getCod(), caractere, tokenEnum.getDescricao(), linha);
+					break;
+				}
 			}
 		}
 		if (Objects.isNull(token)) {
@@ -67,7 +71,7 @@ public class AnalisadorLexico {
 		}
 		this.tokens.add(token);
 	}
-	
+
 	private void adicionarEspacosNosTokens() {
 		this.algoritmo = this.algoritmo.toUpperCase();
 		for (TokenEnum token : TokenEnum.values()) {
@@ -82,21 +86,32 @@ public class AnalisadorLexico {
 		for(Token token : this.tokens) {
 			if(token.getCodigo() == TokenEnum.INTEIRO.getCod()) {
 				if(Integer.parseInt(token.getToken()) >= 32767) {
-			    	this.erros.add(new Erro(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro() + " (Token linha " + token.getLinha() + ")", token.getLinha()));
+			    	this.erros.add(new Erro(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
 			    }
-			} else if (token.getCodigo() == TokenEnum.LIT.getCod()) {
+			}
+			if (token.getCodigo() == TokenEnum.LIT.getCod()) {
 				if(token.getToken().length() > 255) {
-					this.erros.add(new Erro(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+					this.erros.add(new Erro(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
 				}
-			} else if (token.getCodigo() == TokenEnum.ID.getCod()) {
+			}
+			if (token.getCodigo() == TokenEnum.ID.getCod()) {
 				if(token.getToken().length() > 30) {
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
 				}
-				if(this.isInteger(String.valueOf(token.getToken().charAt(0)))){
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+				if(this.isVariavel(token) && this.isInteger(String.valueOf(token.getToken().charAt(0)))){
+					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
 				}
 			}
 		}
+	}
+	
+	private boolean isVariavel(Token token) {
+		int index = this.tokens.indexOf(token);
+		Token tokenAnterior = index == 0 ? null : this.tokens.get(index - 1);
+		return Objects.nonNull(tokenAnterior) && (tokenAnterior.getCodigo() == TokenEnum.VAR.getCod()
+				|| tokenAnterior.getCodigo() == TokenEnum.CONST.getCod()
+				|| tokenAnterior.getCodigo() == TokenEnum.PROGRAM.getCod()
+				|| tokenAnterior.getCodigo() == TokenEnum.PROCEDURE.getCod());
 	}
 	
 	private boolean isInteger(String s) {
