@@ -111,7 +111,8 @@ public class AnalisadorLexico {
 		return Objects.nonNull(tokenAnterior) && (tokenAnterior.getCodigo() == TokenEnum.VAR.getCod()
 				|| tokenAnterior.getCodigo() == TokenEnum.CONST.getCod()
 				|| tokenAnterior.getCodigo() == TokenEnum.PROGRAM.getCod()
-				|| tokenAnterior.getCodigo() == TokenEnum.PROCEDURE.getCod());
+				|| tokenAnterior.getCodigo() == TokenEnum.PROCEDURE.getCod()
+				|| this.isVariavel(tokenAnterior));
 	}
 	
 	private boolean isInteger(String s) {
