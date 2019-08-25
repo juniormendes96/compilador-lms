@@ -9,81 +9,90 @@ import models.Token;
 
 public class AnalisadorSintatico implements Constants {
 	
-	//Inicia a análise utilizando os tokens do léxico
-	public static String iniciarAnalise(List<Token> tokens) {
-		return iniciarDescendentePreditivo(tokens);
+	private List<Integer> pilha;
+	private List<Integer> fila;
+	private List<Token> tokens;
+	
+	public AnalisadorSintatico(List<Token> tokens) {
+		// Cria a pilha e a fila
+		this.pilha = new ArrayList<>();
+		this.fila = new ArrayList<>();
+		this.tokens = tokens;
+	}
+
+	// Inicia a análise utilizando os tokens do léxico
+	public String iniciarAnalise() {
+		return iniciarDescendentePreditivo();
 	}
 	
-	//Iniciar a Análise Sintática Descendente
-	public static String iniciarDescendentePreditivo(List<Token> entrada) {
-		//Criação da pilha
-		List<Integer> pilha = new ArrayList<Integer>();
-		List<Integer> fila = preencherFila(entrada);
+	// Inicia a Análise Sintática Descendente
+	private String iniciarDescendentePreditivo() {
+		this.preencherFila();
 
-		int topo_da_pilha;
-		int proxima_entrada;
-		//Adicionando o token inicial a ela
-		pilha.add(Constants.DOLLAR);
-		pilha.add(Constants.START_SYMBOL);
+		int topoDaPilha;
+		int proximaEntrada;
+		
+		// Adiciona o token inicial à pilha
+		this.pilha.add(Constants.DOLLAR);
+		this.pilha.add(Constants.START_SYMBOL);
+		
 		//Variavel para o valor retornado da matriz de parsing
 		int valorMatriz;
 		
 		System.out.println("INICIANDO TESTE");
 		
-		//Início da análise Descendente Preditivo até a pilha ficar vazia
+		// Início da análise Descendente Preditivo até a pilha ficar vazia
 		
 		do {
-			//Setando o topo_da_pilha e a proxima_entrada baseado na lista de tokens.
-			topo_da_pilha = pilha.get(pilha.size()-1);
-			proxima_entrada = fila.get(0);
-			System.out.println(topo_da_pilha + " " + proxima_entrada + " " +entrada.size());
+			// Setando o topoDaPilha e a proximaEntrada baseado na lista de tokens.
+			topoDaPilha = this.pilha.get(pilha.size() - 1);
+			proximaEntrada = this.fila.get(0);
+			System.out.println(topoDaPilha + " " + proximaEntrada + " " + this.tokens.size());
 			
-			//Verifica se o token no Topo da Pilha é um terminal ou está vazio, caso contrário encessa o processo
-			if(topo_da_pilha < Constants.FIRST_NON_TERMINAL || topo_da_pilha == Constants.DOLLAR) {
-				//Verifica se o Topo Da Pilha é igual ao proximo símbolo da entrada
+			// Verifica se o token no Topo da Pilha é um terminal ou está vazio, caso contrário encessa o processo
+			if(topoDaPilha < Constants.FIRST_NON_TERMINAL || topoDaPilha == Constants.DOLLAR) {
+				// Verifica se o Topo Da Pilha é igual ao proximo símbolo da entrada
 				
-				if(topo_da_pilha == proxima_entrada) {
-					//Se for remove a símbolo do topo da pilha
-					pilha.remove(pilha.size()-1);
-					fila.remove(0);
+				if(topoDaPilha == proximaEntrada) {
+					// Se for remove a símbolo do topo da pilha
+					this.pilha.remove(this.pilha.size() - 1);
+					this.fila.remove(0);
 				} else {
 					//Se for diferente erro sintático
-					return "ERRO SINTÁTICO: "+ Constants.PARSER_ERROR[topo_da_pilha] + " na linha "+entrada.get(entrada.size() - fila.size()).getLinha();
+					return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 				}
 			} else {
-				//Baseado na Matriz de Parse ele pega:
-				//linha = topo_da_pilha - Primeiro Não terminal
-				//coluna = proxima_entrada - 1;
-				valorMatriz = Constants.PARSER_TABLE[topo_da_pilha-Constants.FIRST_NON_TERMINAL][proxima_entrada-1];
+				// Baseado na Matriz de Parse ele pega:
+				// linha = topoDaPilha - Primeiro Não terminal
+				// coluna = proximaEntrada - 1;
+				valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
 
-				//Se valor retornado for igual topo_da_pilha
+				// Se valor retornado for igual topoDaPilha
 				if(valorMatriz != -1) {
-					//Remove da pilha e entrada	
-					pilha.remove(pilha.size()-1);
-					//Adiciona na pilha as produções em ordem decrescente
-					for(int j=Constants.PRODUCTIONS[valorMatriz].length-1; j>=0; j--) {
-						//0 é vazio então não adiciona
+					// Remove da pilha e entrada	
+					this.pilha.remove(pilha.size()-1);
+					// Adiciona na pilha as produções em ordem decrescente
+					for(int j = Constants.PRODUCTIONS[valorMatriz].length-1; j >= 0; j--) {
+						// 0 é vazio então não adiciona
 						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {
-							//Remove da pilha e entrada											
-							//Adiciona novos tokens da produção a pilha
-							pilha.add(Constants.PRODUCTIONS[valorMatriz][j]);
+							// Remove da pilha e entrada											
+							// Adiciona novos tokens da produção a pilha
+							this.pilha.add(Constants.PRODUCTIONS[valorMatriz][j]);
 						}
 					}
 				} else {
-						//Se for diferente ERRO sintático
-					return "ERRO SINTÁTICO: "+ Constants.PARSER_ERROR[topo_da_pilha] + " na linha "+entrada.get(entrada.size() - fila.size()).getLinha();
+						// Se for diferente ERRO sintático
+					return "ERRO SINTÁTICO: "+ Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 				}
 			}
-		} while (!fila.isEmpty());  //(topo_da_pilha != Constants.DOLLAR);
+		} while (!this.fila.isEmpty());  // (topoDaPilha != Constants.DOLLAR);
 		
 		return "";
 	}
 	
-	private static List<Integer> preencherFila(List<Token> entrada){
-		List<Integer> fila = entrada.stream().map(Token::getCodigo).collect(Collectors.toList());
-		for(Integer f : fila)
-			System.out.println(f);
-		return fila;
+	private void preencherFila(){
+		this.fila = this.tokens.stream().map(Token::getCodigo).collect(Collectors.toList());
+		for(Integer f : fila) System.out.println(f);
 	}
 }
 

@@ -25,9 +25,10 @@ public class AlgoritmoController {
 		AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
 		resultadoLexico = analisadorLexico.iniciarAnalise();
 		
-		resultadoSintatico = AnalisadorSintatico.iniciarAnalise(resultadoLexico.getTokens());
-		if(resultadoSintatico != "")
-			resultadoLexico.getErros().add(new Erro(resultadoSintatico));
+		AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(resultadoLexico.getTokens());
+		resultadoSintatico = analisadorSintatico.iniciarAnalise();
+		
+		if(resultadoSintatico != "") resultadoLexico.getErros().add(new Erro(resultadoSintatico));
 		
 		abrirResultadoView();
 	}
