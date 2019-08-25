@@ -38,7 +38,7 @@ public class AnalisadorLexico {
 	}
 	
 	private void removerComentarios() {
-		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\\\*\\)", "");
+		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\*\\)", "");
 	}
 	
 	private void adicionarTokensNaLista() {
