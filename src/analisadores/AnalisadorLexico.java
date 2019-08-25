@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
+import enums.ErroEnum;
 import enums.TokenEnum;
 import models.Erro;
 import models.ResultadoAnalise;
@@ -32,6 +33,7 @@ public class AnalisadorLexico {
 		this.adicionarTokensNaLista();
 		this.handleSinaisDeAtribuicao();
 		this.handleLiterais();
+		this.identificarErros();
 		return new ResultadoAnalise(this.tokens, this.erros);
 	}
 	
@@ -74,6 +76,38 @@ public class AnalisadorLexico {
 				this.algoritmo = this.algoritmo.replace(token.getSimbolo(), replacement);
 			}
 		}
+	}
+	
+	private void identificarErros() {
+		for(Token token : this.tokens) {
+			if(token.getCodigo() == TokenEnum.INTEIRO.getCod()) {
+				if(Integer.parseInt(token.getToken()) >= 32767) {
+			    	this.erros.add(new Erro(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro() + " (Token linha " + token.getLinha() + ")", token.getLinha()));
+			    }
+			} else if (token.getCodigo() == TokenEnum.LIT.getCod()) {
+				if(token.getToken().length() > 255) {
+					this.erros.add(new Erro(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+				}
+			} else if (token.getCodigo() == TokenEnum.ID.getCod()) {
+				if(token.getToken().length() > 30) {
+					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+				}
+				if(this.isInteger(String.valueOf(token.getToken().charAt(0)))){
+					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro() + " (Token linha "+ token.getLinha() + ")", token.getLinha()));
+				}
+			}
+		}
+	}
+	
+	private boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    return true;
 	}
 	
 	private void handleSinaisDeAtribuicao() {
