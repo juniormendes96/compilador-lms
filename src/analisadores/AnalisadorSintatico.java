@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
+import enums.TokenEnum;
 import models.Token;
 
 public class AnalisadorSintatico implements Constants {
@@ -28,7 +29,7 @@ public class AnalisadorSintatico implements Constants {
 	// Inicia a Análise Sintática Descendente
 	private String iniciarDescendentePreditivo() {
 		this.preencherFila();
-
+		
 		int topoDaPilha;
 		int proximaEntrada;
 		
@@ -47,7 +48,11 @@ public class AnalisadorSintatico implements Constants {
 			// Setando o topoDaPilha e a proximaEntrada baseado na lista de tokens.
 			topoDaPilha = this.pilha.get(pilha.size() - 1);
 			proximaEntrada = this.fila.get(0);
-			System.out.println(topoDaPilha + " " + proximaEntrada + " " + this.tokens.size());
+			System.out.println(topoDaPilha + " " + proximaEntrada + " " + this.fila.size());
+			
+			//Encerrar o loop caso esteja vazio
+			if(topoDaPilha == Constants.DOLLAR)
+				return "";
 			
 			// Verifica se o token no Topo da Pilha é um terminal ou está vazio, caso contrário encessa o processo
 			if(topoDaPilha < Constants.FIRST_NON_TERMINAL || topoDaPilha == Constants.DOLLAR) {
@@ -60,22 +65,25 @@ public class AnalisadorSintatico implements Constants {
 				} else {
 					//Se for diferente erro sintático
 					return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+					//		+ " esperava o token " + TokenEnum.values()[proximaEntrada].getSimbolo();
 				}
 			} else {
 				// Baseado na Matriz de Parse ele pega:
 				// linha = topoDaPilha - Primeiro Não terminal
 				// coluna = proximaEntrada - 1;
-				valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
+				if(proximaEntrada != 0)
+					valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
+				else
+					valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][0];
 
 				// Se valor retornado for igual topoDaPilha
 				if(valorMatriz != -1) {
 					// Remove da pilha e entrada	
-					this.pilha.remove(pilha.size()-1);
+					this.pilha.remove(this.pilha.size()-1);
 					// Adiciona na pilha as produções em ordem decrescente
 					for(int j = Constants.PRODUCTIONS[valorMatriz].length-1; j >= 0; j--) {
 						// 0 é vazio então não adiciona
-						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {
-							// Remove da pilha e entrada											
+						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {											
 							// Adiciona novos tokens da produção a pilha
 							this.pilha.add(Constants.PRODUCTIONS[valorMatriz][j]);
 						}
@@ -83,16 +91,16 @@ public class AnalisadorSintatico implements Constants {
 				} else {
 						// Se for diferente ERRO sintático
 					return "ERRO SINTÁTICO: "+ Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+					//		+ " esperava o token " + TokenEnum.values()[proximaEntrada].getSimbolo();
 				}
 			}
-		} while (!this.fila.isEmpty());  // (topoDaPilha != Constants.DOLLAR);
+		} while (!this.fila.isEmpty()); // (topoDaPilha != Constants.DOLLAR);
 		
 		return "";
 	}
 	
 	private void preencherFila(){
-		this.fila = this.tokens.stream().map(Token::getCodigo).collect(Collectors.toList());
-		for(Integer f : fila) System.out.println(f);
+		this.fila = this.tokens.stream().filter(t -> t.getCodigo() != 0).map(Token::getCodigo).collect(Collectors.toList());
 	}
 }
 
