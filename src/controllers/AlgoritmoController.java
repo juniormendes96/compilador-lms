@@ -8,19 +8,15 @@ import analisadores.AnalisadorLexico;
 import analisadores.AnalisadorSintatico;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 import models.Erro;
 import models.ResultadoAnalise;
 import models.Token;
@@ -42,7 +38,9 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	private TextArea txtAreaAlgoritmo;
 	@FXML
-	private Tab tabPane;
+	private TabPane tabPane;
+	@FXML
+	private Tab tabResultado;
 
 	private ResultadoAnalise resultadoLexico;
 	private String resultadoSintatico;
@@ -57,23 +55,23 @@ public class AlgoritmoController implements Initializable {
 	
 	@FXML
 	public void analisarAlgoritmo() {
-		
 		if(!txtAreaAlgoritmo.getText().trim().isEmpty()) {
 			AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
 			resultadoLexico = analisadorLexico.iniciarAnalise();
 			
-			AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(resultadoLexico.getTokens());
-			resultadoSintatico = analisadorSintatico.iniciarAnalise();
-			
-			if(resultadoSintatico != "") 
-				resultadoLexico.getErros().add(new Erro(resultadoSintatico));
-			
-			tabPane.setText("");
-			tabPane.setGraphic(new Label("Resultado"));
-			tabPane.getGraphic().setStyle("-fx-text-fill: green;");
+			if (resultadoLexico.getErros().isEmpty()) {
+				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(resultadoLexico.getTokens());
+				resultadoSintatico = analisadorSintatico.iniciarAnalise();
+				if (resultadoSintatico.isEmpty()) {
+					printMensagemSucesso();
+				} else {
+					printErroAnalisadorSintatico(resultadoSintatico);
+				}
+			} else {
+				printErrosAnalisadorLexico(resultadoLexico.getErros());
+			}
 			
 			populaTabela(resultadoLexico.getTokens());
-			populaErros(resultadoLexico.getErros());
 		} else {
 			exibeMsg("Insira um algoritmo", 
 					"Antes de compilar é necessário inserir um algoritmo para análise", 
@@ -82,18 +80,36 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 
-	public void populaTabela(List<Token> linhasTabela) {
+	private void populaTabela(List<Token> linhasTabela) {
 		tableViewResultado.setItems(FXCollections.observableArrayList(linhasTabela));
 	}
-
-	public void populaErros(List<Erro> erros) {
-		if (!erros.isEmpty()) {
+	
+	private void setStyles(boolean erro) {
+		if (erro) {
+			tabResultado.setStyle("-fx-text-fill: red;");
 			textAreaErros.setStyle("-fx-text-inner-color: red;");
-			textAreaErros.setText("");
-			erros.stream().forEach(erro -> textAreaErros.setText(textAreaErros.getText() + erro.getMensagem() + "\n"));
 		} else {
-			textAreaErros.setText("Código sem erro. Compilado com sucesso!");
+			tabResultado.setStyle("-fx-text-fill: green;");
+			textAreaErros.setStyle("-fx-text-inner-color: green;");
 		}
+	}
+	
+	private void printErrosAnalisadorLexico(List<Erro> erros) {
+		setStyles(true);
+		erros.stream().forEach(erro -> textAreaErros.setText(textAreaErros.getText() + erro.getMensagem() + "\n"));
+		tabPane.getSelectionModel().select(tabResultado);
+	}
+	
+	private void printErroAnalisadorSintatico(String erro) {
+		setStyles(true);
+		textAreaErros.setText(erro);
+		tabPane.getSelectionModel().select(tabResultado);
+	}
+	
+	private void printMensagemSucesso() {
+		setStyles(false);
+		textAreaErros.setText("Código sem erro. Compilado com sucesso!");
+		tabPane.getSelectionModel().select(tabResultado);
 	}
 	
 	private void exibeMsg(String titulo, String cabecalho, String msg, AlertType tipo) {

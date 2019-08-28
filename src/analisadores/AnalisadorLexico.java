@@ -47,7 +47,7 @@ public class AnalisadorLexico {
 		while (scanner.hasNextLine()) {
 			String caracteres[] = scanner.nextLine().split("\\s+");
 			for (int i = 0; i < caracteres.length; i++) {
-				this.adicionarToken(caracteres[i], linha);
+				if (!caracteres[i].equals(TokenEnum.RESERVA_CADEIA_VAZIA.getSimbolo())) this.adicionarToken(caracteres[i], linha);
 			}
 			linha++;
 		}

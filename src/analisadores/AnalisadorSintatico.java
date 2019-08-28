@@ -72,10 +72,7 @@ public class AnalisadorSintatico implements Constants {
 				// Baseado na Matriz de Parse ele pega:
 				// linha = topoDaPilha - Primeiro Não terminal
 				// coluna = proximaEntrada - 1;
-				if(proximaEntrada != 0)
-					valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
-				else
-					valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][0];
+				valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
 
 				// Se valor retornado for igual topoDaPilha
 				if(valorMatriz != -1) {
