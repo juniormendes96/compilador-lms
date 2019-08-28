@@ -84,8 +84,7 @@ public class AnalisadorSintatico implements Constants {
 					// Adiciona na pilha as produções em ordem decrescente
 					for(int j = Constants.PRODUCTIONS[valorMatriz].length-1; j >= 0; j--) {
 						// 0 é vazio então não adiciona
-						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {
-							// Remove da pilha e entrada											
+						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {										
 							// Adiciona novos tokens da produção a pilha
 							this.pilha.add(Constants.PRODUCTIONS[valorMatriz][j]);
 						}
