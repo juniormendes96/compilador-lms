@@ -14,7 +14,6 @@ L  : [A-Za-z]
 D  : [0-9]
 WS : [\ \t\n\r] //simbolos especiais e branco
 COMMENT : "(*" [^ "*" ]* "*)"  //comentário
-
 #Tokens
 "+"
 "-"
@@ -62,9 +61,10 @@ LITERAL
 "CASE"
  
 //tokens
-IDENT : {L} ( {L} | {D} | _ )*
-LITERAL : {L}+ | {D}+ | _ 
-INTEIRO : {D}+ //um ou mais dígitos
+IDENT : {L} ( {L} | {D} | _ )* 
+INTEIRO : {D}+  //um ou mais dígitos
+LITERAL : \" ({L} | {D} | \s )* \" 
+
 
 //ignorar espaços em branco, caracteres especiais e comentários
  : {WS}*

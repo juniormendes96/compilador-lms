@@ -71,7 +71,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private String erro(int topoDaPilha) {
-		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[topoDaPilha] + " na linha "
+		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[this.pilha.get(this.pilha.size()-2)] + " na linha "
 				+ this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 	}
 
@@ -96,12 +96,10 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private boolean pilhaVazia() {
-		return this.getTopoDaPilha() == Constants.DOLLAR;
+		return this.getTopoDaPilha() == Constants.DOLLAR || fila.isEmpty();
 	}
 
 	private void preencheFila() {
 		this.fila = this.tokens.stream().map(Token::getCodigo).collect(Collectors.toList());
-		for (Integer f : fila)
-			System.out.println(f);
 	}
 }
