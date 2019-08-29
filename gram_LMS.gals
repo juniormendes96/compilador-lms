@@ -14,6 +14,7 @@ L  : [A-Za-z]
 D  : [0-9]
 WS : [\ \t\n\r] //simbolos especiais e branco
 COMMENT : "(*" [^ "*" ]* "*)"  //comentário
+STRING : \" [^\n\"]* \" 
 #Tokens
 "+"
 "-"
@@ -63,7 +64,7 @@ LITERAL
 //tokens
 IDENT : {L} ( {L} | {D} | _ )* 
 INTEIRO : {D}+  //um ou mais dígitos
-LITERAL : \" ({L} | {D} | \s )* \" 
+LITERAL : {STRING} 
 
 
 //ignorar espaços em branco, caracteres especiais e comentários
