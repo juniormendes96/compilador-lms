@@ -61,7 +61,7 @@ public class AlgoritmoController implements Initializable {
 			
 			if (resultadoLexico.getErros().isEmpty()) {
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(resultadoLexico.getTokens());
-				resultadoSintatico = analisadorSintatico.iniciarAnalise();
+				resultadoSintatico = analisadorSintatico.iniciarDescendentePreditivo();
 				if (resultadoSintatico.isEmpty()) {
 					printMensagemSucesso();
 				} else {

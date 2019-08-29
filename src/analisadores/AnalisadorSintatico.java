@@ -8,11 +8,11 @@ import constants.Constants;
 import models.Token;
 
 public class AnalisadorSintatico implements Constants {
-	
+
 	private List<Integer> pilha;
 	private List<Integer> fila;
 	private List<Token> tokens;
-	
+
 	public AnalisadorSintatico(List<Token> tokens) {
 		// Cria a pilha e a fila
 		this.pilha = new ArrayList<>();
@@ -20,97 +20,88 @@ public class AnalisadorSintatico implements Constants {
 		this.tokens = tokens;
 	}
 
-	// Inicia a análise utilizando os tokens do léxico
-	public String iniciarAnalise() {
-		return iniciarDescendentePreditivo();
-	}
-	
-	// Inicia a Análise Sintática Descendente
-	private String iniciarDescendentePreditivo() {
-		this.preencherFila();
+	public String iniciarDescendentePreditivo() {
+		this.preencheFila();
+		this.empilhaValoresIniciais();
 
 		int topoDaPilha;
 		int proximaEntrada;
-		
-		// Adiciona o token inicial à pilha
-		this.pilha.add(Constants.DOLLAR);
-		this.pilha.add(Constants.START_SYMBOL);
-		
-		//Variavel para o valor retornado da matriz de parsing
-		int valorMatriz;
-		
-		System.out.println("INICIANDO TESTE");
-		
-		// Início da análise Descendente Preditivo até a pilha ficar vazia
-		
-		do {
-			
-			// Setando o topoDaPilha e a proximaEntrada baseado na lista de tokens.
-			topoDaPilha = this.pilha.get(pilha.size() - 1);
-			proximaEntrada = this.fila.get(0);
-			System.out.println(topoDaPilha + " " + proximaEntrada + " " + this.fila.size());
-			
-			//Encerrar o loop caso esteja vazio
-			if(estaVazio(topoDaPilha))
-				return "";
-			
-			// Verifica se o token no Topo da Pilha é um terminal, caso controla realiza a matriz parsing
-			if(ehTerminal(topoDaPilha)) {
-				
-				// Verifica se o Topo Da Pilha é igual ao proximo símbolo da entrada			
-				if(comparaSimbolo(topoDaPilha, proximaEntrada)) {
-					
-					// Se for remove o símbolo do topo da pilha e da fila de entrada
-					this.pilha.remove(this.pilha.size() - 1);
-					this.fila.remove(0);
-					
-				} else {
-					//Se for diferente erro sintático
-					return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
-				}
-			} else {
-				// Baseado na Matriz de Parse ele pega:
-				// linha = topoDaPilha - Primeiro Não terminal
-				// coluna = proximaEntrada - 1;
-				valorMatriz = Constants.PARSER_TABLE[topoDaPilha-Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
 
-				// Se valor retornado for igual topoDaPilha
-				if(valorMatriz != -1) {
-					// Remove da pilha e entrada	
-					this.pilha.remove(pilha.size()-1);
-					// Adiciona na pilha as produções em ordem decrescente
-					for(int j = Constants.PRODUCTIONS[valorMatriz].length-1; j >= 0; j--) {
-						// 0 é vazio então não adiciona
-						if(Constants.PRODUCTIONS[valorMatriz][j] != 0) {										
-							// Adiciona novos tokens da produção a pilha
-							this.pilha.add(Constants.PRODUCTIONS[valorMatriz][j]);
-						}
-					}
+		int valorMatrizDeParsing;
+
+		while (!pilhaVazia()) {
+			topoDaPilha = this.getTopoDaPilha();
+			proximaEntrada = this.getPrimeiroDaFila();
+
+			if (isTerminal(topoDaPilha) || pilhaVazia()) {
+				if (topoDaPilha == proximaEntrada) {
+					this.retiraTopoDaPilha();
+					this.retiraPrimeiroDaFila();
 				} else {
-						// Se for diferente ERRO sintático
-					return "ERRO SINTÁTICO: "+ Constants.PARSER_ERROR[topoDaPilha] + " na linha " + this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+					return erro(topoDaPilha);
+				}
+			} else { // não é terminal
+				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
+				if (valorMatrizDeParsing != -1) {
+					this.retiraTopoDaPilha();
+					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
+				} else {
+					return erro(topoDaPilha);
 				}
 			}
-		} while (!this.fila.isEmpty());  // (topoDaPilha != Constants.DOLLAR);
-		
-		return "";	//Algoritmo parou portanto não retorna erro
+		}
+		return "";
 	}
-	
-	private boolean ehTerminal(int topoDaPilha) {
+
+	private void empilhaValoresIniciais() {
+		this.pilha.add(Constants.DOLLAR);
+		this.pilha.add(Constants.START_SYMBOL);
+	}
+
+	private int getValorMatrizDeParsing(int topoDaPilha, int proximaEntrada) {
+		return Constants.PARSER_TABLE[topoDaPilha - Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
+	}
+
+	private void empilhaProducoesOrdemDescrescente(int valorMatrizDeParsing) {
+		for (int i = Constants.PRODUCTIONS[valorMatrizDeParsing].length - 1; i >= 0; i--) {
+			if (Constants.PRODUCTIONS[valorMatrizDeParsing][i] != 0) {
+				this.pilha.add(Constants.PRODUCTIONS[valorMatrizDeParsing][i]);
+			}
+		}
+	}
+
+	private String erro(int topoDaPilha) {
+		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[topoDaPilha] + " na linha "
+				+ this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+	}
+
+	private int getTopoDaPilha() {
+		return this.pilha.get(this.pilha.size() - 1);
+	}
+
+	private int getPrimeiroDaFila() {
+		return this.fila.get(0);
+	}
+
+	private void retiraPrimeiroDaFila() {
+		this.fila.remove(0);
+	}
+
+	private void retiraTopoDaPilha() {
+		this.pilha.remove(pilha.size() - 1);
+	}
+
+	private boolean isTerminal(int topoDaPilha) {
 		return topoDaPilha < Constants.FIRST_NON_TERMINAL;
 	}
-	
-	private boolean estaVazio(int topoDaPilha) {
-		return topoDaPilha == Constants.DOLLAR;
+
+	private boolean pilhaVazia() {
+		return this.getTopoDaPilha() == Constants.DOLLAR;
 	}
-	
-	private boolean comparaSimbolo(int topoDaPilha, int proximaEntrada) {
-		return topoDaPilha == proximaEntrada;
-	}
-	
-	private void preencherFila(){
+
+	private void preencheFila() {
 		this.fila = this.tokens.stream().map(Token::getCodigo).collect(Collectors.toList());
-		for(Integer f : fila) System.out.println(f);
+		for (Integer f : fila)
+			System.out.println(f);
 	}
 }
-
