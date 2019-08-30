@@ -1,0 +1,10 @@
+PROGRAM multiplicacao;
+
+    VAR numero1, numero2, resultado: INTEGER;
+
+    BEGIN
+        READLN(numero1);
+        READLN(numero2);
+        resultado := numero1 * numero2;
+        WRITELN(resultado);
+END.

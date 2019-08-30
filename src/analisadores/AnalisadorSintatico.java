@@ -54,24 +54,24 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void empilhaValoresIniciais() {
-		this.pilha.add(Constants.DOLLAR);
-		this.pilha.add(Constants.START_SYMBOL);
+		this.pilha.add(DOLLAR);
+		this.pilha.add(START_SYMBOL);
 	}
 
 	private int getValorMatrizDeParsing(int topoDaPilha, int proximaEntrada) {
-		return Constants.PARSER_TABLE[topoDaPilha - Constants.FIRST_NON_TERMINAL][proximaEntrada - 1];
+		return PARSER_TABLE[topoDaPilha - FIRST_NON_TERMINAL][proximaEntrada - 1];
 	}
 
 	private void empilhaProducoesOrdemDescrescente(int valorMatrizDeParsing) {
-		for (int i = Constants.PRODUCTIONS[valorMatrizDeParsing].length - 1; i >= 0; i--) {
-			if (Constants.PRODUCTIONS[valorMatrizDeParsing][i] != 0) {
-				this.pilha.add(Constants.PRODUCTIONS[valorMatrizDeParsing][i]);
+		for (int i = PRODUCTIONS[valorMatrizDeParsing].length - 1; i >= 0; i--) {
+			if (PRODUCTIONS[valorMatrizDeParsing][i] != 0) {
+				this.pilha.add(PRODUCTIONS[valorMatrizDeParsing][i]);
 			}
 		}
 	}
 
 	private String erro(int topoDaPilha) {
-		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[this.pilha.get(this.pilha.size()-1)] + " na linha "
+		return "ERRO SINTÁTICO: " + PARSER_ERROR[this.pilha.get(this.pilha.size()-1)] + " na linha "
 				+ this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 	}
 
@@ -92,11 +92,11 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private boolean isTerminal(int topoDaPilha) {
-		return topoDaPilha < Constants.FIRST_NON_TERMINAL;
+		return topoDaPilha < FIRST_NON_TERMINAL;
 	}
 
 	private boolean pilhaVazia() {
-		return this.getTopoDaPilha() == Constants.DOLLAR || fila.isEmpty();
+		return this.getTopoDaPilha() == DOLLAR || fila.isEmpty();
 	}
 
 	private void preencheFila() {

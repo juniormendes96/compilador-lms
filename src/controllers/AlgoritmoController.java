@@ -1,7 +1,10 @@
 package controllers;
 
-import java.net.URL;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;import java.util.List;
 import java.util.ResourceBundle;
 
 import analisadores.AnalisadorLexico;
@@ -17,6 +20,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import models.Erro;
 import models.ResultadoAnalise;
 import models.Token;
@@ -80,6 +84,33 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 
+	@FXML
+	public void abrirArquivo() throws IOException {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Texto","*.txt")); 	
+		fileChooser.setInitialDirectory(new File("C:/"));
+		File textoSelec = fileChooser.showOpenDialog(null);
+		
+		
+		BufferedReader reader = new BufferedReader(new FileReader (textoSelec));
+		
+		try {
+			StringBuilder sb = new StringBuilder();
+			String line = reader.readLine();
+			
+			while (line != null) {
+				sb.append(line);
+		        sb.append("\n");
+		        line = reader.readLine();
+		    }
+			System.out.println("Arquivo lido com sucesso "+textoSelec.getName());
+		    txtAreaAlgoritmo.setText(sb.toString());
+		   
+		} finally {
+			reader.close();
+		}
+	}
+	
 	private void populaTabela(List<Token> linhasTabela) {
 		tableViewResultado.setItems(FXCollections.observableArrayList(linhasTabela));
 	}

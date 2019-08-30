@@ -1,0 +1,14 @@
+PROGRAM maior_numero;
+
+    VAR numero1, numero2: INTEGER;
+
+    BEGIN
+        READLN(numero1);
+        READLN(numero2);
+        IF numero1 > numero2 THEN
+            WRITELN("Primeiro número é maior")
+        ELSE IF numero2 > numero1 THEN
+            WRITELN("Segundo número é maior")
+        ELSE
+            WRITELN("Os números são iguais");
+END.

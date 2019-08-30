@@ -9,11 +9,12 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
+<BorderPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
    <top>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compilador" BorderPane.alignment="CENTER">
          <font>
@@ -33,15 +34,20 @@
                      <children>
                         <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <TextArea fx:id="txtAreaAlgoritmo" prefHeight="581.0" prefWidth="766.0" promptText="Digite aqui o algoritmo..." wrapText="true" />
-                              <Button mnemonicParsing="false" onAction="#analisarAlgoritmo" prefHeight="25.0" prefWidth="219.0" text="Analisar algoritmo">
-                                 <font>
-                                    <Font name="Arial" size="15.0" />
-                                 </font>
+                              <HBox alignment="CENTER" prefHeight="40.0" spacing="10.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#abrirArquivo" prefHeight="25.0" prefWidth="220.0" text="Abrir" />
+                                    <Button mnemonicParsing="false" onAction="#analisarAlgoritmo" prefHeight="25.0" prefWidth="220.0" text="Compilar">
+                                       <font>
+                                          <Font name="Arial" size="15.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets />
                                  </VBox.margin>
-                              </Button>
+                              </HBox>
+                              <TextArea fx:id="txtAreaAlgoritmo" prefHeight="581.0" prefWidth="766.0" promptText="Digite aqui o algoritmo..." wrapText="true" />
                            </children>
                         </VBox>
                      </children>

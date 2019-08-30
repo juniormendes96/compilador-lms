@@ -1,0 +1,22 @@
+PROGRAM arvore;
+
+VAR posicao, t: INTEGER;
+
+	BEGIN
+
+   	posicao := 6;
+   	t := 1;
+
+	FOR i := 1 TO i <= 6 DO
+		FOR j := 1 TO j <= 10 DO
+			IF j = posicao (* aqui deve ocorrer o erro *)
+			BEGIN	
+				t := t+2;
+				posicao := posicao - 1;
+				FOR k := 1 TO k <= t DO
+					WRITELN("*");
+			END
+			ELSE
+				WRITELN("");
+        WRITELN("");
+END.
