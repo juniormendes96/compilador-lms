@@ -1,5 +1,7 @@
 package models;
 
+import enums.TokenEnum;
+
 public class Token {
 
 	private Integer codigo;
@@ -7,13 +9,20 @@ public class Token {
 	private String descricao;
 	private Integer linha;
 
+	public Token(TokenEnum tokenEnum, int linha) {
+		this.codigo = tokenEnum.getCod();
+		this.token = tokenEnum.getSimbolo();
+		this.descricao = tokenEnum.getDescricao();
+		this.linha = linha;
+	}
+	
 	public Token(Integer codigo, String token, String descricao, Integer linha) {
 		this.codigo = codigo;
 		this.token = token;
 		this.descricao = descricao;
 		this.linha = linha;
 	}
-
+	
 	public Integer getCodigo() {
 		return codigo;
 	}

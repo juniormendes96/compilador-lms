@@ -31,7 +31,7 @@ public class AnalisadorLexico {
 		this.removerComentarios();
 		this.adicionarEspacosNosTokens();
 		this.adicionarTokensNaLista();
-		this.handleSinaisDeAtribuicao();
+		this.handleSinaisDeAtribuicaoEComparacao();
 		this.handleLiterais();
 		this.identificarErros();
 		return new ResultadoAnalise(this.tokens, this.erros);
@@ -126,17 +126,29 @@ public class AnalisadorLexico {
 	    return true;
 	}
 	
-	private void handleSinaisDeAtribuicao() {
+	private void handleSinaisDeAtribuicaoEComparacao() {
 		Iterator<Token> tokensIterator = this.tokens.iterator();
 		Token previousToken = null;
 		Token currentToken = null;
 		while (tokensIterator.hasNext()) {
 			currentToken = tokensIterator.next();
-			if (Objects.nonNull(previousToken) && previousToken.getCodigo() == TokenEnum.DOIS_PONTOS.getCod() && currentToken.getCodigo() == TokenEnum.IGUAL.getCod()) {
-				tokensIterator.remove();
-				this.tokens.set(this.tokens.indexOf(previousToken),
-						new Token(TokenEnum.ATRIBUICAO.getCod(), TokenEnum.ATRIBUICAO.getSimbolo(),
-								TokenEnum.ATRIBUICAO.getDescricao(), previousToken.getLinha()));
+			if (Objects.nonNull(previousToken)) {
+				if (previousToken.getCodigo() == TokenEnum.DOIS_PONTOS.getCod() && currentToken.getCodigo() == TokenEnum.IGUAL.getCod()) {
+					tokensIterator.remove();
+					this.tokens.set(this.tokens.indexOf(previousToken), new Token(TokenEnum.ATRIBUICAO, previousToken.getLinha()));
+				}
+				if (previousToken.getCodigo() == TokenEnum.MENOR.getCod() && currentToken.getCodigo() == TokenEnum.IGUAL.getCod()) {
+					tokensIterator.remove();
+					this.tokens.set(this.tokens.indexOf(previousToken), new Token(TokenEnum.MENOR_OU_IGUAL, previousToken.getLinha()));
+				}
+				if (previousToken.getCodigo() == TokenEnum.MAIOR.getCod() && currentToken.getCodigo() == TokenEnum.IGUAL.getCod()) {
+					tokensIterator.remove();
+					this.tokens.set(this.tokens.indexOf(previousToken), new Token(TokenEnum.MAIOR_OU_IGUAL, previousToken.getLinha()));
+				}
+				if (previousToken.getCodigo() == TokenEnum.MENOR.getCod() && currentToken.getCodigo() == TokenEnum.MAIOR.getCod()) {
+					tokensIterator.remove();
+					this.tokens.set(this.tokens.indexOf(previousToken), new Token(TokenEnum.DIFERENTE, previousToken.getLinha()));
+				}
 			}
 			previousToken = currentToken;
 		}

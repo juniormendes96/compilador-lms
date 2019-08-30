@@ -71,7 +71,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private String erro(int topoDaPilha) {
-		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[this.pilha.get(this.pilha.size()-2)] + " na linha "
+		return "ERRO SINTÁTICO: " + Constants.PARSER_ERROR[this.pilha.get(this.pilha.size()-1)] + " na linha "
 				+ this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 	}
 
