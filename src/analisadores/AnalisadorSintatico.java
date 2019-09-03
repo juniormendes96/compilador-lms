@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
+import exceptions.AnalisadorSintaticoException;
 import models.Token;
 
 public class AnalisadorSintatico implements Constants {
@@ -38,7 +39,7 @@ public class AnalisadorSintatico implements Constants {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
 				} else {
-					return erro(topoDaPilha);
+					this.lancaErro();
 				}
 			} else { // não é terminal
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
@@ -46,7 +47,7 @@ public class AnalisadorSintatico implements Constants {
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
 				} else {
-					return erro(topoDaPilha);
+					this.lancaErro();
 				}
 			}
 		}
@@ -70,9 +71,8 @@ public class AnalisadorSintatico implements Constants {
 		}
 	}
 
-	private String erro(int topoDaPilha) {
-		return "ERRO SINTÁTICO: " + PARSER_ERROR[this.pilha.get(this.pilha.size()-1)] + " na linha "
-				+ this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+	private void lancaErro() {
+		throw new AnalisadorSintaticoException(PARSER_ERROR[this.pilha.get(this.pilha.size()-1)], this.tokens.get(this.tokens.size() - this.fila.size()).getLinha());
 	}
 
 	private int getTopoDaPilha() {

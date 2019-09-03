@@ -8,8 +8,7 @@ import java.util.Scanner;
 
 import enums.ErroEnum;
 import enums.TokenEnum;
-import models.Erro;
-import models.ResultadoAnalise;
+import exceptions.AnalisadorLexicoException;
 import models.Token;
 
 public class AnalisadorLexico {
@@ -19,22 +18,20 @@ public class AnalisadorLexico {
 	
 	private String algoritmo;
 	private List<Token> tokens;
-	private List<Erro> erros;
 
 	public AnalisadorLexico(String algoritmo) {
 		this.algoritmo = algoritmo;
 		this.tokens = new ArrayList<>();
-		this.erros = new ArrayList<>();
 	}
 	
-	public ResultadoAnalise iniciarAnalise() {
+	public List<Token> iniciarAnalise() {
 		this.removerComentarios();
 		this.adicionarEspacosNosTokens();
 		this.adicionarTokensNaLista();
 		this.handleSinaisDeAtribuicaoEComparacao();
 		this.handleLiterais();
 		this.identificarErros();
-		return new ResultadoAnalise(this.tokens, this.erros);
+		return this.tokens;
 	}
 	
 	private void removerComentarios() {
@@ -86,20 +83,20 @@ public class AnalisadorLexico {
 		for(Token token : this.tokens) {
 			if(token.getCodigo() == TokenEnum.INTEIRO.getCod()) {
 				if(Integer.parseInt(token.getToken()) >= 32767) {
-			    	this.erros.add(new Erro(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
+			    	throw new AnalisadorLexicoException(ErroEnum.INTEIRO_FORA_DO_LIMITE.getErro(), token);
 			    }
 			}
 			if (token.getCodigo() == TokenEnum.LIT.getCod()) {
 				if(token.getToken().length() > 255) {
-					this.erros.add(new Erro(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
+					throw new AnalisadorLexicoException(ErroEnum.CARACTERES_FORA_DO_LIMITE.getErro(), token);
 				}
 			}
 			if (token.getCodigo() == TokenEnum.ID.getCod()) {
 				if(token.getToken().length() > 30) {
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
+					throw new AnalisadorLexicoException(ErroEnum.IDENTIFICADOR_FORA_DO_LIMITE.getErro(), token);
 				}
 				if(this.isVariavel(token) && this.isInteger(String.valueOf(token.getToken().charAt(0)))){
-					this.erros.add(new Erro(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro() + " (Token " + token.getToken() + " linha " + token.getLinha() + ")", token.getLinha()));
+					throw new AnalisadorLexicoException(ErroEnum.IDENTIFICADOR_DECLARADO_ERRADO.getErro(), token);
 				}
 			}
 		}

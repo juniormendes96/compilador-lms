@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;import java.util.List;
+import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import analisadores.AnalisadorLexico;
 import analisadores.AnalisadorSintatico;
+import exceptions.AnalisadorLexicoException;
+import exceptions.AnalisadorSintaticoException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,8 +24,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
-import models.Erro;
-import models.ResultadoAnalise;
 import models.Token;
 
 public class AlgoritmoController implements Initializable {
@@ -46,9 +47,6 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	private Tab tabResultado;
 
-	private ResultadoAnalise resultadoLexico;
-	private String resultadoSintatico;
-	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		columnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
@@ -60,22 +58,23 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	public void analisarAlgoritmo() {
 		if(!txtAreaAlgoritmo.getText().trim().isEmpty()) {
-			AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
-			resultadoLexico = analisadorLexico.iniciarAnalise();
-			
-			if (resultadoLexico.getErros().isEmpty()) {
-				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(resultadoLexico.getTokens());
-				resultadoSintatico = analisadorSintatico.iniciarDescendentePreditivo();
-				if (resultadoSintatico.isEmpty()) {
-					printMensagemSucesso();
-				} else {
-					printErroAnalisadorSintatico(resultadoSintatico);
-				}
-			} else {
-				printErrosAnalisadorLexico(resultadoLexico.getErros());
+			try {
+				AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
+				List<Token> tokens = analisadorLexico.iniciarAnalise();
+				
+				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
+				analisadorSintatico.iniciarDescendentePreditivo();
+				
+				printMensagemSucesso();
+				populaTabela(tokens);
+			} catch (AnalisadorLexicoException analisadorLexicoException) {
+				tableViewResultado.setItems(null);
+				printErro(analisadorLexicoException.getMessage());
+			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
+				tableViewResultado.setItems(null);
+				printErro(analisadorSintaticoException.getMessage());
 			}
 			
-			populaTabela(resultadoLexico.getTokens());
 		} else {
 			exibeMsg("Insira um algoritmo", 
 					"Antes de compilar é necessário inserir um algoritmo para análise", 
@@ -125,13 +124,7 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 	
-	private void printErrosAnalisadorLexico(List<Erro> erros) {
-		setStyles(true);
-		erros.stream().forEach(erro -> textAreaErros.setText(textAreaErros.getText() + erro.getMensagem() + "\n"));
-		tabPane.getSelectionModel().select(tabResultado);
-	}
-	
-	private void printErroAnalisadorSintatico(String erro) {
+	private void printErro(String erro) {
 		setStyles(true);
 		textAreaErros.setText(erro);
 		tabPane.getSelectionModel().select(tabResultado);
