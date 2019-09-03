@@ -21,7 +21,7 @@ public class AnalisadorSintatico implements Constants {
 		this.tokens = tokens;
 	}
 
-	public String iniciarDescendentePreditivo() {
+	public void iniciarDescendentePreditivo() {
 		this.preencheFila();
 		this.empilhaValoresIniciais();
 
@@ -51,7 +51,6 @@ public class AnalisadorSintatico implements Constants {
 				}
 			}
 		}
-		return "";
 	}
 
 	private void empilhaValoresIniciais() {
