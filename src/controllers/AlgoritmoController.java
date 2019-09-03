@@ -88,9 +88,8 @@ public class AlgoritmoController implements Initializable {
 	public void abrirArquivo() throws IOException {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Texto","*.txt")); 	
-		fileChooser.setInitialDirectory(new File("C:/"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 		File textoSelec = fileChooser.showOpenDialog(null);
-		
 		
 		BufferedReader reader = new BufferedReader(new FileReader (textoSelec));
 		
@@ -103,7 +102,6 @@ public class AlgoritmoController implements Initializable {
 		        sb.append("\n");
 		        line = reader.readLine();
 		    }
-			System.out.println("Arquivo lido com sucesso "+textoSelec.getName());
 		    txtAreaAlgoritmo.setText(sb.toString());
 		   
 		} finally {
