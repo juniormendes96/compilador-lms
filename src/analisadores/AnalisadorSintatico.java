@@ -72,7 +72,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void lancaErro() {
-		throw new AnalisadorSintaticoException(PARSER_ERROR[this.pilha.get(this.pilha.size()-1)], this.tokens.get(this.tokens.size() - this.fila.size()).getLinha());
+		throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.tokens.get(this.tokens.size() - this.fila.size()).getLinha());
 	}
 
 	private int getTopoDaPilha() {
