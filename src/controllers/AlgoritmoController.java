@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import analisadores.AnalisadorLexico;
@@ -68,10 +69,10 @@ public class AlgoritmoController implements Initializable {
 				printMensagemSucesso();
 				populaTabela(tokens);
 			} catch (AnalisadorLexicoException analisadorLexicoException) {
-				tableViewResultado.setItems(null);
+				populaTabela(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
-				tableViewResultado.setItems(null);
+				populaTabela(null);
 				printErro(analisadorSintaticoException.getMessage());
 			}
 			
@@ -111,7 +112,7 @@ public class AlgoritmoController implements Initializable {
 	}
 	
 	private void populaTabela(List<Token> linhasTabela) {
-		tableViewResultado.setItems(FXCollections.observableArrayList(linhasTabela));
+		tableViewResultado.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {
