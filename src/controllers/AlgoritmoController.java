@@ -61,18 +61,19 @@ public class AlgoritmoController implements Initializable {
 		if(!txtAreaAlgoritmo.getText().trim().isEmpty()) {
 			try {
 				AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
-				List<Token> tokens = analisadorLexico.iniciarAnalise();
+				List<Token> tokens = analisadorLexico.iniciarAnalise();	
+				
+				populaTabela(tokens);
 				
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
-				analisadorSintatico.iniciarDescendentePreditivo();
-				
+				analisadorSintatico.iniciarDescendentePreditivo();			
+			
 				printMensagemSucesso();
-				populaTabela(tokens);
+			
 			} catch (AnalisadorLexicoException analisadorLexicoException) {
 				populaTabela(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
-				populaTabela(null);
 				printErro(analisadorSintaticoException.getMessage());
 			}
 			

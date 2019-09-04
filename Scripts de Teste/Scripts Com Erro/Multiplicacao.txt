@@ -5,6 +5,6 @@ PROGRAM multiplicacao;
     BEGIN
         READLN(numero1);
         READLN(numero2);
-        resultado := numero1 * numero2;
-        WRITELN(resultado)  (* aqui deve ocorrer o erro *)
+        resultado := numero1 * numero2 (* aqui deve ocorrer o erro *)
+        WRITELN(resultado);
 END.
