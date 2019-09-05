@@ -38,15 +38,15 @@ public class AnalisadorSintatico implements Constants {
 				if (topoDaPilha == proximaEntrada) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
-				} else { // topo da pilha n„o È igual ao simbolo da entrada atual
+				} else { // topo da pilha n√£o √© igual ao simbolo da entrada atual
 					this.lancaErro();
 				}
-			} else { // n„o È terminal
+			} else { // n√£o √© terminal
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
 				if (valorMatrizDeParsing != -1) {
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
-				} else { // valor retornado da matriz de parsing È -1 , ent„o È erro
+				} else { // valor retornado da matriz de parsing √© -1 , ent√£o √© erro
 					this.lancaErro();
 				}
 			}
@@ -75,7 +75,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 	
 	private int getLinhaDoErro() {
-		return this.tokens.get(this.tokens.size() - this.fila.size()).getLinha() - 1;
+		return this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
 	}
 	
 	private int getTopoDaPilha() {
