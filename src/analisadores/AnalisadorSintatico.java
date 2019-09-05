@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
-import enums.TokenEnum;
 import exceptions.AnalisadorSintaticoException;
 import models.Token;
 
