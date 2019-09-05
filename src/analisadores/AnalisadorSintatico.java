@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
+import enums.TokenEnum;
 import exceptions.AnalisadorSintaticoException;
 import models.Token;
 
@@ -71,9 +72,13 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void lancaErro() {
-		throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.tokens.get(this.tokens.size() - this.fila.size()).getLinha()-1);
+		throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], getLinhaDoErro());
 	}
-
+	
+	private int getLinhaDoErro() {
+		return this.tokens.get(this.tokens.size() - this.fila.size()).getLinha()-1;
+	}
+	
 	private int getTopoDaPilha() {
 		return this.pilha.get(this.pilha.size() - 1);
 	}
