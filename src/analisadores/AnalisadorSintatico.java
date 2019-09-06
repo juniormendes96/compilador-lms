@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
+import enums.TokenEnum;
 import exceptions.AnalisadorSintaticoException;
 import models.Token;
 
@@ -71,7 +72,22 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void lancaErro() {
-		throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.getLinhaDoErro());
+		if(this.getTopoDaPilha() < FIRST_NON_TERMINAL) {
+			throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.getLinhaDoErro());
+		} else { //Caso erro seja um Terminal avaliar as colunas da Matriz de Parsing
+			List<Integer> entradasInesperadas = new ArrayList<Integer>();
+			for(int i=0; i<PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL].length; i++) {
+				if(PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL][i] != -1) {
+					entradasInesperadas.add(i+1);					
+				}
+			}
+			String tokenInesperado = "Era esperado o(s) seguinte(s) token(s): ";
+			for(TokenEnum t : TokenEnum.values()){
+				if(entradasInesperadas.contains(t.getCod()))
+					tokenInesperado += t.getSimbolo() + " ";				
+			}
+			throw new AnalisadorSintaticoException(tokenInesperado, this.getLinhaDoErro());
+		}
 	}
 	
 	private int getLinhaDoErro() {
