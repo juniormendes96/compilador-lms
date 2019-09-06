@@ -1,7 +1,9 @@
 package analisadores;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import constants.Constants;
@@ -74,19 +76,16 @@ public class AnalisadorSintatico implements Constants {
 	private void lancaErro() {
 		if(this.getTopoDaPilha() < FIRST_NON_TERMINAL) {
 			throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.getLinhaDoErro());
-		} else { //Caso erro seja um Terminal avaliar as colunas da Matriz de Parsing
-			List<Integer> entradasInesperadas = new ArrayList<Integer>();
-			for(int i=0; i<PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL].length; i++) {
+		} else { // Caso erro não seja um terminal avaliar as colunas da Matriz de Parsing
+			StringBuilder mensagemDeErro = new StringBuilder("Era esperado o(s) seguinte(s) token(s):");
+			for(int i = 0; i < PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL].length; i++) {
 				if(PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL][i] != -1) {
-					entradasInesperadas.add(i+1);					
+					final int codigoTokenEsperado = i + 1;
+					TokenEnum tokenEnum = Arrays.asList(TokenEnum.values()).stream().filter(value -> value.getCod() == codigoTokenEsperado).findFirst().orElse(null);
+					if (Objects.nonNull(tokenEnum)) mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));
 				}
 			}
-			String tokenInesperado = "Era esperado o(s) seguinte(s) token(s): ";
-			for(TokenEnum t : TokenEnum.values()){
-				if(entradasInesperadas.contains(t.getCod()))
-					tokenInesperado += t.getSimbolo() + " ";				
-			}
-			throw new AnalisadorSintaticoException(tokenInesperado, this.getLinhaDoErro());
+			throw new AnalisadorSintaticoException(mensagemDeErro.toString(), this.getLinhaDoErro());
 		}
 	}
 	
