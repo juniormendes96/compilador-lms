@@ -26,14 +26,14 @@ public class AnalisadorSintatico implements Constants {
 
 	public void iniciarDescendentePreditivo() {
 		this.preencheFila();
-		this.empilhaValoresIniciais();
+		this.empilhaValoresIniciais(); //empilhando a pilha
 
 		int topoDaPilha;
 		int proximaEntrada;
 
 		int valorMatrizDeParsing;
 
-		while (!pilhaVazia()) {
+		while (!pilhaVazia()) {		//Termina quando o topo da pilha for $
 			topoDaPilha = this.getTopoDaPilha();
 			proximaEntrada = this.getPrimeiroDaFila();
 
@@ -41,15 +41,15 @@ public class AnalisadorSintatico implements Constants {
 				if (topoDaPilha == proximaEntrada) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
-				} else { // topo da pilha n√£o √© igual ao simbolo da entrada atual
+				} else { // topo da pilha n„o È igual ao simbolo da entrada atual entao lanÁa erro
 					this.lancaErro();
 				}
-			} else { // n√£o √© terminal
+			} else { // n„o È terminal
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
-				if (valorMatrizDeParsing != -1) {
+				if (valorMatrizDeParsing != -1) {	
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
-				} else { // valor retornado da matriz de parsing √© -1 , ent√£o √© erro
+				} else { // valor retornado da matriz de parsing È -1 ent„o lanÁa erro
 					this.lancaErro();
 				}
 			}
@@ -74,15 +74,16 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void lancaErro() {
-		if(this.getTopoDaPilha() < FIRST_NON_TERMINAL) {
+		if(this.getTopoDaPilha() < FIRST_NON_TERMINAL) { // Caso topo da pilha seja terminal lanÁa o erro com token do topo da pilha
 			throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.getLinhaDoErro());
-		} else { // Caso erro n„o seja um terminal avaliar as colunas da Matriz de Parsing
+		} else { // Caso topo da pilha seja um n„o terminal avaliar as colunas da Matriz de Parsing
 			StringBuilder mensagemDeErro = new StringBuilder("Era esperado o(s) seguinte(s) token(s):");
 			for(int i = 0; i < PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL].length; i++) {
-				if(PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL][i] != -1) {
-					final int codigoTokenEsperado = i + 1;
-					TokenEnum tokenEnum = Arrays.asList(TokenEnum.values()).stream().filter(value -> value.getCod() == codigoTokenEsperado).findFirst().orElse(null);
-					if (Objects.nonNull(tokenEnum)) mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));
+				if(PARSER_TABLE[this.getTopoDaPilha() - FIRST_NON_TERMINAL][i] != -1) {  // Coleta a linha correspondente ao topo da pilha na Tabela de Parser com valores diferente de -1
+					final int codigoTokenEsperado = i + 1;		// O token esperado È baseado na coluna atual
+					TokenEnum tokenEnum = Arrays.asList(TokenEnum.values()).stream().filter(value -> value.getCod() == codigoTokenEsperado).findFirst().orElse(null); // Compara o id com tabela de tokens
+					if (Objects.nonNull(tokenEnum)) 
+						mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));	// Cria a mensagem de erro para ser enviada
 				}
 			}
 			throw new AnalisadorSintaticoException(mensagemDeErro.toString(), this.getLinhaDoErro());
