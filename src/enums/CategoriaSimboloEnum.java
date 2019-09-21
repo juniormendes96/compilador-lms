@@ -1,6 +1,6 @@
 package enums;
 
-public enum CategoriaIdentificadorEnum {
+public enum CategoriaSimboloEnum {
 	
 	VARIAVEL, CONSTANTE, PROCEDURE, PARAMETRO;
 

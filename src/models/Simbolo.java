@@ -1,17 +1,17 @@
 package models;
 
-import enums.CategoriaIdentificadorEnum;
+import enums.CategoriaSimboloEnum;
 
 public class Simbolo {
 
 	private String nome;
-	private CategoriaIdentificadorEnum categoria;
+	private CategoriaSimboloEnum categoria;
 	private int nivel;
 	private int geralA;
 	private int geralB;
 	private int proximo;
 	
-	public Simbolo(String nome, CategoriaIdentificadorEnum categoria, int nivel, int geralA, int geralB, int proximo) {
+	public Simbolo(String nome, CategoriaSimboloEnum categoria, int nivel, int geralA, int geralB, int proximo) {
 		this.nome = nome;
 		this.categoria = categoria;
 		this.nivel = nivel;
@@ -29,7 +29,7 @@ public class Simbolo {
 		return nome;
 	}
 	
-	public CategoriaIdentificadorEnum getCategoria() {
+	public CategoriaSimboloEnum getCategoria() {
 		return categoria;
 	}
 	
