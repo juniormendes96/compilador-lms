@@ -115,7 +115,7 @@ public class TabelaDeSimbolos {
 		try {
 			tabela.buscar("Elemento inexistente");
 		} catch (SimboloNaoEncontradoException e) {
-			System.out.println("Símbolo não encontrado\n");
+			System.out.println(e.getMessage() + "\n");
 		}
 		
 		// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
