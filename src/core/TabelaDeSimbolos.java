@@ -99,9 +99,7 @@ public class TabelaDeSimbolos {
 		Identificador elemento8 = new Identificador("Elemento 8", CategoriaIdentificadorEnum.CONSTANTE, 8, 8, 8, 8);
 		Identificador elemento9 = new Identificador("Elemento 9", CategoriaIdentificadorEnum.PROCEDURE, 9, 9, 9, 9);
 		Identificador elemento10 = new Identificador("Elemento 10", CategoriaIdentificadorEnum.VARIAVEL, 10, 10, 10, 10);
-		for (Identificador identificador : Arrays.asList(elemento1, elemento2, elemento3, elemento4, elemento5, elemento6, elemento7, elemento8, elemento9, elemento10)) {
-			tabela.inserir(identificador);
-		}
+		Arrays.asList(elemento1, elemento2, elemento3, elemento4, elemento5, elemento6, elemento7, elemento8, elemento9, elemento10).forEach(elemento -> tabela.inserir(elemento));
 		
 		// Mostrar conteúdo da tabela
 		tabela.mostrarConteudo();
