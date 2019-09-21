@@ -18,7 +18,7 @@ public class TabelaDeSimbolos {
 	
 	public TabelaDeSimbolos() {
 		this.identificadores = new Identificador[tableSize];
-		this.iniciarHashTable();
+		this.hashTable = new int[tableSize];
 	}
 	
 	public Identificador buscar(String nome) {
@@ -77,14 +77,7 @@ public class TabelaDeSimbolos {
 	private int getValorHash(String nome) {
 		return HashUtils.hash(nome, tableSize);
 	}
-	
-	private void iniciarHashTable() {
-		this.hashTable = new int[tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			this.hashTable[i] = 0;
-		}
-	}
-	
+
 	public static void main(String[] args) throws Exception {
 		TabelaDeSimbolos tabela = new TabelaDeSimbolos();
 		
@@ -128,7 +121,7 @@ public class TabelaDeSimbolos {
 		// Fazer uma busca por 1 elemento inexistente na tabela. Mostrar mensagem informando que o elemento não foi encontrado
 		try {
 			tabela.buscar("Elemento inexistente");
-		} catch(IdentificadorNaoEncontradoException e) {
+		} catch (IdentificadorNaoEncontradoException e) {
 			System.out.println("Identificador não encontrado\n");
 		}
 		
