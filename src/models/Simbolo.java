@@ -2,7 +2,7 @@ package models;
 
 import enums.CategoriaIdentificadorEnum;
 
-public class Identificador {
+public class Simbolo {
 
 	private String nome;
 	private CategoriaIdentificadorEnum categoria;
@@ -11,7 +11,7 @@ public class Identificador {
 	private int geralB;
 	private int proximo;
 	
-	public Identificador(String nome, CategoriaIdentificadorEnum categoria, int nivel, int geralA, int geralB, int proximo) {
+	public Simbolo(String nome, CategoriaIdentificadorEnum categoria, int nivel, int geralA, int geralB, int proximo) {
 		this.nome = nome;
 		this.categoria = categoria;
 		this.nivel = nivel;

@@ -4,67 +4,67 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import enums.CategoriaIdentificadorEnum;
-import exceptions.IdentificadorJaDeclaradoException;
-import exceptions.IdentificadorNaoEncontradoException;
-import models.Identificador;
+import exceptions.SimboloJaDeclaradoException;
+import exceptions.SimboloNaoEncontradoException;
+import models.Simbolo;
 import utils.HashUtils;
 
 public class TabelaDeSimbolos {
 	
 	private final int TABLE_SIZE = 25147;
 	
-	private Identificador[] identificadores;
+	private Simbolo[] simbolos;
 	
 	public TabelaDeSimbolos() {
-		this.identificadores = new Identificador[TABLE_SIZE];
+		this.simbolos = new Simbolo[TABLE_SIZE];
 	}
 	
-	public Identificador buscar(String nome) {
-		Identificador identificador = this.identificadores[this.getValorHash(nome)];
-		if (Objects.nonNull(identificador)) {
-			return identificador;
+	public Simbolo buscar(String nome) {
+		Simbolo simbolo = this.simbolos[this.getValorHash(nome)];
+		if (Objects.nonNull(simbolo)) {
+			return simbolo;
 		}
-		throw new IdentificadorNaoEncontradoException(nome);
+		throw new SimboloNaoEncontradoException(nome);
 	}
 	
-	public void inserir(Identificador identificador) {
-		int index = this.getValorHash(identificador.getNome());
-		if (Objects.nonNull(identificadores[index])) {
-			throw new IdentificadorJaDeclaradoException(identificador.getNome());
+	public void inserir(Simbolo simbolo) {
+		int index = this.getValorHash(simbolo.getNome());
+		if (Objects.nonNull(simbolos[index])) {
+			throw new SimboloJaDeclaradoException(simbolo.getNome());
 		}
-		this.identificadores[index] = identificador;
+		this.simbolos[index] = simbolo;
 	}
 	
 	public void mostrarConteudo() {
-		for (int i = 0; i < this.identificadores.length; i++) {
-			if (Objects.nonNull(this.identificadores[i])) {
-				System.out.println(this.identificadores[i]);
+		for (int i = 0; i < this.simbolos.length; i++) {
+			if (Objects.nonNull(this.simbolos[i])) {
+				System.out.println(this.simbolos[i]);
 			}
 		}
 	}
 	
-	public void alterar(Identificador identificador, Identificador novoIdentificador) {
-		int indexIdentificadorAntigo = this.getValorHash(identificador.getNome());
+	public void alterar(Simbolo simbolo, Simbolo novoSimbolo) {
+		int indexIdentificadorAntigo = this.getValorHash(simbolo.getNome());
 		
-		if (Objects.isNull(this.identificadores[indexIdentificadorAntigo])) {
-			throw new IdentificadorNaoEncontradoException(novoIdentificador.getNome());
+		if (Objects.isNull(this.simbolos[indexIdentificadorAntigo])) {
+			throw new SimboloNaoEncontradoException(novoSimbolo.getNome());
 		}
 
-		if (identificador.getNome().equals(novoIdentificador.getNome())) {
-			this.identificadores[indexIdentificadorAntigo] = novoIdentificador;
+		if (simbolo.getNome().equals(novoSimbolo.getNome())) {
+			this.simbolos[indexIdentificadorAntigo] = novoSimbolo;
 		} else {
-			int indexNovoIdentificador = this.getValorHash(novoIdentificador.getNome());
-			this.identificadores[indexIdentificadorAntigo] = null;
-			this.identificadores[indexNovoIdentificador] = novoIdentificador;
+			int indexNovoIdentificador = this.getValorHash(novoSimbolo.getNome());
+			this.simbolos[indexIdentificadorAntigo] = null;
+			this.simbolos[indexNovoIdentificador] = novoSimbolo;
 		}
 	}
 	
-	public void excluir(Identificador identificador) {
+	public void excluir(Simbolo identificador) {
 		int index = this.getValorHash(identificador.getNome());
-		if (Objects.isNull(this.identificadores[index])) {
-			throw new IdentificadorNaoEncontradoException(identificador.getNome());
+		if (Objects.isNull(this.simbolos[index])) {
+			throw new SimboloNaoEncontradoException(identificador.getNome());
 		}
-		this.identificadores[index] = null;
+		this.simbolos[index] = null;
 	}
 	
 	private int getValorHash(String nome) {
@@ -75,16 +75,16 @@ public class TabelaDeSimbolos {
 		TabelaDeSimbolos tabela = new TabelaDeSimbolos();
 		
 		// Inserir 10 elementos
-		Identificador elemento1 = new Identificador("Elemento 1", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1);
-		Identificador elemento2 = new Identificador("Elemento 2", CategoriaIdentificadorEnum.PARAMETRO, 2, 2, 2, 2);
-		Identificador elemento3 = new Identificador("Elemento 3", CategoriaIdentificadorEnum.VARIAVEL, 3, 3, 3, 3);
-		Identificador elemento4 = new Identificador("Elemento 4", CategoriaIdentificadorEnum.PROCEDURE, 4, 4, 4, 4);
-		Identificador elemento5 = new Identificador("Elemento 5", CategoriaIdentificadorEnum.PARAMETRO, 5, 5, 5, 5);
-		Identificador elemento6 = new Identificador("Elemento 6", CategoriaIdentificadorEnum.PROCEDURE, 6, 6, 6, 6);
-		Identificador elemento7 = new Identificador("Elemento 7", CategoriaIdentificadorEnum.VARIAVEL, 7, 7, 7, 7);
-		Identificador elemento8 = new Identificador("Elemento 8", CategoriaIdentificadorEnum.CONSTANTE, 8, 8, 8, 8);
-		Identificador elemento9 = new Identificador("Elemento 9", CategoriaIdentificadorEnum.PROCEDURE, 9, 9, 9, 9);
-		Identificador elemento10 = new Identificador("Elemento 10", CategoriaIdentificadorEnum.VARIAVEL, 10, 10, 10, 10);
+		Simbolo elemento1 = new Simbolo("Elemento 1", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1);
+		Simbolo elemento2 = new Simbolo("Elemento 2", CategoriaIdentificadorEnum.PARAMETRO, 2, 2, 2, 2);
+		Simbolo elemento3 = new Simbolo("Elemento 3", CategoriaIdentificadorEnum.VARIAVEL, 3, 3, 3, 3);
+		Simbolo elemento4 = new Simbolo("Elemento 4", CategoriaIdentificadorEnum.PROCEDURE, 4, 4, 4, 4);
+		Simbolo elemento5 = new Simbolo("Elemento 5", CategoriaIdentificadorEnum.PARAMETRO, 5, 5, 5, 5);
+		Simbolo elemento6 = new Simbolo("Elemento 6", CategoriaIdentificadorEnum.PROCEDURE, 6, 6, 6, 6);
+		Simbolo elemento7 = new Simbolo("Elemento 7", CategoriaIdentificadorEnum.VARIAVEL, 7, 7, 7, 7);
+		Simbolo elemento8 = new Simbolo("Elemento 8", CategoriaIdentificadorEnum.CONSTANTE, 8, 8, 8, 8);
+		Simbolo elemento9 = new Simbolo("Elemento 9", CategoriaIdentificadorEnum.PROCEDURE, 9, 9, 9, 9);
+		Simbolo elemento10 = new Simbolo("Elemento 10", CategoriaIdentificadorEnum.VARIAVEL, 10, 10, 10, 10);
 		Arrays.asList(elemento1, elemento2, elemento3, elemento4, elemento5, elemento6, elemento7, elemento8, elemento9, elemento10).forEach(elemento -> tabela.inserir(elemento));
 		
 		// Mostrar conteúdo da tabela
@@ -92,11 +92,11 @@ public class TabelaDeSimbolos {
 		System.out.print("\n");
 		
 		// Alterar dados de 5 elementos
-		tabela.alterar(elemento1, new Identificador("Elemento 1 editado", CategoriaIdentificadorEnum.PROCEDURE, 1, 1, 1, 1));
-		tabela.alterar(elemento2, new Identificador("Elemento 2 editado", CategoriaIdentificadorEnum.VARIAVEL, 2, 2, 2, 2));
-		tabela.alterar(elemento3, new Identificador("Elemento 3 editado", CategoriaIdentificadorEnum.CONSTANTE, 3, 3, 3, 3));
-		tabela.alterar(elemento4, new Identificador("Elemento 4 editado", CategoriaIdentificadorEnum.PARAMETRO, 4, 4, 4, 4));
-		tabela.alterar(elemento5, new Identificador("Elemento 5 editado", CategoriaIdentificadorEnum.PARAMETRO, 5, 5, 5, 5));
+		tabela.alterar(elemento1, new Simbolo("Elemento 1 editado", CategoriaIdentificadorEnum.PROCEDURE, 1, 1, 1, 1));
+		tabela.alterar(elemento2, new Simbolo("Elemento 2 editado", CategoriaIdentificadorEnum.VARIAVEL, 2, 2, 2, 2));
+		tabela.alterar(elemento3, new Simbolo("Elemento 3 editado", CategoriaIdentificadorEnum.CONSTANTE, 3, 3, 3, 3));
+		tabela.alterar(elemento4, new Simbolo("Elemento 4 editado", CategoriaIdentificadorEnum.PARAMETRO, 4, 4, 4, 4));
+		tabela.alterar(elemento5, new Simbolo("Elemento 5 editado", CategoriaIdentificadorEnum.PARAMETRO, 5, 5, 5, 5));
 		
 		// Mostrar conteúdo da tabela
 		tabela.mostrarConteudo();
@@ -114,8 +114,8 @@ public class TabelaDeSimbolos {
 		// Fazer uma busca por 1 elemento inexistente na tabela. Mostrar mensagem informando que o elemento não foi encontrado
 		try {
 			tabela.buscar("Elemento inexistente");
-		} catch (IdentificadorNaoEncontradoException e) {
-			System.out.println("Identificador não encontrado\n");
+		} catch (SimboloNaoEncontradoException e) {
+			System.out.println("Símbolo não encontrado\n");
 		}
 		
 		// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
