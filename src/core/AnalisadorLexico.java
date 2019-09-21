@@ -1,4 +1,4 @@
-package analisadores;
+package core;
 
 import java.util.ArrayList;
 import java.util.Iterator;

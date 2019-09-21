@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import analisadores.AnalisadorLexico;
-import analisadores.AnalisadorSintatico;
+import core.AnalisadorLexico;
+import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
 import exceptions.AnalisadorSintaticoException;
 import javafx.collections.FXCollections;
