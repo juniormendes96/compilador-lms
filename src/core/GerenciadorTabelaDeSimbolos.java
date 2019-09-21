@@ -72,7 +72,7 @@ public class GerenciadorTabelaDeSimbolos {
 	public static void main(String[] args) throws Exception {
 		GerenciadorTabelaDeSimbolos gerenciador = new GerenciadorTabelaDeSimbolos();
 		gerenciador.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
-		System.out.println(gerenciador.buscar("sdfsd"));
+		gerenciador.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
 	}
 
 }
