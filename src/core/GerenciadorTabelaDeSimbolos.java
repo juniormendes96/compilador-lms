@@ -20,7 +20,7 @@ public class GerenciadorTabelaDeSimbolos {
 		this.iniciarHashTable();
 	}
 	
-	private Identificador buscar(String nome) {
+	public Identificador buscar(String nome) {
 		Identificador identificador = this.identificadores[this.getValorHash(nome)];
 		if (Objects.nonNull(identificador)) {
 			return identificador;
@@ -28,7 +28,7 @@ public class GerenciadorTabelaDeSimbolos {
 		throw new IdentificadorNaoEncontradoException(nome);
 	}
 	
-	private void inserir(Identificador identificador) {
+	public void inserir(Identificador identificador) {
 		int index = this.getValorHash(identificador.getNome());
 		if (hashTable[index] > 0) {
 			throw new IdentificadorJaDeclaradoException(identificador.getNome());
@@ -37,11 +37,15 @@ public class GerenciadorTabelaDeSimbolos {
 		hashTable[index]++;
 	}
 	
-	private void mostrarConteudo() {
-		// WIP
+	public void mostrarConteudo() {
+		for (int i = 0; i < this.hashTable.length; i++) {
+			if (this.hashTable[i] != 0) {
+				System.out.println(this.identificadores[i]);
+			}
+		}
 	}
 	
-	private void alterar(Identificador identificador, Identificador novoIdentificador) {
+	public void alterar(Identificador identificador, Identificador novoIdentificador) {
 		int index = this.getValorHash(identificador.getNome());
 		if (this.hashTable[index] <= 0) {
 			throw new IdentificadorNaoEncontradoException(novoIdentificador.getNome());
@@ -49,7 +53,7 @@ public class GerenciadorTabelaDeSimbolos {
 		this.identificadores[index] = novoIdentificador;
 	}
 	
-	private void excluir(Identificador identificador) {
+	public void excluir(Identificador identificador) {
 		int index = this.getValorHash(identificador.getNome());
 		if (this.hashTable[index] <= 0) {
 			throw new IdentificadorNaoEncontradoException(identificador.getNome());
@@ -72,7 +76,7 @@ public class GerenciadorTabelaDeSimbolos {
 	public static void main(String[] args) throws Exception {
 		GerenciadorTabelaDeSimbolos gerenciador = new GerenciadorTabelaDeSimbolos();
 		gerenciador.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
-		gerenciador.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
+		gerenciador.mostrarConteudo();
 	}
 
 }
