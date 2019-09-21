@@ -8,14 +8,14 @@ import exceptions.IdentificadorNaoEncontradoException;
 import models.Identificador;
 import utils.HashUtils;
 
-public class GerenciadorTabelaDeSimbolos {
+public class TabelaDeSimbolos {
 	
 	private final int tableSize = 25147;
 	
 	private Identificador[] identificadores;
 	private int[] hashTable;
 	
-	public GerenciadorTabelaDeSimbolos() {
+	public TabelaDeSimbolos() {
 		this.identificadores = new Identificador[tableSize];
 		this.iniciarHashTable();
 	}
@@ -74,9 +74,9 @@ public class GerenciadorTabelaDeSimbolos {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		GerenciadorTabelaDeSimbolos gerenciador = new GerenciadorTabelaDeSimbolos();
-		gerenciador.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
-		gerenciador.mostrarConteudo();
+		TabelaDeSimbolos tabela = new TabelaDeSimbolos();
+		tabela.inserir(new Identificador("Teste", CategoriaIdentificadorEnum.CONSTANTE, 1, 1, 1, 1));
+		tabela.mostrarConteudo();
 	}
 
 }
