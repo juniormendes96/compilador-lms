@@ -11,14 +11,12 @@ import utils.HashUtils;
 
 public class TabelaDeSimbolos {
 	
-	private final int tableSize = 25147;
+	private final int TABLE_SIZE = 25147;
 	
 	private Identificador[] identificadores;
-	private int[] hashTable;
 	
 	public TabelaDeSimbolos() {
-		this.identificadores = new Identificador[tableSize];
-		this.hashTable = new int[tableSize];
+		this.identificadores = new Identificador[TABLE_SIZE];
 	}
 	
 	public Identificador buscar(String nome) {
@@ -31,16 +29,15 @@ public class TabelaDeSimbolos {
 	
 	public void inserir(Identificador identificador) {
 		int index = this.getValorHash(identificador.getNome());
-		if (hashTable[index] > 0) {
+		if (Objects.nonNull(identificadores[index])) {
 			throw new IdentificadorJaDeclaradoException(identificador.getNome());
 		}
 		this.identificadores[index] = identificador;
-		hashTable[index]++;
 	}
 	
 	public void mostrarConteudo() {
-		for (int i = 0; i < this.hashTable.length; i++) {
-			if (this.hashTable[i] != 0) {
+		for (int i = 0; i < this.identificadores.length; i++) {
+			if (Objects.nonNull(this.identificadores[i])) {
 				System.out.println(this.identificadores[i]);
 			}
 		}
@@ -49,7 +46,7 @@ public class TabelaDeSimbolos {
 	public void alterar(Identificador identificador, Identificador novoIdentificador) {
 		int indexIdentificadorAntigo = this.getValorHash(identificador.getNome());
 		
-		if (this.hashTable[indexIdentificadorAntigo] <= 0) {
+		if (Objects.isNull(this.identificadores[indexIdentificadorAntigo])) {
 			throw new IdentificadorNaoEncontradoException(novoIdentificador.getNome());
 		}
 
@@ -59,23 +56,19 @@ public class TabelaDeSimbolos {
 			int indexNovoIdentificador = this.getValorHash(novoIdentificador.getNome());
 			this.identificadores[indexIdentificadorAntigo] = null;
 			this.identificadores[indexNovoIdentificador] = novoIdentificador;
-
-			this.hashTable[indexIdentificadorAntigo]--;
-			this.hashTable[indexNovoIdentificador]++;
 		}
 	}
 	
 	public void excluir(Identificador identificador) {
 		int index = this.getValorHash(identificador.getNome());
-		if (this.hashTable[index] <= 0) {
+		if (Objects.isNull(this.identificadores[index])) {
 			throw new IdentificadorNaoEncontradoException(identificador.getNome());
 		}
 		this.identificadores[index] = null;
-		this.hashTable[index] = 0;
 	}
 	
 	private int getValorHash(String nome) {
-		return HashUtils.hash(nome, tableSize);
+		return HashUtils.hash(nome, TABLE_SIZE);
 	}
 
 	public static void main(String[] args) throws Exception {
