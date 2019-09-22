@@ -19,14 +19,6 @@ public class Simbolo {
 		this.geralB = geralB;
 		this.proximo = proximo;
 	}
-
-	public Simbolo(String nome, CategoriaSimboloEnum categoria, int nivel, int geralA, int geralB) {
-		this.nome = nome;
-		this.categoria = categoria;
-		this.nivel = nivel;
-		this.geralA = geralA;
-		this.geralB = geralB;
-	}
 	
 	@Override
 	public String toString() {
@@ -57,7 +49,4 @@ public class Simbolo {
 		return proximo;
 	}
 
-	public void setProximo(int proximo) {
-		this.proximo = proximo;
-	}
 }
