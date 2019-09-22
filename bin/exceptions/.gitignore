@@ -1,2 +1,4 @@
 /AnalisadorLexicoException.class
 /AnalisadorSintaticoException.class
+/SimboloJaDeclaradoException.class
+/SimboloNaoEncontradoException.class
