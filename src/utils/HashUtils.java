@@ -1,5 +1,7 @@
 package utils;
 
+import models.Simbolo;
+
 public class HashUtils {
 	
 	public static int hash(String key, int tableSize) {
@@ -13,5 +15,4 @@ public class HashUtils {
 		}
 		return hashVal;
 	}
-
 }
