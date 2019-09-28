@@ -21,60 +21,59 @@ public class Simbolo {
 		this.geralB = geralB;
 	}
 	
-	public void inserirProximoSimbolo(Simbolo novo) {
-		Simbolo atual = this.proximo;
+	public void inserirProximoSimbolo(Simbolo primeiro, Simbolo novo) {
 		while(true) {
-			if(atual.proximo == null) {
-				this.proximo = novo;
+			if(primeiro.proximo == null) {
+				primeiro.proximo = novo;
 				break;
 			} else {
-				atual = atual.proximo;
+				primeiro = primeiro.proximo;
 			}
 		}
 	}
 	
-	public Simbolo buscarSimboloAtual(Simbolo simbolo){
-		Simbolo atual = simbolo;
+	public void removeSimbolo(Simbolo primeiro, Simbolo simbolo) {
+		simbolo = buscarSimboloAtual(simbolo);
+		Simbolo anterior = buscarSimboloAnterior(primeiro, simbolo);
 		
-		while(atual!=null && !atual.getNome().equals(simbolo.getNome())){
-			atual=atual.proximo;
-		}
-		
-		if(atual!=null)
-			return atual;
-		return null;
-	}
-	
-	public Simbolo buscarSimboloAnterior(Simbolo simbolo){
-		Simbolo anterior = simbolo;
-		
-		while(anterior!=null && anterior.proximo != simbolo){
-			anterior=anterior.proximo;
-		}
-		
-		if(anterior!=null)
-			return anterior;
-		return null;
-	}
-	
-	
-	public void removeSimbolo(Simbolo simbolo) {
-		Simbolo atual = buscarSimboloAtual(simbolo);
-		Simbolo anterior = buscarSimboloAnterior(simbolo);
-		if(atual.proximo != null)
-			anterior.proximo = atual.proximo;
-		atual = null;		
+		if(simbolo.proximo != null)
+			anterior.proximo = simbolo.proximo;
+		simbolo = null;		
 	}
 	
 	public void alterarSimbolo(Simbolo simbolo, Simbolo novoSimbolo) {
-		Simbolo atual = buscarSimboloAtual(simbolo);
-		if(atual.getNome().equals(novoSimbolo.getNome()))
-			atual = novoSimbolo;		
+		simbolo = buscarSimboloAtual(simbolo);
+		simbolo.nome = novoSimbolo.getNome();
+		simbolo.categoria = novoSimbolo.getCategoria();
+		simbolo.nivel = novoSimbolo.getNivel();
+		simbolo.geralA = novoSimbolo.getGeralA();
+		simbolo.geralB = novoSimbolo.getGeralB();
 	}
 	
+	public Simbolo buscarSimbolo(Simbolo simbolo, int nivel){
+		if (Objects.nonNull(simbolo.proximo) && simbolo.getNivel() == nivel)
+			return buscarSimboloAtual(simbolo.proximo);
+		return simbolo;
+	}
+	
+	public Simbolo buscarSimboloAtual(Simbolo simbolo){
+		if (Objects.nonNull(simbolo.proximo) && simbolo.proximo == simbolo)
+			return buscarSimboloAtual(simbolo.proximo);
+		return simbolo;
+	}
+	
+	public Simbolo buscarSimboloAnterior(Simbolo primeiro, Simbolo simbolo){		
+		while(primeiro.proximo != null) {
+			if(primeiro.proximo == simbolo)
+				return primeiro;
+			primeiro = primeiro.proximo;
+		}
+		return null;
+	}	
+
 	@Override
 	public String toString() {
-		return nome + " - " +categoria + " - " + nivel + " - " + geralA + " - " + geralB + (Objects.nonNull(proximo) ? " - " + proximo.getNome() : "");
+		return nome + " - " +categoria + " - " + nivel + " - " + geralA + " - " + geralB + " - " + (Objects.nonNull(proximo) ? proximo.getNome() : null);
 	}
 	
 	public String getNome() {
@@ -100,5 +99,5 @@ public class Simbolo {
 	public Simbolo getProximo() {
 		return proximo;
 	}
-
+	
 }

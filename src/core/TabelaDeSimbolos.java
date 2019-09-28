@@ -1,54 +1,55 @@
 package core;
 
 import java.util.Objects;
-
 import exceptions.SimboloJaDeclaradoException;
 import exceptions.SimboloNaoEncontradoException;
 import models.Simbolo;
 import utils.HashUtils;
 
 public class TabelaDeSimbolos {
-	
-	private final int TABLE_SIZE = 25147;
-	
+		
 	private Simbolo[] simbolos;
 	
 	public TabelaDeSimbolos() {
-		this.simbolos = new Simbolo[TABLE_SIZE];
+		this.simbolos = new Simbolo[HashUtils.tableSize];
 	}
 	
-	public Simbolo buscar(String nome) {
-		Simbolo simbolo = this.simbolos[this.getValorHash(nome)];
+	public Simbolo buscar(Simbolo simbolo) {
+		int index = this.getValorHash(simbolo.getNome());
+		//int index = 50;
+		
 		if (Objects.nonNull(simbolo)) {
-			if(!simbolo.getNome().equals(nome))
-				return simbolo.buscarSimboloAtual(simbolo);
-			else
-				return simbolo;
+			if(encontrouColisao(index)) {
+				System.out.println(simbolo.getNome());
+				return this.simbolos[index].buscarSimboloAtual(simbolo);
+			}else
+				return this.simbolos[index];
 		}
-		throw new SimboloNaoEncontradoException(nome);
+		throw new SimboloNaoEncontradoException(simbolo.getNome());
 	}
 	
 	public void inserir(Simbolo simbolo) {
 		int index = this.getValorHash(simbolo.getNome());
-		if (Objects.nonNull(simbolos[index])) {
+		//int index = 50;
+		
+		if (Objects.nonNull(simbolos[index]) && simbolos[index] == simbolo) {
 			throw new SimboloJaDeclaradoException(simbolo.getNome());
 		}
-		if(this.simbolos[index] != null) 
-			encontrouColisao(index, simbolo);
-		else
+		
+		if(encontrouColisao(index)) {
+			simbolos[index].inserirProximoSimbolo(simbolos[index], simbolo);
+		}else
 			this.simbolos[index] = simbolo;
 	}
 	
 	public void alterar(Simbolo simbolo, Simbolo novoSimbolo) {
 		int indexSimboloAntigo = this.getValorHash(simbolo.getNome());
+		//int indexSimboloAntigo = 50;
 		
 		if (Objects.isNull(this.simbolos[indexSimboloAntigo])) {
-			throw new SimboloNaoEncontradoException(novoSimbolo.getNome());
+			throw new SimboloNaoEncontradoException(simbolo.getNome());
 		}
-
-		if (simbolo.getNome().equals(novoSimbolo.getNome())) {
-			this.simbolos[indexSimboloAntigo] = novoSimbolo;
-		} else if(this.simbolos[indexSimboloAntigo] != simbolo) {
+		if (encontrouColisao(indexSimboloAntigo)) {
 			this.simbolos[indexSimboloAntigo].alterarSimbolo(simbolo, novoSimbolo);
 		} else {
 			int indexNovoSimbolo = this.getValorHash(novoSimbolo.getNome());
@@ -59,28 +60,39 @@ public class TabelaDeSimbolos {
 	
 	public void excluir(Simbolo simbolo) {
 		int index = this.getValorHash(simbolo.getNome());
+		//int index = 50;
 		if (Objects.isNull(this.simbolos[index])) {
 			throw new SimboloNaoEncontradoException(simbolo.getNome());
 		}
-		if(simbolo.getNome().equals(this.simbolos[index].getNome()))
+		if(encontrouColisao(index)) {
+			if(this.simbolos[index].getProximo() == null)
+				this.simbolos[index] = null;
+			else
+				this.simbolos[index].removeSimbolo(this.simbolos[index], simbolo);
+		}else {
 			this.simbolos[index] = null;
-		else
-			this.simbolos[index].removeSimbolo(simbolo);
+		}
 	}
 	
 	public void mostrarConteudo() {
 		for (int i = 0; i < this.simbolos.length; i++) {
 			if (Objects.nonNull(this.simbolos[i])) {
 				System.out.println(this.simbolos[i]);
+				Simbolo prox = this.simbolos[i].getProximo();
+				while(prox != null) {
+					System.out.println(	"> "+prox);
+					prox = prox.getProximo();			
+				}			
 			}
 		}
 	}
 	
 	private int getValorHash(String nome) {
-		return HashUtils.hash(nome, TABLE_SIZE);
+		return HashUtils.hash(nome);
 	}
 	
-	private void encontrouColisao(int index, Simbolo simbolo) {
-		this.simbolos[index].inserirProximoSimbolo(simbolo);
+	private boolean encontrouColisao(int index) {
+		Simbolo simbolo = simbolos[index];
+		return (simbolo != null) ? true : false;
 	}
 }

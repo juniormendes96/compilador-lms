@@ -19,7 +19,7 @@ public class HardcodeTS {
 		TabelaDeSimbolos tabela = new TabelaDeSimbolos();
 		
 		// Inserir 10 elementos
-		System.out.println("INSERINDO SÍMBOLOS");
+		System.out.println("# INSERINDO SÍMBOLOS");
 		Simbolo elemento1 = new Simbolo("Elemento 1", CategoriaSimboloEnum.CONSTANTE, 1, 1, 1);
 		Simbolo elemento2 = new Simbolo("Elemento 2", CategoriaSimboloEnum.PARAMETRO, 2, 2, 2);
 		Simbolo elemento3 = new Simbolo("Elemento 3", CategoriaSimboloEnum.VARIAVEL, 3, 3, 3);
@@ -37,7 +37,7 @@ public class HardcodeTS {
 		breakLine();
 		
 		// Alterar dados de 5 elementos
-		System.out.println("ALTERANDO SÍMBOLOS");
+		System.out.println("# ALTERANDO SÍMBOLOS");
 		tabela.alterar(elemento1, new Simbolo("Elemento 1 editado", CategoriaSimboloEnum.PROCEDURE, 1, 1, 1));
 		tabela.alterar(elemento2, new Simbolo("Elemento 2 editado", CategoriaSimboloEnum.VARIAVEL, 2, 2, 2));
 		tabela.alterar(elemento3, new Simbolo("Elemento 3 editado", CategoriaSimboloEnum.CONSTANTE, 3, 3, 3));
@@ -49,27 +49,27 @@ public class HardcodeTS {
 		breakLine();
 		
 		// Excluir 3 elementos
-		System.out.println("EXCLUINDO SÍMBOLOS");
+		System.out.println("# EXCLUINDO SÍMBOLOS");
 		tabela.excluir(elemento8);
 		tabela.excluir(elemento9);
 		tabela.excluir(elemento10);
 		
 		// Mostrar conteúdo da tabela
 		tabela.mostrarConteudo();
-		breakLine();
+		breakLine();		
 		
-		// Fazer uma busca por 1 elemento inexistente na tabela. Mostrar mensagem informando que o elemento não foi encontrado
-		System.out.println("BUSCANDO SÍMBOLOS");
+		System.out.println("# BUSCANDO SÍMBOLOS");
 		try {
-			tabela.buscar("JAVA");
+			// Fazer uma busca por 1 elemento inexistente na tabela. Mostrar mensagem informando que o elemento não foi encontrado
+			tabela.buscar(elemento8);
+			
+			// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
+			System.out.println(tabela.buscar(elemento1));
+			System.out.println(tabela.buscar(elemento2));
+			System.out.println(tabela.buscar(elemento3));
 		} catch (SimboloNaoEncontradoException e) {
 			System.out.println(e.getMessage() + "\n");
 		}
-		
-		// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
-		System.out.println(tabela.buscar("Elemento 1 editado"));
-		System.out.println(tabela.buscar("Elemento 2 editado"));
-		System.out.println(tabela.buscar("Elemento 3 editado"));
 
 	}
 }

@@ -1,10 +1,10 @@
 package utils;
 
-import models.Simbolo;
-
 public class HashUtils {
 	
-	public static int hash(String key, int tableSize) {
+	public static int tableSize = 25147;
+	
+	public static int hash(String key) {
 		int hashVal = 0; // uses Horner’s method to evaluate a polynomial
 		for (int i = 0; i < key.length(); i++) {
 			hashVal = 37 * hashVal + key.charAt(i);
@@ -15,4 +15,5 @@ public class HashUtils {
 		}
 		return hashVal;
 	}
+	
 }
