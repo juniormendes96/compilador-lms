@@ -38,11 +38,11 @@ public class HardcodeTS {
 		
 		// Alterar dados de 5 elementos
 		System.out.println("# ALTERANDO SÍMBOLOS");
-		tabela.alterar(elemento1, new Simbolo("Elemento 1 editado", CategoriaSimboloEnum.PROCEDURE, 1, 1, 1));
-		tabela.alterar(elemento2, new Simbolo("Elemento 2 editado", CategoriaSimboloEnum.VARIAVEL, 2, 2, 2));
-		tabela.alterar(elemento3, new Simbolo("Elemento 3 editado", CategoriaSimboloEnum.CONSTANTE, 3, 3, 3));
-		tabela.alterar(elemento4, new Simbolo("Elemento 4 editado", CategoriaSimboloEnum.PARAMETRO, 4, 4, 4));
-		tabela.alterar(elemento5, new Simbolo("Elemento 5 editado", CategoriaSimboloEnum.PARAMETRO, 5, 5, 5));
+		tabela.alterar(elemento1, new Simbolo("Elemento 1", CategoriaSimboloEnum.PROCEDURE, 1, 1, 5));
+		tabela.alterar(elemento2, new Simbolo("Elemento 2", CategoriaSimboloEnum.VARIAVEL, 2, 2, 4));
+		tabela.alterar(elemento3, new Simbolo("Elemento 3", CategoriaSimboloEnum.CONSTANTE, 3, 3, 2));
+		tabela.alterar(elemento4, new Simbolo("Elemento 4", CategoriaSimboloEnum.PARAMETRO, 4, 4, 1));
+		tabela.alterar(elemento5, new Simbolo("Elemento 5", CategoriaSimboloEnum.PARAMETRO, 5, 5, 3));
 		
 		// Mostrar conteúdo da tabela
 		tabela.mostrarConteudo();
@@ -62,14 +62,13 @@ public class HardcodeTS {
 		try {
 			// Fazer uma busca por 1 elemento inexistente na tabela. Mostrar mensagem informando que o elemento não foi encontrado
 			tabela.buscar(elemento8);
-			
-			// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
-			System.out.println(tabela.buscar(elemento1));
-			System.out.println(tabela.buscar(elemento2));
-			System.out.println(tabela.buscar(elemento3));
 		} catch (SimboloNaoEncontradoException e) {
 			System.out.println(e.getMessage() + "\n");
 		}
+			// Fazer uma busca por nome de 3 elementos que estão na tabela. Mostrar os dados completos dos elementos encontrados
+		System.out.println(tabela.buscar(elemento1));
+		System.out.println(tabela.buscar(elemento2));
+		System.out.println(tabela.buscar(elemento3));
 
 	}
 }

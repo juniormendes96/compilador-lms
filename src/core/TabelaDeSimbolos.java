@@ -16,11 +16,9 @@ public class TabelaDeSimbolos {
 	
 	public Simbolo buscar(Simbolo simbolo) {
 		int index = this.getValorHash(simbolo.getNome());
-		//int index = 50;
 		
-		if (Objects.nonNull(simbolo)) {
+		if (Objects.nonNull(simbolos[index])) {
 			if(encontrouColisao(index)) {
-				System.out.println(simbolo.getNome());
 				return this.simbolos[index].buscarSimboloAtual(simbolo);
 			}else
 				return this.simbolos[index];
@@ -30,7 +28,6 @@ public class TabelaDeSimbolos {
 	
 	public void inserir(Simbolo simbolo) {
 		int index = this.getValorHash(simbolo.getNome());
-		//int index = 50;
 		
 		if (Objects.nonNull(simbolos[index]) && simbolos[index] == simbolo) {
 			throw new SimboloJaDeclaradoException(simbolo.getNome());
@@ -44,7 +41,6 @@ public class TabelaDeSimbolos {
 	
 	public void alterar(Simbolo simbolo, Simbolo novoSimbolo) {
 		int indexSimboloAntigo = this.getValorHash(simbolo.getNome());
-		//int indexSimboloAntigo = 50;
 		
 		if (Objects.isNull(this.simbolos[indexSimboloAntigo])) {
 			throw new SimboloNaoEncontradoException(simbolo.getNome());
@@ -52,15 +48,13 @@ public class TabelaDeSimbolos {
 		if (encontrouColisao(indexSimboloAntigo)) {
 			this.simbolos[indexSimboloAntigo].alterarSimbolo(simbolo, novoSimbolo);
 		} else {
-			int indexNovoSimbolo = this.getValorHash(novoSimbolo.getNome());
-			this.simbolos[indexSimboloAntigo] = null;
-			this.simbolos[indexNovoSimbolo] = novoSimbolo;
+			this.simbolos[indexSimboloAntigo] = novoSimbolo;
 		}
 	}
 	
 	public void excluir(Simbolo simbolo) {
 		int index = this.getValorHash(simbolo.getNome());
-		//int index = 50;
+
 		if (Objects.isNull(this.simbolos[index])) {
 			throw new SimboloNaoEncontradoException(simbolo.getNome());
 		}
