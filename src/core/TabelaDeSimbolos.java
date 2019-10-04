@@ -17,17 +17,17 @@ public class TabelaDeSimbolos {
 	}
 	
 	public Simbolo buscar(String nome) {
-		Simbolo simbolo = this.simbolos[this.getValorHash(nome)];
-		if (Objects.nonNull(simbolo)) {
-			return simbolo.buscarUltimoNivel(nome).orElseThrow(() -> new SimboloNaoEncontradoException(nome));
+		Simbolo primeiroSimboloDaPosicao = this.simbolos[this.getValorHash(nome)];
+		if (Objects.nonNull(primeiroSimboloDaPosicao)) {
+			return primeiroSimboloDaPosicao.buscarUltimoNivel(nome).orElseThrow(() -> new SimboloNaoEncontradoException(nome));
 		}
 		throw new SimboloNaoEncontradoException(nome);
 	}
 	
 	public Simbolo buscar(String nome, int nivel) {
-		Simbolo simbolo = this.simbolos[this.getValorHash(nome)];
-		if (Objects.nonNull(simbolo)) {
-			return simbolo.buscarPorNivel(nome, nivel).orElseThrow(() -> new SimboloNaoEncontradoException(nome));
+		Simbolo primeiroSimboloDaPosicao = this.simbolos[this.getValorHash(nome)];
+		if (Objects.nonNull(primeiroSimboloDaPosicao)) {
+			return primeiroSimboloDaPosicao.buscarPorNivel(nome, nivel).orElseThrow(() -> new SimboloNaoEncontradoException(nome));
 		}
 		throw new SimboloNaoEncontradoException(nome);
 	}
@@ -48,18 +48,20 @@ public class TabelaDeSimbolos {
 	
 	public void excluir(String nome, int nivel) {
 		int index = this.getValorHash(nome);
-		Simbolo simbolo = this.simbolos[index];
-		if (simbolo.getNome().equals(nome) && simbolo.getNivel() == nivel) {
-			this.simbolos[index] = simbolo.getProximo();
+		Simbolo primeiroSimboloDaPosicao = this.simbolos[index];
+		if (primeiroSimboloDaPosicao.getNome().equals(nome) && primeiroSimboloDaPosicao.getNivel() == nivel) {
+			this.simbolos[index] = primeiroSimboloDaPosicao.getProximo();
 		} else {
-			simbolo.excluir(nome, nivel);
+			primeiroSimboloDaPosicao.excluir(nome, nivel);
 		}
 	}
 	
 	public void mostrarConteudo() {
 		for (int i = 0; i < this.simbolos.length; i++) {
-			if (Objects.nonNull(this.simbolos[i])) {
-				System.out.println(this.simbolos[i]);
+			Simbolo simbolo = this.simbolos[i];
+			if (Objects.nonNull(simbolo)) {
+				System.out.println(simbolo);
+				simbolo.getProximo().getProximosSimbolos().stream().forEach(simb -> System.out.println("> " + simb));
 			}
 		}
 	}

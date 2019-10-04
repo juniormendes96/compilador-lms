@@ -26,6 +26,10 @@ public class HardcodeTS {
 		System.out.println(tabela.buscar("Elemento 1"));
 		System.out.println(tabela.buscar("Elemento 1", 1));
 		
+		tabela.atualizar("Elemento 1", 2, 10, 10);
+		
+		tabela.mostrarConteudo();
+		
 		
 //		// Inserir 10 elementos
 //		System.out.println("INSERINDO SÍMBOLOS");

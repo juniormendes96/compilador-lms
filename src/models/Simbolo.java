@@ -1,7 +1,6 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +28,7 @@ public class Simbolo {
 	}
 	
 	public Optional<Simbolo> buscarUltimoNivel(String nome) {
-		List<Simbolo> simbolos = this.getListaDeSimbolos();
+		List<Simbolo> simbolos = this.getProximosSimbolos();
 		return simbolos
 				.stream()
 				.filter(simbolo -> simbolo.nome.equals(nome))
@@ -37,7 +36,7 @@ public class Simbolo {
 	}
 	
 	public Optional<Simbolo> buscarPorNivel(String nome, int nivel) {
-		List<Simbolo> simbolos = this.getListaDeSimbolos();
+		List<Simbolo> simbolos = this.getProximosSimbolos();
 		return simbolos
 				.stream()
 				.filter(simbolo -> simbolo.nome.equals(nome) && simbolo.nivel == nivel)
@@ -58,7 +57,7 @@ public class Simbolo {
 	}
 	
 	public void excluir(String nome, int nivel) {
-		this.getListaDeSimbolos()
+		this.getProximosSimbolos()
 			.stream()
 			.filter(simbolo -> simbolo.proximo.nome.equals(nome) && simbolo.proximo.nivel == nivel)
 			.findFirst()
@@ -95,7 +94,7 @@ public class Simbolo {
 		return nome + " - " +categoria + " - " + nivel + " - " + geralA + " - " + geralB + " - " + (Objects.nonNull(proximo) ? proximo.getNome() : null);
 	}
 	
-	private List<Simbolo> getListaDeSimbolos() {
+	public List<Simbolo> getProximosSimbolos() {
 		List<Simbolo> lista = new ArrayList<>();
 		Simbolo simbolo = this;
 		while (Objects.nonNull(simbolo)) {
