@@ -61,7 +61,9 @@ public class TabelaDeSimbolos {
 			Simbolo simbolo = this.simbolos[i];
 			if (Objects.nonNull(simbolo)) {
 				System.out.println(simbolo);
-				simbolo.getProximo().getProximosSimbolos().stream().forEach(simb -> System.out.println("> " + simb));
+				if (Objects.nonNull(simbolo.getProximo())) {
+					simbolo.getProximo().getProximosSimbolos().stream().forEach(simb -> System.out.println("> " + simb));
+				}
 			}
 		}
 	}
