@@ -32,39 +32,30 @@ public class Simbolo {
 		}
 	}
 	
-	public void removeSimbolo(Simbolo primeiro, Simbolo simbolo) {
-		simbolo = buscarSimboloAtual(simbolo);
-		Simbolo anterior = buscarSimboloAnterior(primeiro, simbolo);
-		
+	public void removeSimbolo(Simbolo simbolo, String nome) {
+		Simbolo anterior = buscarSimboloAnterior(simbolo, nome);
+		simbolo = buscarSimbolo(simbolo, nome);
+
 		if(simbolo.proximo != null)
 			anterior.proximo = simbolo.proximo;
 		simbolo = null;		
 	}
 	
-	public void alterarSimbolo(Simbolo simbolo, Simbolo novoSimbolo) {
-		simbolo = buscarSimboloAtual(simbolo);
-		simbolo.nome = novoSimbolo.getNome();
-		simbolo.categoria = novoSimbolo.getCategoria();
-		simbolo.nivel = novoSimbolo.getNivel();
-		simbolo.geralA = novoSimbolo.getGeralA();
-		simbolo.geralB = novoSimbolo.getGeralB();
+	public void alterarSimbolo(Simbolo simbolo, String nome, int geralA, int geralB) {
+		simbolo = buscarSimbolo(simbolo, nome);
+		simbolo.geralA = geralA;
+		simbolo.geralB = geralB;
 	}
 	
-	public Simbolo buscarSimbolo(Simbolo simbolo, int nivel){
-		if (Objects.nonNull(simbolo.proximo) && simbolo.getNivel() == nivel)
-			return buscarSimboloAtual(simbolo.proximo);
+	public Simbolo buscarSimbolo(Simbolo simbolo, String nome){
+		if (Objects.nonNull(simbolo.proximo) && !simbolo.getNome().equals(nome))
+			return buscarSimbolo(simbolo.proximo, nome);
 		return simbolo;
 	}
-	
-	public Simbolo buscarSimboloAtual(Simbolo simbolo){
-		if (Objects.nonNull(simbolo.proximo) && simbolo.proximo == simbolo)
-			return buscarSimboloAtual(simbolo.proximo);
-		return simbolo;
-	}
-	
-	public Simbolo buscarSimboloAnterior(Simbolo primeiro, Simbolo simbolo){		
+		
+	public Simbolo buscarSimboloAnterior(Simbolo primeiro, String nome){		
 		while(primeiro.proximo != null) {
-			if(primeiro.proximo == simbolo)
+			if(primeiro.proximo.getNome().equals(nome))
 				return primeiro;
 			primeiro = primeiro.proximo;
 		}
