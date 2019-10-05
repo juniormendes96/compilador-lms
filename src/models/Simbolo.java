@@ -28,16 +28,14 @@ public class Simbolo {
 	}
 	
 	public Optional<Simbolo> buscarUltimoNivel(String nome) {
-		List<Simbolo> simbolos = this.getProximosSimbolos();
-		return simbolos
+		return this.getProximosSimbolos()
 				.stream()
 				.filter(simbolo -> simbolo.nome.equals(nome))
 				.max(Comparator.comparing(simbolo -> simbolo.nivel));
 	}
 	
 	public Optional<Simbolo> buscarPorNivel(String nome, int nivel) {
-		List<Simbolo> simbolos = this.getProximosSimbolos();
-		return simbolos
+		return this.getProximosSimbolos()
 				.stream()
 				.filter(simbolo -> simbolo.nome.equals(nome) && simbolo.nivel == nivel)
 				.findFirst();

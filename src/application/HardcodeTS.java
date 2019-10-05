@@ -49,6 +49,7 @@ public class HardcodeTS {
 		breakLine();
 		
 		// Excluir 3 elementos
+		
 		System.out.println("EXCLUINDO SÍMBOLOS");
 		tabela.excluir("Elemento 8", 1);
 		tabela.excluir("Elemento 9", 1);
