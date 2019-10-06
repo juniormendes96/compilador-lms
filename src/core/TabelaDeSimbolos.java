@@ -8,12 +8,13 @@ import utils.HashUtils;
 
 public class TabelaDeSimbolos {
 	
-	private final int TABLE_SIZE = 25147;
+	private final int tableSize;
 	
 	private Simbolo[] simbolos;
 	
-	public TabelaDeSimbolos() {
-		this.simbolos = new Simbolo[TABLE_SIZE];
+	public TabelaDeSimbolos(int tableSize) {
+		this.simbolos = new Simbolo[tableSize];
+		this.tableSize = tableSize;
 	}
 	
 	public Simbolo buscar(String nome) {
@@ -69,6 +70,6 @@ public class TabelaDeSimbolos {
 	}
 	
 	private int getValorHash(String nome) {
-		return HashUtils.hash(nome, TABLE_SIZE);
+		return HashUtils.hash(nome, tableSize);
 	}
 }

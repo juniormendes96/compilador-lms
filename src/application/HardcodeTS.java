@@ -16,7 +16,7 @@ public class HardcodeTS {
 	}
 
 	public static void main(String[] args) throws Exception {
-		TabelaDeSimbolos tabela = new TabelaDeSimbolos();
+		TabelaDeSimbolos tabela = new TabelaDeSimbolos(25147);
 		
 		System.out.println("Nome - Categoria - Nível - GeralA - GeralB - Próximo\n");
 		
