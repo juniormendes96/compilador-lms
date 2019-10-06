@@ -13,8 +13,8 @@ public class TabelaDeSimbolos {
 	private Simbolo[] simbolos;
 	
 	public TabelaDeSimbolos(int tableSize) {
-		this.simbolos = new Simbolo[tableSize];
 		this.tableSize = tableSize;
+		this.simbolos = new Simbolo[this.tableSize];
 	}
 	
 	public Simbolo buscar(String nome) {
