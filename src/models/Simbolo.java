@@ -59,8 +59,7 @@ public class Simbolo {
 			.stream()
 			.filter(simbolo -> simbolo.proximo.nome.equals(nome) && simbolo.proximo.nivel == nivel)
 			.findFirst()
-			.map(simbolo -> simbolo.proximo = Objects.nonNull(simbolo.proximo.proximo) ? simbolo.proximo.proximo : null)
-			.orElseThrow(() -> new SimboloNaoEncontradoException(nome));
+			.map(simbolo -> simbolo.proximo = simbolo.proximo.proximo);
 	}
 	
 	public String getNome() {
