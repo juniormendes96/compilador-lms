@@ -50,6 +50,9 @@ public class TabelaDeSimbolos {
 	public void excluir(String nome, int nivel) {
 		int index = this.getValorHash(nome);
 		Simbolo primeiroSimboloDaPosicao = this.simbolos[index];
+		if (Objects.isNull(primeiroSimboloDaPosicao)) {
+			throw new SimboloNaoEncontradoException(nome);
+		}
 		if (primeiroSimboloDaPosicao.getNome().equals(nome) && primeiroSimboloDaPosicao.getNivel() == nivel) {
 			this.simbolos[index] = primeiroSimboloDaPosicao.getProximo();
 		} else {

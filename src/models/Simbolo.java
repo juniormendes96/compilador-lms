@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import enums.CategoriaSimboloEnum;
+import exceptions.SimboloNaoEncontradoException;
 
 public class Simbolo {
 
@@ -54,11 +55,15 @@ public class Simbolo {
 	}
 	
 	public void excluir(String nome, int nivel) {
-		this.getProximosSimbolos()
+		 Optional<Simbolo> simboloAnterior = this.getProximosSimbolos()
 			.stream()
 			.filter(simbolo -> simbolo.proximo.nome.equals(nome) && simbolo.proximo.nivel == nivel)
-			.findFirst()
-			.map(simbolo -> simbolo.proximo = simbolo.proximo.proximo);
+			.findFirst();
+		 if (simboloAnterior.isPresent()) {
+			 simboloAnterior.map(simbolo -> simbolo.proximo = simbolo.proximo.proximo);
+		 } else {
+			 throw new SimboloNaoEncontradoException(nome);
+		 }
 	}
 	
 	public String getNome() {
