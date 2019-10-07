@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import enums.CategoriaSimboloEnum;
-import exceptions.SimboloNaoEncontradoException;
 
 public class Simbolo {
 
