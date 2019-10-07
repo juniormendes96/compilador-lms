@@ -9,19 +9,34 @@ import utils.HashUtils;
 public class TabelaDeSimbolos {
 		
 	private Simbolo[] simbolos;
-	public int tableSize = 25147;
+	public int tableSize;
 	
-	public TabelaDeSimbolos() {
+	public TabelaDeSimbolos(int tableSize) {
+		this.tableSize = tableSize;
 		this.simbolos = new Simbolo[tableSize];
 	}
 	
 	public Simbolo buscar(String nome) {
-		int index = 50;// this.getValorHash(nome);
+		int index = this.getValorHash(nome);
 		
 		Simbolo simbolo = null;
 		
 		if(encontrouColisao(index))
 			simbolo = this.simbolos[index].buscarSimbolo(simbolos[index], nome);
+		
+		if(simbolo == null) 
+			throw new SimboloNaoEncontradoException(nome);
+		
+		return simbolo;
+	}
+	
+	public Simbolo buscarNivel(String nome, int nivel) {
+		int index = this.getValorHash(nome);
+		
+		Simbolo simbolo = null;
+		
+		if(encontrouColisao(index))
+			simbolo = this.simbolos[index].buscarSimboloPorNivel(simbolos[index], nome, nivel);
 		
 		if(simbolo.getNome()!=nome) 
 			throw new SimboloNaoEncontradoException(nome);
@@ -30,7 +45,7 @@ public class TabelaDeSimbolos {
 	}
 	
 	public void inserir(Simbolo simbolo) {
-		int index = 50;//this.getValorHash(simbolo.getNome());
+		int index = this.getValorHash(simbolo.getNome());
 		
 		if (Objects.nonNull(simbolos[index]) && simbolos[index] == simbolo) {
 			throw new SimboloJaDeclaradoException(simbolo.getNome());
@@ -42,18 +57,18 @@ public class TabelaDeSimbolos {
 			this.simbolos[index] = simbolo;
 	}
 	
-	public void alterar(String nome, int geralA, int geralB) {
-		int index = 50;//this.getValorHash(nome);
+	public void alterar(String nome, int nivel, int geralA, int geralB) {
+		int index = this.getValorHash(nome);
 		
 		if (!encontrouColisao(index)) {
 			throw new SimboloNaoEncontradoException(nome);
 		}
 		
-		this.simbolos[index].alterarSimbolo(simbolos[index], nome, geralA, geralB);
+		this.simbolos[index].alterarSimbolo(simbolos[index], nome, nivel, geralA, geralB);
 	}
 	
 	public void excluir(String nome) {
-		int index = 50;// this.getValorHash(nome);
+		int index = this.getValorHash(nome);
 
 		if (Objects.isNull(this.simbolos[index])) {
 			throw new SimboloNaoEncontradoException(nome);
