@@ -29,8 +29,9 @@ import models.Token;
 
 public class AlgoritmoController implements Initializable {
 
+	/* TABELA LEXICO */
 	@FXML
-	private TableView<Token> tableViewResultado;
+	private TableView<Token> tableViewTokens;
 	@FXML
 	private TableColumn<Token, Integer> columnCodigo;
 	@FXML
@@ -39,6 +40,19 @@ public class AlgoritmoController implements Initializable {
 	private TableColumn<Token, String> columnDescricao;
 	@FXML
 	private TableColumn<Token, Integer> columnLinha;
+	
+	/* TABELA CODIGO INTERMEDIARIO */
+	@FXML
+	private TableView<Token> tableViewCodigoIntermediario;
+	@FXML
+	private TableColumn<Token, Integer> columnEndereco;
+	@FXML
+	private TableColumn<Token, String> columnInstrucao;
+	@FXML
+	private TableColumn<Token, Integer> columnOperacao1;	
+	@FXML
+	private TableColumn<Token, Integer> columnOperacao2;
+	
 	@FXML
 	private TextArea textAreaErros;
 	@FXML
@@ -111,7 +125,7 @@ public class AlgoritmoController implements Initializable {
 	}
 	
 	private void populaTabela(List<Token> linhasTabela) {
-		tableViewResultado.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+		tableViewTokens.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {
