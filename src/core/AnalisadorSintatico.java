@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import core.AnalisadorSemantico;
 import constants.Constants;
 import enums.TokenEnum;
 import exceptions.AnalisadorSintaticoException;
@@ -52,6 +53,9 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Valor retornado da matriz de parsing é -1, então lança erro
 					this.lancaErro();
 				}
+			}
+			if(isSemantico(topoDaPilha)) {
+				AnalisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha));
 			}
 		}
 	}
@@ -113,7 +117,16 @@ public class AnalisadorSintatico implements Constants {
 	private boolean isTerminal(int topoDaPilha) {
 		return topoDaPilha < FIRST_NON_TERMINAL;
 	}
+	
+	
+	private boolean isSemantico(int topoDaPilha) {
+		return topoDaPilha >= FIRST_SEMANTIC_ACTION;
+	}
 
+	public int codigoDaAcaoSemantica(int topoDaPilha) {
+		return topoDaPilha - FIRST_SEMANTIC_ACTION;
+	}
+	
 	private boolean pilhaVazia() {
 		return this.getTopoDaPilha() == DOLLAR;
 	}
