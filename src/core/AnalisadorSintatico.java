@@ -37,7 +37,7 @@ public class AnalisadorSintatico implements Constants {
 		while (!pilhaVazia()) {		// Termina quando o topo da pilha for $
 			topoDaPilha = this.getTopoDaPilha();
 			proximaEntrada = this.getPrimeiroDaFila();
-
+			
 			if (isTerminal(topoDaPilha) || pilhaVazia()) {
 				if (topoDaPilha == proximaEntrada) {
 					this.retiraTopoDaPilha();
@@ -45,7 +45,7 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro();
 				}
-			} else { // Não é terminal
+			} else if(!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
 				if (valorMatrizDeParsing != -1) {	
 					this.retiraTopoDaPilha();
@@ -53,9 +53,9 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Valor retornado da matriz de parsing é -1, então lança erro
 					this.lancaErro();
 				}
-			}
-			if(isSemantico(topoDaPilha)) {
+			} else { //é uma ação semântica
 				AnalisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha));
+				this.retiraTopoDaPilha();			
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 	
 	
-	private boolean isSemantico(int topoDaPilha) {
+	private boolean isAcaoSemantica(int topoDaPilha) {
 		return topoDaPilha >= FIRST_SEMANTIC_ACTION;
 	}
 
