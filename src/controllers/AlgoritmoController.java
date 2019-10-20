@@ -59,8 +59,6 @@ public class AlgoritmoController implements Initializable {
 	private TextArea txtAreaAlgoritmo;
 	@FXML
 	private TabPane tabPane;
-	@FXML
-	private Tab tabResultado;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -130,10 +128,8 @@ public class AlgoritmoController implements Initializable {
 	
 	private void setStyles(boolean erro) {
 		if (erro) {
-			tabResultado.setStyle("-fx-text-fill: red;");
 			textAreaErros.setStyle("-fx-text-inner-color: red;");
 		} else {
-			tabResultado.setStyle("-fx-text-fill: green;");
 			textAreaErros.setStyle("-fx-text-inner-color: green;");
 		}
 	}
@@ -141,13 +137,11 @@ public class AlgoritmoController implements Initializable {
 	private void printErro(String erro) {
 		setStyles(true);
 		textAreaErros.setText(erro);
-		tabPane.getSelectionModel().select(tabResultado);
 	}
 	
 	private void printMensagemSucesso() {
 		setStyles(false);
 		textAreaErros.setText("Código sem erro. Compilado com sucesso!");
-		tabPane.getSelectionModel().select(tabResultado);
 	}
 	
 	private void exibeMsg(String titulo, String cabecalho, String msg, AlertType tipo) {
