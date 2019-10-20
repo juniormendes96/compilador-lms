@@ -45,7 +45,7 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro();
 				}
-			} else if(!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
+			} else if (!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
 				if (valorMatrizDeParsing != -1) {	
 					this.retiraTopoDaPilha();
@@ -53,7 +53,7 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Valor retornado da matriz de parsing é -1, então lança erro
 					this.lancaErro();
 				}
-			} else { //é uma ação semântica
+			} else { // é uma ação semântica
 				AnalisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha));
 				this.retiraTopoDaPilha();			
 			}
