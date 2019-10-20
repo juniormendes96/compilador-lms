@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
+<BorderPane prefHeight="834.0" prefWidth="1122.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
    <top>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compilador" BorderPane.alignment="CENTER">
          <font>
@@ -25,70 +25,86 @@
          </BorderPane.margin>
       </Text>
    </top>
-   <left>
-      <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Algoritmo">
-               <content>
-                  <AnchorPane>
+   <bottom>
+      <TextArea fx:id="textAreaErros" editable="false" promptText="Compilador LMS - UNISUL 2019" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
+         </BorderPane.margin>
+      </TextArea>
+   </bottom>
+   <center>
+      <AnchorPane BorderPane.alignment="CENTER">
+         <children>
+            <HBox spacing="5.0">
+               <children>
+                  <VBox alignment="CENTER" spacing="10.0">
                      <children>
-                        <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <HBox alignment="CENTER" prefHeight="40.0" spacing="10.0">
                            <children>
-                              <HBox alignment="CENTER" prefHeight="40.0" spacing="10.0">
+                              <Button mnemonicParsing="false" onAction="#abrirArquivo" prefHeight="30.0" prefWidth="165.0" text="Abrir" />
+                              <Button mnemonicParsing="false" onAction="#analisarAlgoritmo" prefHeight="30.0" prefWidth="165.0" text="Compilar">
+                                 <font>
+                                    <Font name="Arial" size="15.0" />
+                                 </font>
+                              </Button>
+                              <Button layoutX="322.0" layoutY="12.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="240.0" text="Executar código Intermediário">
+                                 <font>
+                                    <Font name="Arial" size="15.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </HBox>
+                        <TextArea fx:id="txtAreaAlgoritmo" prefHeight="581.0" prefWidth="604.0" promptText="Digite aqui o algoritmo..." wrapText="true">
+                           <VBox.margin>
+                              <Insets left="10.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </TextArea>
+                     </children>
+                  </VBox>
+                  <TabPane prefHeight="597.0" prefWidth="493.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Tabela de Tokens">
+                        <content>
+                          <AnchorPane>
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#abrirArquivo" prefHeight="25.0" prefWidth="220.0" text="Abrir" />
-                                    <Button mnemonicParsing="false" onAction="#analisarAlgoritmo" prefHeight="25.0" prefWidth="220.0" text="Compilar">
-                                       <font>
-                                          <Font name="Arial" size="15.0" />
-                                       </font>
-                                    </Button>
+                                    <TableView fx:id="tableViewTokens" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn fx:id="columnCodigo" prefWidth="92.0" text="Código" />
+                                        <TableColumn fx:id="columnToken" prefWidth="129.0" text="Token" />
+                                          <TableColumn fx:id="columnDescricao" minWidth="4.0" prefWidth="189.0" text="Descrição" />
+                                          <TableColumn fx:id="columnLinha" prefWidth="74.0" text="Linha" />
+                                      </columns>
+                                    </TableView>
                                  </children>
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </HBox>
-                              <TextArea fx:id="txtAreaAlgoritmo" prefHeight="581.0" prefWidth="766.0" promptText="Digite aqui o algoritmo..." wrapText="true" />
-                           </children>
-                        </VBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </AnchorPane>
-               </content>
-            </Tab>
-          <Tab fx:id="tabResultado" text="Resultado">
-               <content>
-                  <AnchorPane>
-                     <children>
-                        <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <TableView fx:id="tableViewResultado" prefHeight="453.0" prefWidth="776.0">
-                                <columns>
-                                  <TableColumn fx:id="columnCodigo" prefWidth="113.0" text="Código" />
-                                  <TableColumn fx:id="columnToken" prefWidth="184.0" text="Token" />
-                                    <TableColumn fx:id="columnDescricao" prefWidth="371.0" text="Descrição" />
-                                    <TableColumn fx:id="columnLinha" prefWidth="95.0" text="Linha" />
-                                </columns>
-                                 <padding>
-                                    <Insets left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </TableView>
-                              <TextArea fx:id="textAreaErros" prefHeight="178.0" prefWidth="776.0" promptText="Complador LMS - 2019">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </TextArea>
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-   </left>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                      <Tab text="Código Intermediário">
+                        <content>
+                          <AnchorPane>
+                                 <children>
+                                    <TableView fx:id="tableViewCodigoIntermediario" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn fx:id="columnEndereco" prefWidth="95.0" text="Endereço" />
+                                        <TableColumn fx:id="columnInstrucao" prefWidth="135.0" text="Instrução" />
+                                          <TableColumn fx:id="columnOperacao1" prefWidth="133.0" text="Operação 1" />
+                                          <TableColumn fx:id="columnOperacao2" prefWidth="129.0" text="Operação 2" />
+                                      </columns>
+                                    </TableView>
+                                 </children></AnchorPane>
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </AnchorPane>
+   </center>
 </BorderPane>

@@ -1,2 +1,8 @@
 /application/
 /core/
+/controllers/
+/enums/
+/exceptions/
+/models/
+/constants/
+/views/
