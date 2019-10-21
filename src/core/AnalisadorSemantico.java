@@ -3,9 +3,9 @@ package core;
 public class AnalisadorSemantico {
 
 	private Hipotetica maquinaVirtual;
+	private TabelaDeSimbolos tabelaDeSimbolos;
 	
 	public AnalisadorSemantico() {
-		this.maquinaVirtual = new Hipotetica();
 	}
 	
 	public void executarSemantico(int codigoDaAcaoSemantica) {
@@ -13,6 +13,8 @@ public class AnalisadorSemantico {
 		
 		switch (codigoDaAcaoSemantica) {
 			case 100:
+				this.maquinaVirtual = new Hipotetica();
+				this.tabelaDeSimbolos = new TabelaDeSimbolos(25147);
 				break;
 			case 102:
 				break;
