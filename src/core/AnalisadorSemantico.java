@@ -43,8 +43,8 @@ public class AnalisadorSemantico {
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + 3);
 				break;
-			case 130:
-				break;
+//			case 130:
+//				break;
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
 		}
