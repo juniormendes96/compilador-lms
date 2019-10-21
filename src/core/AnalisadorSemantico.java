@@ -3,6 +3,8 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
+import enums.InstrucaoEnum;
+
 public class AnalisadorSemantico {
 
 	private Hipotetica maquinaVirtual;
@@ -39,6 +41,7 @@ public class AnalisadorSemantico {
 				inicializaVariaveis();
 				break;
 			case 102:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + 3);
 				break;
 			case 130:
 				break;
