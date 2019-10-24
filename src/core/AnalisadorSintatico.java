@@ -36,10 +36,7 @@ public class AnalisadorSintatico implements Constants {
 
 		int valorMatrizDeParsing;
 
-		while (!pilhaVazia() || !fila.isEmpty()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
-			if (fila.isEmpty()) {
-				break;
-			}
+		while (!pilhaVazia() && !fila.isEmpty()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
 			topoDaPilha = this.getTopoDaPilha();
 			proximaEntrada = this.getPrimeiroDaFila();
 			

@@ -1,4 +1,4 @@
-PROGRAM maior_numero;
+PROGRAM hello_world;
 BEGIN
 	WRITELN('Hello world!');
 END.
