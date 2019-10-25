@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import enums.InstrucaoEnum;
+import models.Token;
 
 public class AnalisadorSemantico {
 
@@ -22,6 +23,7 @@ public class AnalisadorSemantico {
 	private Integer nivelAtual;
 	private Integer posicaoLivre;
 	private Integer numeroVariaveisBloco;
+	private Integer deslocamento;
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	
 	
@@ -31,7 +33,7 @@ public class AnalisadorSemantico {
 		this.areaLiterais = new AreaLiterais();
 	}
 	
-	public void executarSemantico(int codigoDaAcaoSemantica) {
+	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		switch (codigoDaAcaoSemantica) {
 			case 100:
 				inicializaPilhas();
@@ -41,7 +43,7 @@ public class AnalisadorSemantico {
 				inicializaVariaveis();
 				break;
 			case 102:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + 3);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + deslocamento);
 				break;
 //			case 130:
 //				break;
@@ -64,5 +66,6 @@ public class AnalisadorSemantico {
 		this.posicaoLivre = 1;
 		this.escopo[0] = 1;
 		this.numeroVariaveisBloco = 0;
+		this.deslocamento = 3;
 	}
 }

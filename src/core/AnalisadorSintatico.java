@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import core.AnalisadorSemantico;
 import constants.Constants;
@@ -15,40 +14,40 @@ import models.Token;
 public class AnalisadorSintatico implements Constants {
 
 	private List<Integer> pilha;
-	private List<Integer> fila;
 	private List<Token> tokens;
 	private AnalisadorSemantico analisadorSemantico;
 
 	public AnalisadorSintatico(List<Token> tokens) {
 		// Cria a pilha e a fila
 		this.pilha = new ArrayList<>();
-		this.fila = new ArrayList<>();
 		this.tokens = tokens;
 		this.analisadorSemantico = new AnalisadorSemantico();
 	}
 
 	public void iniciarDescendentePreditivo() {
-		this.preencheFila();
 		this.empilhaValoresIniciais(); // Empilhando a pilha
 
 		int topoDaPilha;
-		int proximaEntrada;
+		Token proximaEntrada;
+		Token tokenAnterior = null;
 
 		int valorMatrizDeParsing;
 
-		while (!pilhaVazia() && !fila.isEmpty()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
+		while (!pilhaVazia() && !this.tokens.isEmpty()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
+			
 			topoDaPilha = this.getTopoDaPilha();
 			proximaEntrada = this.getPrimeiroDaFila();
 			
+			System.out.println("Topo da pilha: " + topoDaPilha);
 			if (isTerminal(topoDaPilha) || pilhaVazia()) {
-				if (topoDaPilha == proximaEntrada) {
+				if (topoDaPilha == proximaEntrada.getCodigo()) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro();
 				}
 			} else if (!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
-				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada);
+				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada.getCodigo());
 				if (valorMatrizDeParsing != -1) {	
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
@@ -56,9 +55,10 @@ public class AnalisadorSintatico implements Constants {
 					this.lancaErro();
 				}
 			} else { // é uma ação semântica
-				this.analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha));
+				this.analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.retiraTopoDaPilha();			
 			}
+			tokenAnterior = proximaEntrada;
 		}
 	}
 
@@ -97,19 +97,19 @@ public class AnalisadorSintatico implements Constants {
 	}
 	
 	private int getLinhaDoErro() {
-		return this.tokens.get(this.tokens.size() - this.fila.size()).getLinha();
+		return this.tokens.get(this.tokens.size() - this.tokens.size()).getLinha();
 	}
 	
 	private int getTopoDaPilha() {
 		return this.pilha.get(this.pilha.size() - 1);
 	}
 
-	private int getPrimeiroDaFila() {
-		return this.fila.get(0);
+	private Token getPrimeiroDaFila() {
+		return this.tokens.get(0);
 	}
 
 	private void retiraPrimeiroDaFila() {
-		this.fila.remove(0);
+		this.tokens.remove(0);
 	}
 
 	private void retiraTopoDaPilha() {
@@ -133,7 +133,4 @@ public class AnalisadorSintatico implements Constants {
 		return this.getTopoDaPilha() == DOLLAR;
 	}
 
-	private void preencheFila() {
-		this.fila = this.tokens.stream().map(Token::getCodigo).collect(Collectors.toList());
-	}
 }
