@@ -25,6 +25,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import models.Literal;
 import models.Tipos;
 import models.Token;
 
@@ -56,11 +57,11 @@ public class AlgoritmoController implements Initializable {
 	
 	/* AREA DE LITERAL */
 	@FXML
-	private TableView<Token> tableViewAreaDeLiteral;
+	private TableView<Literal> tableViewAreaDeLiteral;
 	@FXML
-	private TableColumn<Token, Integer> columnEnderecoLiteral;
+	private TableColumn<Literal, Integer> columnEnderecoLiteral;
 	@FXML
-	private TableColumn<Token, String> columnLiteral;
+	private TableColumn<Literal, String> columnLiteral;
 	
 	@FXML
 	private TextArea textAreaErros;
@@ -80,6 +81,9 @@ public class AlgoritmoController implements Initializable {
 		columnInstrucao.setCellValueFactory(new PropertyValueFactory<>("nome"));
 		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("op1"));
 		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("op2"));
+		
+		columnEnderecoLiteral.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnLiteral.setCellValueFactory(new PropertyValueFactory<>("nome"));
 	}
 	
 	@FXML
@@ -98,6 +102,9 @@ public class AlgoritmoController implements Initializable {
 				
 				List<Tipos> instrucoes = analisadorSemantico.obterInstrucoes();
 				populaTabelaCodigoIntermediario(instrucoes);
+				
+				List<Literal> literais = analisadorSemantico.obterLiterais();
+				populaTabelaLiterais(literais);
 			
 				printMensagemSucesso();
 			
@@ -147,6 +154,10 @@ public class AlgoritmoController implements Initializable {
 	
 	private void populaTabelaCodigoIntermediario(List<Tipos> linhasTabela) {
 		tableViewCodigoIntermediario.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaLiterais(List<Literal> linhasTabela) {
+		tableViewAreaDeLiteral.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {

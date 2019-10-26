@@ -9,6 +9,7 @@ import constants.Constants;
 import enums.InstrucaoEnum;
 import models.AreaInstrucoes;
 import models.AreaLiterais;
+import models.Literal;
 import models.Tipos;
 import models.Token;
 
@@ -73,6 +74,17 @@ public class AnalisadorSemantico {
 			endereco++;
 		}
 		return lista;
+	}
+	
+	public List<Literal> obterLiterais() {
+		List<String> lista = Arrays.asList(this.areaLiterais.AL).stream().filter(item -> !item.isEmpty()).collect(Collectors.toList());
+		List<Literal> literais = new ArrayList<>();
+		int endereco = 1;
+		for (String literal : lista) {
+			literais.add(new Literal(endereco, literal));
+			endereco++;
+		}
+		return literais;
 	}
 	
 	private void inicializaPilhas() {
