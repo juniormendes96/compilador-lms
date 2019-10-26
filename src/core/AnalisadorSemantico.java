@@ -1,10 +1,15 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import constants.Constants;
 import enums.InstrucaoEnum;
+import models.AreaInstrucoes;
+import models.AreaLiterais;
+import models.Tipos;
 import models.Token;
 
 public class AnalisadorSemantico {
@@ -58,6 +63,16 @@ public class AnalisadorSemantico {
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
 		}
+	}
+	
+	public List<Tipos> obterInstrucoes() {
+		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != -1).collect(Collectors.toList());
+		int endereco = 1;
+		for (Tipos instrucao : lista) {
+			instrucao.endereco = endereco;
+			endereco++;
+		}
+		return lista;
 	}
 	
 	private void inicializaPilhas() {

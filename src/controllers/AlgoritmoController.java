@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import core.AnalisadorLexico;
+import core.AnalisadorSemantico;
 import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
 import exceptions.AnalisadorSintaticoException;
@@ -24,6 +25,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import models.Tipos;
 import models.Token;
 
 public class AlgoritmoController implements Initializable {
@@ -42,15 +44,15 @@ public class AlgoritmoController implements Initializable {
 	
 	/* TABELA CODIGO INTERMEDIARIO */
 	@FXML
-	private TableView<Token> tableViewCodigoIntermediario;
+	private TableView<Tipos> tableViewCodigoIntermediario;
 	@FXML
-	private TableColumn<Token, Integer> columnEndereco;
+	private TableColumn<Tipos, Integer> columnEndereco;
 	@FXML
-	private TableColumn<Token, String> columnInstrucao;
+	private TableColumn<Tipos, Integer> columnInstrucao;
 	@FXML
-	private TableColumn<Token, Integer> columnOperacao1;	
+	private TableColumn<Tipos, Integer> columnOperacao1;	
 	@FXML
-	private TableColumn<Token, Integer> columnOperacao2;
+	private TableColumn<Tipos, Integer> columnOperacao2;
 	
 	/* AREA DE LITERAL */
 	@FXML
@@ -73,6 +75,11 @@ public class AlgoritmoController implements Initializable {
 		columnToken.setCellValueFactory(new PropertyValueFactory<>("token"));
 		columnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 		columnLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
+		
+		columnEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnInstrucao.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("op1"));
+		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("op2"));
 	}
 	
 	@FXML
@@ -82,15 +89,20 @@ public class AlgoritmoController implements Initializable {
 				AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
 				List<Token> tokens = analisadorLexico.iniciarAnalise();	
 				
-				populaTabela(tokens);
+				populaTabelaTokens(tokens);
+				
+				AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 				
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
-				analisadorSintatico.iniciarDescendentePreditivo();			
+				analisadorSintatico.iniciarDescendentePreditivo(analisadorSemantico);
+				
+				List<Tipos> instrucoes = analisadorSemantico.obterInstrucoes();
+				populaTabelaCodigoIntermediario(instrucoes);
 			
 				printMensagemSucesso();
 			
 			} catch (AnalisadorLexicoException analisadorLexicoException) {
-				populaTabela(null);
+				populaTabelaTokens(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
 				printErro(analisadorSintaticoException.getMessage());
@@ -129,8 +141,12 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 	
-	private void populaTabela(List<Token> linhasTabela) {
+	private void populaTabelaTokens(List<Token> linhasTabela) {
 		tableViewTokens.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaCodigoIntermediario(List<Tipos> linhasTabela) {
+		tableViewCodigoIntermediario.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {
