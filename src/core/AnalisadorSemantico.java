@@ -50,6 +50,7 @@ public class AnalisadorSemantico {
 	
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		switch (codigoDaAcaoSemantica) {
+//			Reconhecendo o nome do programa
 			case 100:
 				inicializaPilhas();
 				this.tabelaDeSimbolos = new TabelaDeSimbolos(25147);
@@ -57,12 +58,18 @@ public class AnalisadorSemantico {
 				Hipotetica.InicializaAL(this.areaLiterais);
 				inicializaVariaveis();
 				break;
+				
+//			Final de programa
 			case 101:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), -1, -1);
 				break;
+				
+//			Após declaração de variável
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveis + deslocamento);
 				break;
+				
+//			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
 			case 104:
 				if (tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
 					throw new AnalisadorSemanticoException(String.format("O simbolo %s já foi declarado", tokenAnterior.getToken()));
@@ -75,9 +82,13 @@ public class AnalisadorSemantico {
 					numeroParametros++;
 				}
 				break;
+				
+//			Antes de lista de identificadores em declaração de variáveis	
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
 				break;
+				
+//			WRITELN - após literal na instrução WRITELN
 			case 130:
 				maquinaVirtual.IncluirAL(this.areaLiterais, tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), Constants.VAZIO, ponteiroLit);
