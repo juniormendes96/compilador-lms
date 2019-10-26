@@ -1,10 +1,17 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import constants.Constants;
 import enums.InstrucaoEnum;
+import hipotetica.AreaInstrucoes;
+import hipotetica.AreaLiterais;
+import hipotetica.Hipotetica;
+import hipotetica.Tipos;
+import models.Literal;
 import models.Token;
 
 public class AnalisadorSemantico {
@@ -58,6 +65,27 @@ public class AnalisadorSemantico {
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
 		}
+	}
+	
+	public List<Tipos> obterInstrucoes() {
+		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != -1).collect(Collectors.toList());
+		int endereco = 1;
+		for (Tipos instrucao : lista) {
+			instrucao.endereco = endereco;
+			endereco++;
+		}
+		return lista;
+	}
+	
+	public List<Literal> obterLiterais() {
+		List<String> lista = Arrays.asList(this.areaLiterais.AL).stream().filter(item -> !item.isEmpty()).collect(Collectors.toList());
+		List<Literal> literais = new ArrayList<>();
+		int endereco = 1;
+		for (String literal : lista) {
+			literais.add(new Literal(endereco, literal));
+			endereco++;
+		}
+		return literais;
 	}
 	
 	private void inicializaPilhas() {

@@ -74,8 +74,8 @@
                                       <columns>
                                         <TableColumn fx:id="columnCodigo" prefWidth="92.0" text="Código" />
                                         <TableColumn fx:id="columnToken" prefWidth="129.0" text="Token" />
-                                          <TableColumn fx:id="columnDescricao" minWidth="4.0" prefWidth="189.0" text="Descrição" />
-                                          <TableColumn fx:id="columnLinha" prefWidth="74.0" text="Linha" />
+                                        <TableColumn fx:id="columnDescricao" minWidth="4.0" prefWidth="189.0" text="Descrição" />
+                                        <TableColumn fx:id="columnLinha" prefWidth="74.0" text="Linha" />
                                       </columns>
                                     </TableView>
                                  </children>
@@ -88,7 +88,7 @@
                                  <children>
                                     <TableView fx:id="tableViewCodigoIntermediario" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                       <columns>
-                                        <TableColumn fx:id="columnEndereco" prefWidth="95.0" text="Endereço" />
+                                      	 <TableColumn fx:id="columnEndereco" prefWidth="95.0" text="Endereço" />
                                         <TableColumn fx:id="columnInstrucao" prefWidth="135.0" text="Instrução" />
                                           <TableColumn fx:id="columnOperacao1" prefWidth="133.0" text="Operação 1" />
                                           <TableColumn fx:id="columnOperacao2" prefWidth="129.0" text="Operação 2" />
@@ -97,6 +97,20 @@
                                  </children></AnchorPane>
                         </content>
                       </Tab>
+                        <Tab text="Área de Literal">
+                           <content>
+                              <AnchorPane>
+                                 <children>
+                                    <TableView fx:id="tableViewAreaDeLiteral" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <columns>
+                                          <TableColumn fx:id="columnEnderecoLiteral" prefWidth="95.0" text="Endereço" />
+                                          <TableColumn fx:id="columnLiteral" prefWidth="397.0" text="Literal" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
                     </tabs>
                   </TabPane>
                </children>

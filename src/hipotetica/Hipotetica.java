@@ -1,4 +1,4 @@
-package core;
+package hipotetica;
 
 //Maquina_virtual para a linguagem LMS
 //Equipe:Maicon, reinaldo e Fabio - 2003A
@@ -10,62 +10,6 @@ package core;
 
 import javax.swing.JOptionPane;
 
-/**
- * Classe utilizada pela classe "Hipotetica" para armazenar as informações 
- * de uma instrução.
- * Esta classe, bem como as classes "AreaInstrucoes", "AreaLiterais"
- * e "Hipotetica" foi criada por Maicon, Reinaldo e Fabio e adaptada
- * para este aplicativo.
- */
-class Tipos{
-	public int codigo; 
-	public int op1;
-	public int op2;
-	
-  /**
-   * Construtor sem parâmetros.
-   * Todos os atributos são inicializados com valores padrões.
-   */
-	Tipos(){
-	     codigo=0;
-	   	 op1=0;
-   	 	 op2=0;
-   	 }
-}
-
-/**
- * Classe utilizada pela classe "Hipotetica" para armazenar a área de
- * instruções.
-  * Esta classe, bem como as classes "Tipos", "AreaLiterais"
- * e "Hipotetica" foi criada por Maicon, Reinaldo e Fabio e adaptada
- * para este aplicativo.
- */
-class AreaInstrucoes{
-	public Tipos AI[]= new Tipos[1000];
-	public int LC;
-	
-    /**
-   * Construtor sem parâmetros.
-   * Todos os atributos são inicializados com valores padrões.
-   */
-	AreaInstrucoes(){
-		for(int i=0; i<1000; i++){
-			AI[i]=new Tipos();
-		}
-	}
-}
-
-/**
- * Classe utilizada pela classe "Hipotetica" para armazenar a área de
- * literais.
-  * Esta classe, bem como as classes "Tipos", "AreaInstrucoes"
- * e "Hipotetica" foi criada por Maicon, Reinaldo e Fabio e adaptada
- * para este aplicativo.
- */
-class AreaLiterais{
-	public String AL[]= new String[30];
-	public int LIT;
-}
 
 /**
  * Classe que implementa a máquina hipotética.
@@ -73,7 +17,7 @@ class AreaLiterais{
  * e "AreaLiterais" foi criada por Maicon, Reinaldo e Fabio e adaptada
  * para este aplicativo.
  */
-class Hipotetica{
+public class Hipotetica{
 	  public static int MaxInst=1000;
 	  public static int MaxList=30;
 	  public static int b; //base do segmento
@@ -90,7 +34,7 @@ class Hipotetica{
    * Construtor sem parâmetros.
    * Os atributos "nv", "np" e "num_impr" são inicializados com valores padrões.
    */	  
-	  Hipotetica(){
+	  public Hipotetica(){
 	  	num_impr=0;
 	  }
 	      		

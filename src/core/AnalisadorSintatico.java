@@ -15,16 +15,14 @@ public class AnalisadorSintatico implements Constants {
 
 	private List<Integer> pilha;
 	private List<Token> tokens;
-	private AnalisadorSemantico analisadorSemantico;
 
 	public AnalisadorSintatico(List<Token> tokens) {
 		// Cria a pilha e a fila
 		this.pilha = new ArrayList<>();
 		this.tokens = tokens;
-		this.analisadorSemantico = new AnalisadorSemantico();
 	}
 
-	public void iniciarDescendentePreditivo() {
+	public void iniciarDescendentePreditivo(AnalisadorSemantico analisadorSemantico) {
 		this.empilhaValoresIniciais(); // Empilhando a pilha
 
 		int topoDaPilha;
@@ -55,7 +53,7 @@ public class AnalisadorSintatico implements Constants {
 					this.lancaErro(linhaAtual);
 				}
 			} else { // é uma ação semântica
-				this.analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
+				analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.retiraTopoDaPilha();			
 			}
 			if (tokenAtual.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {

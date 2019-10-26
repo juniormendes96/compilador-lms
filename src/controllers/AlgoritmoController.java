@@ -10,9 +10,11 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import core.AnalisadorLexico;
+import core.AnalisadorSemantico;
 import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
 import exceptions.AnalisadorSintaticoException;
+import hipotetica.Tipos;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +26,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import models.Literal;
 import models.Token;
 
 public class AlgoritmoController implements Initializable {
@@ -42,23 +45,23 @@ public class AlgoritmoController implements Initializable {
 	
 	/* TABELA CODIGO INTERMEDIARIO */
 	@FXML
-	private TableView<Token> tableViewCodigoIntermediario;
+	private TableView<Tipos> tableViewCodigoIntermediario;
 	@FXML
-	private TableColumn<Token, Integer> columnEndereco;
+	private TableColumn<Tipos, Integer> columnEndereco;
 	@FXML
-	private TableColumn<Token, String> columnInstrucao;
+	private TableColumn<Tipos, Integer> columnInstrucao;
 	@FXML
-	private TableColumn<Token, Integer> columnOperacao1;	
+	private TableColumn<Tipos, Integer> columnOperacao1;	
 	@FXML
-	private TableColumn<Token, Integer> columnOperacao2;
+	private TableColumn<Tipos, Integer> columnOperacao2;
 	
 	/* AREA DE LITERAL */
 	@FXML
-	private TableView<Token> tableViewAreaDeLiteral;
+	private TableView<Literal> tableViewAreaDeLiteral;
 	@FXML
-	private TableColumn<Token, Integer> columnEnderecoLiteral;
+	private TableColumn<Literal, Integer> columnEnderecoLiteral;
 	@FXML
-	private TableColumn<Token, String> columnLiteral;
+	private TableColumn<Literal, String> columnLiteral;
 	
 	@FXML
 	private TextArea textAreaErros;
@@ -73,6 +76,14 @@ public class AlgoritmoController implements Initializable {
 		columnToken.setCellValueFactory(new PropertyValueFactory<>("token"));
 		columnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 		columnLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
+		
+		columnEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnInstrucao.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("op1"));
+		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("op2"));
+		
+		columnEnderecoLiteral.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnLiteral.setCellValueFactory(new PropertyValueFactory<>("nome"));
 	}
 	
 	@FXML
@@ -82,15 +93,23 @@ public class AlgoritmoController implements Initializable {
 				AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
 				List<Token> tokens = analisadorLexico.iniciarAnalise();	
 				
-				populaTabela(tokens);
+				populaTabelaTokens(tokens);
+				
+				AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 				
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
-				analisadorSintatico.iniciarDescendentePreditivo();			
+				analisadorSintatico.iniciarDescendentePreditivo(analisadorSemantico);
+				
+				List<Tipos> instrucoes = analisadorSemantico.obterInstrucoes();
+				populaTabelaCodigoIntermediario(instrucoes);
+				
+				List<Literal> literais = analisadorSemantico.obterLiterais();
+				populaTabelaLiterais(literais);
 			
 				printMensagemSucesso();
 			
 			} catch (AnalisadorLexicoException analisadorLexicoException) {
-				populaTabela(null);
+				populaTabelaTokens(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
 				printErro(analisadorSintaticoException.getMessage());
@@ -129,8 +148,16 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 	
-	private void populaTabela(List<Token> linhasTabela) {
+	private void populaTabelaTokens(List<Token> linhasTabela) {
 		tableViewTokens.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaCodigoIntermediario(List<Tipos> linhasTabela) {
+		tableViewCodigoIntermediario.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaLiterais(List<Literal> linhasTabela) {
+		tableViewAreaDeLiteral.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {
