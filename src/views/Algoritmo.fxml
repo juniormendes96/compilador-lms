@@ -74,8 +74,8 @@
                                       <columns>
                                         <TableColumn fx:id="columnCodigo" prefWidth="92.0" text="Código" />
                                         <TableColumn fx:id="columnToken" prefWidth="129.0" text="Token" />
-                                          <TableColumn fx:id="columnDescricao" minWidth="4.0" prefWidth="189.0" text="Descrição" />
-                                          <TableColumn fx:id="columnLinha" prefWidth="74.0" text="Linha" />
+                                        <TableColumn fx:id="columnDescricao" minWidth="4.0" prefWidth="189.0" text="Descrição" />
+                                        <TableColumn fx:id="columnLinha" prefWidth="74.0" text="Linha" />
                                       </columns>
                                     </TableView>
                                  </children>
