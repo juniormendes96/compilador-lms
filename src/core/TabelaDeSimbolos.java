@@ -17,6 +17,15 @@ public class TabelaDeSimbolos {
 		this.simbolos = new Simbolo[this.tableSize];
 	}
 	
+	public boolean existe(String nome, int nivel) {
+		try {
+			this.buscar(nome, nivel);
+			return true;
+		} catch (SimboloNaoEncontradoException e) {
+			return false;
+		}
+	}
+	
 	public Simbolo buscar(String nome) {
 		Simbolo primeiroSimboloDaPosicao = this.simbolos[this.getValorHash(nome)];
 		if (Objects.nonNull(primeiroSimboloDaPosicao)) {

@@ -13,6 +13,7 @@ import core.AnalisadorLexico;
 import core.AnalisadorSemantico;
 import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
+import exceptions.AnalisadorSemanticoException;
 import exceptions.AnalisadorSintaticoException;
 import hipotetica.Tipos;
 import javafx.collections.FXCollections;
@@ -113,6 +114,8 @@ public class AlgoritmoController implements Initializable {
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
 				printErro(analisadorSintaticoException.getMessage());
+			} catch (AnalisadorSemanticoException analisadorSemanticoException) {
+				printErro(analisadorSemanticoException.getMessage());
 			}
 			
 		} else {
