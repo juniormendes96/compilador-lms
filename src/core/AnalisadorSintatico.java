@@ -28,23 +28,23 @@ public class AnalisadorSintatico implements Constants {
 		this.empilhaValoresIniciais(); // Empilhando a pilha
 
 		int topoDaPilha;
+		int linhaAtual = 1;
 		Token proximaEntrada;
 		Token tokenAnterior = null;
 
 		int valorMatrizDeParsing;
-
-		while (!pilhaVazia() && !this.tokens.isEmpty()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
+		
+		while (!condicaoParada()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
 			
 			topoDaPilha = this.getTopoDaPilha();
 			proximaEntrada = this.getPrimeiroDaFila();
 			
-			System.out.println("Topo da pilha: " + topoDaPilha);
-			if (isTerminal(topoDaPilha) || pilhaVazia()) {
+			if (isTerminal(topoDaPilha) || condicaoParada()) {
 				if (topoDaPilha == proximaEntrada.getCodigo()) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
-					this.lancaErro();
+					this.lancaErro(linhaAtual);
 				}
 			} else if (!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
 				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada.getCodigo());
@@ -52,11 +52,14 @@ public class AnalisadorSintatico implements Constants {
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
 				} else { // Valor retornado da matriz de parsing é -1, então lança erro
-					this.lancaErro();
+					this.lancaErro(linhaAtual);
 				}
 			} else { // é uma ação semântica
 				this.analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.retiraTopoDaPilha();			
+			}
+			if (proximaEntrada.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
+				linhaAtual = proximaEntrada.getLinha();
 			}
 			tokenAnterior = proximaEntrada;
 		}
@@ -65,6 +68,7 @@ public class AnalisadorSintatico implements Constants {
 	private void empilhaValoresIniciais() {
 		this.pilha.add(DOLLAR);
 		this.pilha.add(START_SYMBOL);
+		this.tokens.add(new Token(TokenEnum.FIM_ARQUIVO, null));
 	}
 
 	private int getValorMatrizDeParsing(int topoDaPilha, int proximaEntrada) {
@@ -79,9 +83,9 @@ public class AnalisadorSintatico implements Constants {
 		}
 	}
 
-	private void lancaErro() {
+	private void lancaErro(int linha) {
 		if(this.getTopoDaPilha() < FIRST_NON_TERMINAL) { // Caso topo da pilha seja terminal, lança o erro com token do topo da pilha
-			throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], this.getLinhaDoErro());
+			throw new AnalisadorSintaticoException(PARSER_ERROR[this.getTopoDaPilha()], linha);
 		} else { // Caso topo da pilha seja um não terminal, avaliar as colunas da Matriz de Parsing
 			StringBuilder mensagemDeErro = new StringBuilder("Era esperado o(s) seguinte(s) token(s):");
 			for(int i = 0; i < FIRST_NON_TERMINAL - 1; i++) {
@@ -92,12 +96,8 @@ public class AnalisadorSintatico implements Constants {
 						mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));	// Cria a mensagem de erro para ser enviada
 				}
 			}
-			throw new AnalisadorSintaticoException(mensagemDeErro.toString(), this.getLinhaDoErro());
+			throw new AnalisadorSintaticoException(mensagemDeErro.toString(), linha);
 		}
-	}
-	
-	private int getLinhaDoErro() {
-		return this.tokens.get(this.tokens.size() - this.tokens.size()).getLinha();
 	}
 	
 	private int getTopoDaPilha() {
@@ -120,7 +120,6 @@ public class AnalisadorSintatico implements Constants {
 		return topoDaPilha < FIRST_NON_TERMINAL;
 	}
 	
-	
 	private boolean isAcaoSemantica(int topoDaPilha) {
 		return topoDaPilha >= FIRST_SEMANTIC_ACTION;
 	}
@@ -129,8 +128,8 @@ public class AnalisadorSintatico implements Constants {
 		return topoDaPilha - FIRST_SEMANTIC_ACTION;
 	}
 	
-	private boolean pilhaVazia() {
-		return this.getTopoDaPilha() == DOLLAR;
+	private boolean condicaoParada() {
+		return this.getTopoDaPilha() == DOLLAR && this.getPrimeiroDaFila().getToken() == TokenEnum.FIM_ARQUIVO.getSimbolo();
 	}
 
 }

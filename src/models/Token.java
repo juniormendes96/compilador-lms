@@ -9,7 +9,7 @@ public class Token {
 	private String descricao;
 	private Integer linha;
 
-	public Token(TokenEnum tokenEnum, int linha) {
+	public Token(TokenEnum tokenEnum, Integer linha) {
 		this.codigo = tokenEnum.getCod();
 		this.token = tokenEnum.getSimbolo();
 		this.descricao = tokenEnum.getDescricao();
@@ -53,6 +53,11 @@ public class Token {
 
 	public void setLinha(Integer linha) {
 		this.linha = linha;
+	}
+
+	@Override
+	public String toString() {
+		return "Token [token=" + token + "]";
 	}
 	
 }
