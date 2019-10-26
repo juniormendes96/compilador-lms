@@ -14,6 +14,7 @@ import core.AnalisadorSemantico;
 import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
 import exceptions.AnalisadorSintaticoException;
+import hipotetica.Tipos;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +27,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import models.Literal;
-import models.Tipos;
 import models.Token;
 
 public class AlgoritmoController implements Initializable {

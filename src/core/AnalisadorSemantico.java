@@ -7,10 +7,11 @@ import java.util.stream.Collectors;
 
 import constants.Constants;
 import enums.InstrucaoEnum;
-import models.AreaInstrucoes;
-import models.AreaLiterais;
+import hipotetica.AreaInstrucoes;
+import hipotetica.AreaLiterais;
+import hipotetica.Hipotetica;
+import hipotetica.Tipos;
 import models.Literal;
-import models.Tipos;
 import models.Token;
 
 public class AnalisadorSemantico {

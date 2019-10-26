@@ -1,4 +1,4 @@
-package core;
+package hipotetica;
 
 //Maquina_virtual para a linguagem LMS
 //Equipe:Maicon, reinaldo e Fabio - 2003A
@@ -10,9 +10,6 @@ package core;
 
 import javax.swing.JOptionPane;
 
-import models.AreaInstrucoes;
-import models.AreaLiterais;
-
 
 /**
  * Classe que implementa a máquina hipotética.
@@ -20,7 +17,7 @@ import models.AreaLiterais;
  * e "AreaLiterais" foi criada por Maicon, Reinaldo e Fabio e adaptada
  * para este aplicativo.
  */
-class Hipotetica{
+public class Hipotetica{
 	  public static int MaxInst=1000;
 	  public static int MaxList=30;
 	  public static int b; //base do segmento
@@ -37,7 +34,7 @@ class Hipotetica{
    * Construtor sem parâmetros.
    * Os atributos "nv", "np" e "num_impr" são inicializados com valores padrões.
    */	  
-	  Hipotetica(){
+	  public Hipotetica(){
 	  	num_impr=0;
 	  }
 	      		

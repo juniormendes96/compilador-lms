@@ -1,4 +1,4 @@
-package models;
+package hipotetica;
 
 /**
  * Classe utilizada pela classe "Hipotetica" para armazenar a área de

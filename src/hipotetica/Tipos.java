@@ -1,4 +1,4 @@
-package models;
+package hipotetica;
 
 import enums.InstrucaoEnum;
 
