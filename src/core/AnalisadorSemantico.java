@@ -3,16 +3,19 @@ package core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
 import enums.InstrucaoEnum;
+import exceptions.AnalisadorSemanticoException;
 import hipotetica.AreaInstrucoes;
 import hipotetica.AreaLiterais;
 import hipotetica.Hipotetica;
 import hipotetica.Tipos;
 import models.Literal;
+import models.Simbolo;
 import models.Token;
 
 public class AnalisadorSemantico {
@@ -31,7 +34,8 @@ public class AnalisadorSemantico {
 	
 	private Integer nivelAtual;
 	private Integer posicaoLivre;
-	private Integer numeroVariaveisBloco;
+	private Integer numeroVariaveis;
+	private Integer numeroParametros;
 	private Integer deslocamento;
 	private Integer ponteiroLit; 
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
@@ -57,7 +61,19 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), -1, -1);
 				break;
 			case 102:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + deslocamento);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveis + deslocamento);
+				break;
+			case 104:
+				if (tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+					throw new AnalisadorSemanticoException(String.format("O simbolo %s já foi declarado", tokenAnterior.getToken()));
+				}
+				if (tipoIdentificador.equals(CategoriaSimboloEnum.VARIAVEL)) {
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento, null));
+					numeroVariaveis++;
+				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento, null));
+					numeroParametros++;
+				}
 				break;
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
@@ -106,7 +122,8 @@ public class AnalisadorSemantico {
 		this.nivelAtual = 0;
 		this.posicaoLivre = 1;
 		this.escopo[0] = 1;
-		this.numeroVariaveisBloco = 0;
+		this.numeroVariaveis = 0;
+		this.numeroParametros = 0;
 		this.deslocamento = 3;
 		this.ponteiroLit = 0;
 	}
