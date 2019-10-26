@@ -52,6 +52,14 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	private TableColumn<Token, Integer> columnOperacao2;
 	
+	/* AREA DE LITERAL */
+	@FXML
+	private TableView<Token> tableViewAreaDeLiteral;
+	@FXML
+	private TableColumn<Token, Integer> columnEnderecoLiteral;
+	@FXML
+	private TableColumn<Token, String> columnLiteral;
+	
 	@FXML
 	private TextArea textAreaErros;
 	@FXML
