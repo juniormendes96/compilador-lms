@@ -171,7 +171,7 @@ class Hipotetica{
      * Inclui um literal na área de literais utilizada pela máquina
      * hipotética.
      */	  
-	  public static boolean IncluirAL(AreaLiterais AL, String literal){
+	  public boolean IncluirAL(AreaLiterais AL, String literal){
 	  	boolean aux;
 	  	if (AL.LIT>=MaxList){
 	  		aux=false;	  		
@@ -420,7 +420,7 @@ class Hipotetica{
 			}//fim do while
 		}//fim do procedimento interpreta
 
-	private static void mostraAreaDados() {
+	public static void mostraAreaDados() {
 		for (int i=topo; i>=0; i--) {
 			System.out.println(i+"["+S[i]+"]");
 		}
