@@ -129,7 +129,7 @@ public class AnalisadorSintatico implements Constants {
 	}
 	
 	private boolean condicaoParada() {
-		return this.getTopoDaPilha() == DOLLAR && this.getPrimeiroDaFila().getToken() == TokenEnum.FIM_ARQUIVO.getSimbolo();
+		return this.getTopoDaPilha() == DOLLAR && this.getPrimeiroDaFila().getCodigo() == DOLLAR;
 	}
 
 }
