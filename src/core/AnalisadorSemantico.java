@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
+import constants.Constants;
 import enums.InstrucaoEnum;
 import models.Token;
 
@@ -24,7 +25,7 @@ public class AnalisadorSemantico {
 	private Integer posicaoLivre;
 	private Integer numeroVariaveisBloco;
 	private Integer deslocamento;
-	private Integer lit; //ponteiro literal
+	private Integer ponteiroLit; 
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	
 	
@@ -48,8 +49,8 @@ public class AnalisadorSemantico {
 				break;
 			case 130:
 				maquinaVirtual.IncluirAL(this.areaLiterais, tokenAnterior.getToken());
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), -1, -1);
-				lit++;
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), Constants.VAZIO, ponteiroLit);
+				ponteiroLit++;
 				break;
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
@@ -71,6 +72,6 @@ public class AnalisadorSemantico {
 		this.escopo[0] = 1;
 		this.numeroVariaveisBloco = 0;
 		this.deslocamento = 3;
-		this.lit = 1;
+		this.ponteiroLit = 0;
 	}
 }
