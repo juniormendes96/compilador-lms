@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import constants.Constants;
+import enums.CategoriaSimboloEnum;
 import enums.InstrucaoEnum;
 import hipotetica.AreaInstrucoes;
 import hipotetica.AreaLiterais;
@@ -34,6 +35,7 @@ public class AnalisadorSemantico {
 	private Integer deslocamento;
 	private Integer ponteiroLit; 
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
+	private CategoriaSimboloEnum tipoIdentificador;
 	
 	
 	public AnalisadorSemantico() {
@@ -56,6 +58,9 @@ public class AnalisadorSemantico {
 				break;
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + deslocamento);
+				break;
+			case 107:
+				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
 				break;
 			case 130:
 				maquinaVirtual.IncluirAL(this.areaLiterais, tokenAnterior.getToken());
