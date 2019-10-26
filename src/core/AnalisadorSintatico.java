@@ -29,7 +29,7 @@ public class AnalisadorSintatico implements Constants {
 
 		int topoDaPilha;
 		int linhaAtual = 1;
-		Token proximaEntrada;
+		Token tokenAtual;
 		Token tokenAnterior = null;
 
 		int valorMatrizDeParsing;
@@ -37,17 +37,17 @@ public class AnalisadorSintatico implements Constants {
 		while (!condicaoParada()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
 			
 			topoDaPilha = this.getTopoDaPilha();
-			proximaEntrada = this.getPrimeiroDaFila();
+			tokenAtual = this.getPrimeiroDaFila();
 			
 			if (isTerminal(topoDaPilha) || condicaoParada()) {
-				if (topoDaPilha == proximaEntrada.getCodigo()) {
+				if (topoDaPilha == tokenAtual.getCodigo()) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro(linhaAtual);
 				}
 			} else if (!isAcaoSemantica(topoDaPilha)){ // Não é terminal e não é ação semântica
-				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, proximaEntrada.getCodigo());
+				valorMatrizDeParsing = this.getValorMatrizDeParsing(topoDaPilha, tokenAtual.getCodigo());
 				if (valorMatrizDeParsing != -1) {	
 					this.retiraTopoDaPilha();
 					this.empilhaProducoesOrdemDescrescente(valorMatrizDeParsing);
@@ -58,10 +58,10 @@ public class AnalisadorSintatico implements Constants {
 				this.analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.retiraTopoDaPilha();			
 			}
-			if (proximaEntrada.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
-				linhaAtual = proximaEntrada.getLinha();
+			if (tokenAtual.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
+				linhaAtual = tokenAtual.getLinha();
 			}
-			tokenAnterior = proximaEntrada;
+			tokenAnterior = tokenAtual;
 		}
 	}
 
