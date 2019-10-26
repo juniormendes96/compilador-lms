@@ -43,7 +43,7 @@ public class AnalisadorSemantico {
 				inicializaVariaveis();
 				break;
 			case 101:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), 0, numeroVariaveisBloco + deslocamento);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), -1, -1);
 				break;
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveisBloco + deslocamento);
