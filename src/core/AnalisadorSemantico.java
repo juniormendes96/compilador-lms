@@ -101,18 +101,30 @@ public class AnalisadorSemantico {
 				contexto = ContextoEnum.READLN;
 				break;
 							
-//				Identificador de variável
-				case 129:
-					if (contexto == ContextoEnum.READLN) {
-						if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), -1, -1);
-							int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
-							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
-						} else {
-							throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
-						}
+//			Identificador de variável
+			case 129:
+				if (contexto == ContextoEnum.READLN) {
+					if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), -1, -1);
+						int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+					} else {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
 					}
-					break;
+				}
+				if(contexto == ContextoEnum.EXPRESSAO) {
+					if(!tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
+					} else if (tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s é um Procedure", tokenAnterior.getToken()));
+					} else if (tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), -1, Integer.parseInt(tokenAnterior.getToken()));
+					} else {
+						int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+					}
+				}
+				break;
 					
 //			WRITELN - após literal na instrução WRITELN
 			case 130:

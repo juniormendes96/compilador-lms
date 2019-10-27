@@ -21,7 +21,7 @@ public class AnalisadorSintatico implements Constants {
 		this.pilha = new ArrayList<>();
 		this.tokens = tokens;
 	}
-
+	
 	public void iniciarDescendentePreditivo(AnalisadorSemantico analisadorSemantico) {
 		this.empilhaValoresIniciais(); // Empilhando a pilha
 
@@ -61,8 +61,6 @@ public class AnalisadorSintatico implements Constants {
 			}
 			tokenAnterior = tokenAtual;
 		}
-		
-		analisadorSemantico.interpretarMaquinaVirtual();
 	}
 
 	private void empilhaValoresIniciais() {
