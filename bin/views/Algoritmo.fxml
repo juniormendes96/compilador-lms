@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="587.0" prefWidth="1127.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
+<BorderPane prefHeight="587.0" prefWidth="1127.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AlgoritmoController">
    <top>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Compilador" BorderPane.alignment="CENTER">
          <font>
@@ -47,7 +47,7 @@
                                     <Font name="Arial" size="15.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="322.0" layoutY="12.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="240.0" text="Executar código Intermediário">
+                              <Button layoutX="322.0" layoutY="12.0" mnemonicParsing="false" onAction="#interpretarCodigoIntermediario" prefHeight="30.0" prefWidth="240.0" text="Executar código Intermediário">
                                  <font>
                                     <Font name="Arial" size="15.0" />
                                  </font>
