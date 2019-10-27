@@ -165,6 +165,11 @@ public class AnalisadorSemantico {
 			case 154:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
 				break;
+			
+//			Expressão - variável
+			case 156:
+				contexto = ContextoEnum.EXPRESSAO;
+				break;
 				
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
