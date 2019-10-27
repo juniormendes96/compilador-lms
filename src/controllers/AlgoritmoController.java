@@ -107,6 +107,8 @@ public class AlgoritmoController implements Initializable {
 				List<Literal> literais = analisadorSemantico.obterLiterais();
 				populaTabelaLiterais(literais);
 			
+				analisadorSemantico.interpretarMaquinaVirtual();
+				
 				printMensagemSucesso();
 			
 			} catch (AnalisadorLexicoException analisadorLexicoException) {

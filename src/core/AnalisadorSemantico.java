@@ -1,10 +1,12 @@
 package core;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
@@ -49,6 +51,11 @@ public class AnalisadorSemantico {
 		this.areaLiterais = new AreaLiterais();
 	}
 	
+	public void interpretarMaquinaVirtual() {
+		System.out.println("Máquina Virtual interpretada");
+		Hipotetica.Interpreta(this.areaInstrucoes, this.areaLiterais);
+	}
+	
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
@@ -62,7 +69,7 @@ public class AnalisadorSemantico {
 				
 //			Final de programa
 			case 101:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), -1, -1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
 //			Após declaração de variável
@@ -76,10 +83,10 @@ public class AnalisadorSemantico {
 					throw new AnalisadorSemanticoException(String.format("O simbolo %s já foi declarado", tokenAnterior.getToken()));
 				}
 				if (tipoIdentificador.equals(CategoriaSimboloEnum.VARIAVEL)) {
-					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento, null));
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
 					numeroVariaveis++;
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
-					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento, null));
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null));
 					numeroParametros++;
 				}
 				break;
@@ -92,21 +99,48 @@ public class AnalisadorSemantico {
 //			Comando READLN início
 			case 128:
 				contexto = ContextoEnum.READLN;
-				break;		
-				
+				break;
+							
+//			Identificador de variável
+			case 129:
+				Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+				if (contexto == ContextoEnum.READLN) {
+					if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+						int deslocamentoDoToken = simbolo.getGeralA();
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+					} else {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
+					}
+				}
+				if(contexto == ContextoEnum.EXPRESSAO) {
+					if(!tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
+					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+						throw new AnalisadorSemanticoException(String.format("O simbolo %s é um Procedure", tokenAnterior.getToken()));
+					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
+					} else {
+						int deslocamentoDoToken = simbolo.getGeralA();
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+					}
+				}
+				break;
+					
 //			WRITELN - após literal na instrução WRITELN
 			case 130:
 				maquinaVirtual.IncluirAL(this.areaLiterais, tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), Constants.VAZIO, ponteiroLit);
 				ponteiroLit++;
 				break;
+				
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
 		}
 	}
 	
 	public List<Tipos> obterInstrucoes() {
-		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != -1).collect(Collectors.toList());
+		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != Constants.VAZIO).collect(Collectors.toList());
 		int endereco = 1;
 		for (Tipos instrucao : lista) {
 			instrucao.endereco = endereco;

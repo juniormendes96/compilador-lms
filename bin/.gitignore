@@ -1,9 +1,7 @@
-/application/
 /core/
-/controllers/
 /enums/
 /exceptions/
+/hipotetica/
 /models/
-/constants/
-/views/
 /utils/
+/controllers/
