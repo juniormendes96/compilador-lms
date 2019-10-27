@@ -1,10 +1,12 @@
 package core;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
@@ -49,6 +51,11 @@ public class AnalisadorSemantico {
 		this.areaLiterais = new AreaLiterais();
 	}
 	
+	public void interpretarMaquinaVirtual() {
+		System.out.println("Máquina Virtual interpretada");
+		Hipotetica.Interpreta(this.areaInstrucoes, this.areaLiterais);
+	}
+	
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
@@ -76,10 +83,10 @@ public class AnalisadorSemantico {
 					throw new AnalisadorSemanticoException(String.format("O simbolo %s já foi declarado", tokenAnterior.getToken()));
 				}
 				if (tipoIdentificador.equals(CategoriaSimboloEnum.VARIAVEL)) {
-					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento, null));
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
 					numeroVariaveis++;
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
-					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento, null));
+					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null));
 					numeroParametros++;
 				}
 				break;
@@ -92,14 +99,28 @@ public class AnalisadorSemantico {
 //			Comando READLN início
 			case 128:
 				contexto = ContextoEnum.READLN;
-				break;		
-				
+				break;
+							
+//				Identificador de variável
+				case 129:
+					if (contexto == ContextoEnum.READLN) {
+						if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), -1, -1);
+							int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+						} else {
+							throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
+						}
+					}
+					break;
+					
 //			WRITELN - após literal na instrução WRITELN
 			case 130:
 				maquinaVirtual.IncluirAL(this.areaLiterais, tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), Constants.VAZIO, ponteiroLit);
 				ponteiroLit++;
 				break;
+				
 			default:
 				System.out.println("Ação Semântica número " + codigoDaAcaoSemantica + " não implementada");
 		}

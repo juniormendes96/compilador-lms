@@ -61,6 +61,8 @@ public class AnalisadorSintatico implements Constants {
 			}
 			tokenAnterior = tokenAtual;
 		}
+		
+		analisadorSemantico.interpretarMaquinaVirtual();
 	}
 
 	private void empilhaValoresIniciais() {
