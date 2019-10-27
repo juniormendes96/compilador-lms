@@ -13,6 +13,7 @@ import enums.CategoriaSimboloEnum;
 import enums.ContextoEnum;
 import enums.InstrucaoEnum;
 import exceptions.AnalisadorSemanticoException;
+import exceptions.SimboloNaoEncontradoException;
 import hipotetica.AreaInstrucoes;
 import hipotetica.AreaLiterais;
 import hipotetica.Hipotetica;
@@ -80,7 +81,9 @@ public class AnalisadorSemantico {
 //			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
 			case 104:
 				if (tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-					throw new AnalisadorSemanticoException(String.format("O simbolo %s já foi declarado", tokenAnterior.getToken()));
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s já foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 				}
 				if (tipoIdentificador.equals(CategoriaSimboloEnum.VARIAVEL)) {
 					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
@@ -103,27 +106,28 @@ public class AnalisadorSemantico {
 							
 //			Identificador de variável
 			case 129:
-				Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
-				if (contexto == ContextoEnum.READLN) {
-					if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
+				try {
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					if (contexto == ContextoEnum.READLN) {
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 						int deslocamentoDoToken = simbolo.getGeralA();
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
-					} else {
-						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
+					} else if (contexto == ContextoEnum.EXPRESSAO) {
+						if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+							throw new AnalisadorSemanticoException(
+									String.format("Erro semântico na linha %s: o simbolo %s é um Procedure",
+											tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+						} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
+						} else {
+							int deslocamentoDoToken = simbolo.getGeralA();
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+						}
 					}
-				}
-				if(contexto == ContextoEnum.EXPRESSAO) {
-					if(!tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
-					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
-						throw new AnalisadorSemanticoException(String.format("O simbolo %s é um Procedure", tokenAnterior.getToken()));
-					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
-						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
-					} else {
-						int deslocamentoDoToken = simbolo.getGeralA();
-						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
-					}
+				} catch (SimboloNaoEncontradoException e) {
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 				}
 				break;
 					
