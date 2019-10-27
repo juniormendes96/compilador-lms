@@ -52,9 +52,9 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	private TableColumn<Tipos, Integer> columnInstrucao;
 	@FXML
-	private TableColumn<Tipos, Integer> columnOperacao1;	
+	private TableColumn<Tipos, String> columnOperacao1;	
 	@FXML
-	private TableColumn<Tipos, Integer> columnOperacao2;
+	private TableColumn<Tipos, String> columnOperacao2;
 	
 	/* AREA DE LITERAL */
 	@FXML
@@ -80,8 +80,8 @@ public class AlgoritmoController implements Initializable {
 		
 		columnEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
 		columnInstrucao.setCellValueFactory(new PropertyValueFactory<>("nome"));
-		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("op1"));
-		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("op2"));
+		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("displayOp1"));
+		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("displayOp2"));
 		
 		columnEnderecoLiteral.setCellValueFactory(new PropertyValueFactory<>("endereco"));
 		columnLiteral.setCellValueFactory(new PropertyValueFactory<>("nome"));

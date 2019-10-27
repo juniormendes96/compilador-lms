@@ -1,5 +1,6 @@
 package hipotetica;
 
+import constants.Constants;
 import enums.InstrucaoEnum;
 
 /**
@@ -10,12 +11,16 @@ import enums.InstrucaoEnum;
  * para este aplicativo.
  */
 public class Tipos{
-	public int codigo; 
-	public int op1;
-	public int op2;
+	public Integer codigo; 
+	public Integer op1;
+	public Integer op2;
 	
 	// Atributo criado para mostrar o endereço da instrução na tabela
-	public int endereco;
+	public Integer endereco;
+	
+	// Atributos criados para mostrar o op1 e op2 na tabela, convertendo para hifen caso seja vazio
+	public String displayOp1;
+	public String displayOp2;
 	
   /**
    * Construtor sem parâmetros.
@@ -44,6 +49,14 @@ public class Tipos{
 	
 	public Integer getOp2() {
 		return op2;
+	}
+	
+	public String getDisplayOp1() {
+		return op1 == Constants.VAZIO ? "-" : op1.toString();
+	}
+	
+	public String getDisplayOp2() {
+		return op2 == Constants.VAZIO ? "-" : op2.toString();
 	}
 	
 	public String getNome() {
