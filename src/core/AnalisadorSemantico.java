@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
-
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
 import enums.ContextoEnum;
@@ -156,6 +154,11 @@ public class AnalisadorSemantico {
 //			Expressão – multiplicação
 			case 151:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.MULT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
+//			Expressão – divisão
+			case 152:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DIVI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
 //			Expressão – inteiro
