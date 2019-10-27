@@ -40,7 +40,7 @@ public class AnalisadorSemantico {
 	private Integer ponteiroLit; 
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private CategoriaSimboloEnum tipoIdentificador;
-	
+	private String contexto;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -86,6 +86,11 @@ public class AnalisadorSemantico {
 //			Antes de lista de identificadores em declaração de variáveis	
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
+				break;
+				
+//			Comando READLN início
+			case 128:
+				contexto = "readln";
 				break;
 				
 //			WRITELN - após literal na instrução WRITELN

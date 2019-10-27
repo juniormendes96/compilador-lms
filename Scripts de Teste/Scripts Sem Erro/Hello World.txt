@@ -1,4 +1,6 @@
 PROGRAM hello_world;
+VAR a,b : INTEGER
 BEGIN
 	WRITELN('Hello world!');
+	READLN(a,b);
 END.

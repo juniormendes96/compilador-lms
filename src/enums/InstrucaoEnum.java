@@ -34,7 +34,7 @@ public enum InstrucaoEnum {
 	
 	private int codigo;
 	
-	InstrucaoEnum(Integer codigo) {
+	private InstrucaoEnum(Integer codigo) {
 		this.codigo = codigo;
 	}
 
