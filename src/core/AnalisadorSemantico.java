@@ -69,7 +69,7 @@ public class AnalisadorSemantico {
 				
 //			Final de programa
 			case 101:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), -1, -1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.PARA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
 //			Após declaração de variável
@@ -103,10 +103,11 @@ public class AnalisadorSemantico {
 							
 //			Identificador de variável
 			case 129:
+				Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
 				if (contexto == ContextoEnum.READLN) {
 					if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), -1, -1);
-						int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+						int deslocamentoDoToken = simbolo.getGeralA();
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
 					} else {
 						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
@@ -115,12 +116,12 @@ public class AnalisadorSemantico {
 				if(contexto == ContextoEnum.EXPRESSAO) {
 					if(!tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
 						throw new AnalisadorSemanticoException(String.format("O simbolo %s não foi declarado", tokenAnterior.getToken()));
-					} else if (tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						throw new AnalisadorSemanticoException(String.format("O simbolo %s é um Procedure", tokenAnterior.getToken()));
-					} else if (tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
-						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), -1, Integer.parseInt(tokenAnterior.getToken()));
+					} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
 					} else {
-						int deslocamentoDoToken = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getGeralA();
+						int deslocamentoDoToken = simbolo.getGeralA();
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
 					}
 				}
@@ -139,7 +140,7 @@ public class AnalisadorSemantico {
 	}
 	
 	public List<Tipos> obterInstrucoes() {
-		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != -1).collect(Collectors.toList());
+		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != Constants.VAZIO).collect(Collectors.toList());
 		int endereco = 1;
 		for (Tipos instrucao : lista) {
 			instrucao.endereco = endereco;
