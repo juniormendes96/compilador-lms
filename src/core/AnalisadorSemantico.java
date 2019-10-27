@@ -147,7 +147,12 @@ public class AnalisadorSemantico {
 			case 148:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
-			
+				
+//			Expressão – subtração
+			case 149:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SUBT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
 //			Expressão – inteiro
 			case 154:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
