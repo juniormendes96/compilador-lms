@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
+import enums.ContextoEnum;
 import enums.InstrucaoEnum;
 import exceptions.AnalisadorSemanticoException;
 import hipotetica.AreaInstrucoes;
@@ -40,7 +41,7 @@ public class AnalisadorSemantico {
 	private Integer ponteiroLit; 
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private CategoriaSimboloEnum tipoIdentificador;
-	private String contexto;
+	private ContextoEnum contexto;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -90,8 +91,8 @@ public class AnalisadorSemantico {
 				
 //			Comando READLN início
 			case 128:
-				contexto = "readln";
-				break;
+				contexto = ContextoEnum.READLN;
+				break;		
 				
 //			WRITELN - após literal na instrução WRITELN
 			case 130:
