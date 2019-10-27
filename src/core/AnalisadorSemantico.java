@@ -137,6 +137,11 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPRL.getCodigo(), Constants.VAZIO, ponteiroLit);
 				ponteiroLit++;
 				break;
+				
+//			WRITELN após expressão
+			case 131:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
 			
 //			Expressão – inteiro
 			case 154:
