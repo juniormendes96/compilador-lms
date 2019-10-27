@@ -81,9 +81,9 @@ public class AnalisadorSemantico {
 //			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
 			case 104:
 				if (tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-				throw new AnalisadorSemanticoException(
-						String.format("Erro semântico na linha %s: o simbolo %s já foi declarado",
-								tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s já foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 				}
 				if (tipoIdentificador.equals(CategoriaSimboloEnum.VARIAVEL)) {
 					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
@@ -114,9 +114,9 @@ public class AnalisadorSemantico {
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
 					} else if (contexto == ContextoEnum.EXPRESSAO) {
 						if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
-						throw new AnalisadorSemanticoException(
-								String.format("Erro semântico na linha %s: o simbolo %s é um Procedure",
-										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+							throw new AnalisadorSemanticoException(
+									String.format("Erro semântico na linha %s: o simbolo %s é um Procedure",
+											tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 						} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
 							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
 						} else {
@@ -125,7 +125,9 @@ public class AnalisadorSemantico {
 						}
 					}
 				} catch (SimboloNaoEncontradoException e) {
-					throw new AnalisadorSemanticoException(String.format("Erro semântico na linha %s: o simbolo %s não foi declarado", tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 				}
 				break;
 					
