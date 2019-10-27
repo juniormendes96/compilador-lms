@@ -204,9 +204,9 @@ public class Hipotetica{
 			       	case 8: //DIVI
 			       		if (S[topo]==0){
 			       			JOptionPane.showMessageDialog(null,"Divisão por zero.","Erro durante a execução",JOptionPane.ERROR_MESSAGE);
-			       			S[topo-1]=S[topo-1] / S[topo];
-			       			topo=topo-1;
 			       		}
+			       		S[topo-1]=S[topo-1] / S[topo];
+		       			topo=topo-1;
 			       		break;
 			       		
 			       	case 9://INVR

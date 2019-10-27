@@ -4,6 +4,7 @@ BEGIN
 	WRITELN(1+1);
 	WRITELN(5-2);
 	WRITELN(10*10);
+	WRITELN(5/5);
 	WRITELN('Hello world!');
 	READLN(a,b);
 END.
