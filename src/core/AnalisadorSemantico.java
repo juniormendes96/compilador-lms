@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
-
 import constants.Constants;
 import enums.CategoriaSimboloEnum;
 import enums.ContextoEnum;
