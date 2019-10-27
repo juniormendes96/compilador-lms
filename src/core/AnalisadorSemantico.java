@@ -73,7 +73,7 @@ public class AnalisadorSemantico {
 				
 //			Após declaração de variável
 			case 102:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), 0, numeroVariaveis + deslocamento);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, numeroVariaveis + deslocamento);
 				break;
 				
 //			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
