@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -71,6 +72,9 @@ public class AlgoritmoController implements Initializable {
 	@FXML
 	private TabPane tabPane;
 
+	private AnalisadorSemantico analisadorSemantico;
+	private List<Tipos> instrucoes = new ArrayList<Tipos>();
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		columnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
@@ -95,19 +99,16 @@ public class AlgoritmoController implements Initializable {
 				List<Token> tokens = analisadorLexico.iniciarAnalise();	
 				
 				populaTabelaTokens(tokens);
-				
-				AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
-				
+						
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
+				analisadorSemantico = new AnalisadorSemantico();
 				analisadorSintatico.iniciarDescendentePreditivo(analisadorSemantico);
 				
-				List<Tipos> instrucoes = analisadorSemantico.obterInstrucoes();
+				instrucoes = analisadorSemantico.obterInstrucoes();
 				populaTabelaCodigoIntermediario(instrucoes);
 				
 				List<Literal> literais = analisadorSemantico.obterLiterais();
-				populaTabelaLiterais(literais);
-			
-				analisadorSemantico.interpretarMaquinaVirtual();
+				populaTabelaLiterais(literais);	
 				
 				printMensagemSucesso();
 			
@@ -128,6 +129,18 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 
+	@FXML
+	public void interpretarCodigoIntermediario() {
+		if(!instrucoes.isEmpty()) {
+			analisadorSemantico.interpretarMaquinaVirtual();
+		}else{
+			exibeMsg("Compile o Algoritmo", 
+					"Antes de interpretar é necessário compilar o algoritmo primeiro", 
+					"Não foi possível interpretar o código intermediário.", 
+					AlertType.WARNING);
+		}
+	}
+	
 	@FXML
 	public void abrirArquivo() throws IOException {
 		FileChooser fileChooser = new FileChooser();
