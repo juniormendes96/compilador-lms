@@ -43,6 +43,7 @@ public class AnalisadorSemantico {
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private CategoriaSimboloEnum tipoIdentificador;
 	private ContextoEnum contexto;
+	private Simbolo variavelDeAtribuicao;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -95,6 +96,23 @@ public class AnalisadorSemantico {
 //			Antes de lista de identificadores em declaração de variáveis	
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
+				break;
+				
+//			Atribuição parte esquerda 				
+			case 114:
+				try {
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					if(simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
+						throw new AnalisadorSemanticoException(
+								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
+										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+					} else {
+						variavelDeAtribuicao = simbolo;
+					}
+				} catch (SimboloNaoEncontradoException e) {
+					   String.format("Erro semântico na linha %s: o simbolo %s não existe",
+					     tokenAnterior.getLinha().toString(), tokenAnterior.getToken());
+				}
 				break;
 				
 //			Comando READLN início
