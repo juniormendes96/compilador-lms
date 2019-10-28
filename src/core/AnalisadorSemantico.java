@@ -100,18 +100,18 @@ public class AnalisadorSemantico {
 				
 //			Atribuição parte esquerda 				
 			case 114:
-				if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
-					if(tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual).getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
+				try {
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					if(simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
 										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 					} else {
-						variavelDeAtribuicao = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+						variavelDeAtribuicao = simbolo;
 					}
-				} else {
-					throw new AnalisadorSemanticoException(
-							String.format("Erro semântico na linha %s: o simbolo %s não existe",
-									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+				} catch (SimboloNaoEncontradoException e) {
+					   String.format("Erro semântico na linha %s: o simbolo %s não existe",
+					     tokenAnterior.getLinha().toString(), tokenAnterior.getToken());
 				}
 				break;
 				
