@@ -8,5 +8,5 @@ BEGIN
 	WRITELN('Hello world!');
 	READLN(a,b);
 	b := 99;
-	WRITELN(b);
+	WRITELN(a,b);
 END.

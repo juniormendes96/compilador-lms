@@ -114,6 +114,11 @@ public class AnalisadorSemantico {
 					     tokenAnterior.getLinha().toString(), tokenAnterior.getToken());
 				}
 				break;
+
+// 			Após expressão em atribuição
+			case 115:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), variavelDeAtribuicao.getNivel(), variavelDeAtribuicao.getGeralA());
+				break;
 				
 //			Comando READLN início
 			case 128:
