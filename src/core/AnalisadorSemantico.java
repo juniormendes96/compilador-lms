@@ -97,6 +97,7 @@ public class AnalisadorSemantico {
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
 				break;
+				
 //			Atribuição parte esquerda 				
 			case 114:
 				if(tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {
