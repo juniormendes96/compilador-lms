@@ -119,7 +119,7 @@ public class AnalisadorSemantico {
 							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
 						} else {
 							int deslocamentoDoToken = simbolo.getGeralA();
-							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, deslocamentoDoToken);
 						}
 					}
 				} catch (SimboloNaoEncontradoException e) {
