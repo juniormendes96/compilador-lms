@@ -1,7 +1,8 @@
 PROGRAM hello_world;
+CONST aux = 20;
 VAR a,b : INTEGER;
 BEGIN
-	WRITELN(1+1);
+	WRITELN(1+aux);
 	WRITELN(5-2);
 	WRITELN(10*10);
 	WRITELN(5/5);
