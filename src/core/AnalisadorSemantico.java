@@ -44,6 +44,7 @@ public class AnalisadorSemantico {
 	private CategoriaSimboloEnum tipoIdentificador;
 	private ContextoEnum contexto;
 	private Simbolo variavelDeAtribuicao;
+	private Simbolo novaConstante;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -92,7 +93,19 @@ public class AnalisadorSemantico {
 					numeroParametros++;
 				}
 				break;
-				
+
+//			Reconhecido nome de constante em declaração 
+			case 105:
+				if (tabelaDeSimbolos.existe(tokenAnterior.getToken(), nivelAtual)) {	
+					throw new AnalisadorSemanticoException(
+						String.format("Erro semântico na linha %s: o simbolo %s já foi declarado",
+								tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+				} else {
+					novaConstante = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.CONSTANTE, nivelAtual, null, null);
+					tabelaDeSimbolos.inserir(novaConstante);
+				}
+				break;
+								
 //			Antes de lista de identificadores em declaração de variáveis	
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
@@ -139,7 +152,8 @@ public class AnalisadorSemantico {
 									String.format("Erro semântico na linha %s: o simbolo %s é um Procedure",
 											tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 						} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
-							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
+							int valorDecimal = simbolo.getGeralA();
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 						} else {
 							int deslocamentoDoToken = simbolo.getGeralA();
 							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, deslocamentoDoToken);

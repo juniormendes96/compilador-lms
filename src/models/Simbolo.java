@@ -82,6 +82,10 @@ public class Simbolo {
 		return geralA;
 	}
 	
+	public void setGeralA(Integer geralA) {
+		this.geralA = geralA;
+	}
+
 	public int getGeralB() {
 		return geralB;
 	}
