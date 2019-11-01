@@ -168,6 +168,11 @@ public class AnalisadorSemantico {
 			case 141:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
+			
+//			Comparação - menor
+			case 142:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMME.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
 				
 //			Expressão – soma
 			case 148:
