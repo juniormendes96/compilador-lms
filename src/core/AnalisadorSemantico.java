@@ -105,7 +105,12 @@ public class AnalisadorSemantico {
 					tabelaDeSimbolos.inserir(novaConstante);
 				}
 				break;
-								
+		
+// 			Reconhecido valor de constante em declaração
+			case 106:
+				novaConstante.setGeralA(Integer.parseInt(tokenAnterior.getToken()));
+				break;
+						
 //			Antes de lista de identificadores em declaração de variáveis	
 			case 107:
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
