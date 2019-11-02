@@ -104,7 +104,7 @@ public class Hipotetica{
      * Altera uma instrução da área de instruções utilizada pela máquina
      * hipotética.
      */
-	  public static void AlterarAI(AreaInstrucoes AI, int s, int o1, int o2){
+	  public void AlterarAI(AreaInstrucoes AI, int s, int o1, int o2){
 	  	
 	  	if (o1!=-1){
 	  		AI.AI[s].op1=o1;

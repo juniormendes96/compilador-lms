@@ -90,6 +90,11 @@ public class Simbolo {
 		return geralB;
 	}
 	
+	public void setGeralB(Integer geralB) {
+		this.geralB = geralB;
+	}
+
+	
 	public Simbolo getProximo() {
 		return proximo;
 	}

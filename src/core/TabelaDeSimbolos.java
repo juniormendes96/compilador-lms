@@ -69,6 +69,14 @@ public class TabelaDeSimbolos {
 		}
 	}
 	
+	public void excluirPorNivel(int nivel) {
+		for(int i=0; i<simbolos.length-1; i++) {
+			if(Objects.nonNull(simbolos[i]) && simbolos[i].getNivel() == nivel) {
+				simbolos[i] = null;
+			}
+		}
+	}
+	
 	public void mostrarConteudo() {
 		for (int i = 0; i < this.simbolos.length; i++) {
 			Simbolo simbolo = this.simbolos[i];
