@@ -260,12 +260,12 @@ public class AnalisadorSemantico {
 				}
 				break;
 			
-//			Após expressão valor inicial
+//			Após expressão - valor inicial
 			case 138:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
 				break;
 				
-//			Após expressão – valor final
+//			Após expressão - valor final
 			case 139:
 				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
@@ -274,7 +274,6 @@ public class AnalisadorSemantico {
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
-				
 				break;
 				
 //			Após comando em FOR
@@ -358,7 +357,7 @@ public class AnalisadorSemantico {
 	}
 	
 	public List<Tipos> obterInstrucoes() {
-		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != Constants.VAZIO).collect(Collectors.toList());
+		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != -1).collect(Collectors.toList());
 		int endereco = 0;
 		for (Tipos instrucao : lista) {
 			instrucao.endereco = endereco;

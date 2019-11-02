@@ -2,7 +2,7 @@ package constants;
 
 public interface Constants extends ParserConstants
 {
-    int VAZIO = -1; //"-"
+    int VAZIO = -99; // "-"
     
     int EPSILON  = 0;
     int DOLLAR   = 1;

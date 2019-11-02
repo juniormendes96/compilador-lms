@@ -19,4 +19,13 @@ BEGIN
 	end
 	Until soma > 5;
 	WRITELN('FIM DO REPEAT');
+
+	WRITELN('FOR');
+	soma := 0;
+	For i:= 10 to 20 do
+	begin
+		soma:= soma+2*i;
+		Writeln(soma);
+	end;
+	WRITELN('FIM DO FOR');
 END.
