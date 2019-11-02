@@ -58,6 +58,11 @@ public class AnalisadorSemantico {
 	}
 	
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
+		
+		// Variáveis auxiliares utilizadas nos cases
+		int enderecoDSVS;
+		int enderecoDSVF;
+		
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
 			case 100:
@@ -141,23 +146,22 @@ public class AnalisadorSemantico {
 //			Após expressão num comando IF	
 			case 120:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1);
+				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 			
 //			Após instrução IF
 			case 121:
-				int enderecoDSVS = this.getTopoDaPilha(this.pilhaIf);
+				enderecoDSVS = this.getTopoDaPilha(this.pilhaIf);
 				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
 				break;
 			
 //			Após domínio do THEN, antes do ELSE
 			case 122:
-				int enderecoDSVF = this.getTopoDaPilha(this.pilhaIf);
-				int proximoEndereco = maquinaVirtual.enderecoProximaInstrucao + 1;
-				this.getInstrucaoByEndereco(enderecoDSVF).op2 = proximoEndereco;
+				enderecoDSVF = this.getTopoDaPilha(this.pilhaIf);
+				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1);
+				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 				
 //			Comando READLN início
