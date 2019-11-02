@@ -60,8 +60,8 @@ public class AnalisadorSemantico {
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		
 		// Variáveis auxiliares utilizadas nos cases
-		int enderecoDSVS;
-		int enderecoDSVF;
+		int enderecoDSVS = 0;
+		int enderecoDSVF = 0;
 		
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
@@ -163,12 +163,23 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
+
+//			Comando REPEAT - início
+			case 126:
+				this.pilhaRepeat.add(maquinaVirtual.enderecoProximaInstrucao);
+				break;
 				
+//			Comando REPEAT - fim
+			case 127:
+				enderecoDSVF = this.getTopoDaPilha(this.pilhaRepeat);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, enderecoDSVF);
+				break;
+					
 //			Comando READLN início
 			case 128:
 				contexto = ContextoEnum.READLN;
 				break;
-							
+					
 //			Identificador de variável
 			case 129:
 				try {
