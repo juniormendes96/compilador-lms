@@ -60,8 +60,8 @@ public class AnalisadorSemantico {
 	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
 		
 		// Variáveis auxiliares utilizadas nos cases
-		int enderecoDSVS = 0;
-		int enderecoDSVF = 0;
+		int enderecoDSVS;
+		int enderecoDSVF;
 		
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
@@ -164,6 +164,26 @@ public class AnalisadorSemantico {
 				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 
+//			Comando WHILE antes da expressão
+			case 123:
+				this.pilhaWhile.add(maquinaVirtual.enderecoProximaInstrucao);
+				break;
+			
+//			Comando WHILE depois da expressão
+			case 124:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaWhile.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
+				break;
+				
+//			Após comando WHILE
+			case 125:
+				enderecoDSVF = this.getTopoDaPilha(pilhaWhile);
+				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
+				
+				this.retiraTopoDaPilha(pilhaWhile);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.getTopoDaPilha(pilhaWhile));
+				break;
+				
 //			Comando REPEAT - início
 			case 126:
 				this.pilhaRepeat.add(maquinaVirtual.enderecoProximaInstrucao);
@@ -308,6 +328,10 @@ public class AnalisadorSemantico {
 	
 	private int getTopoDaPilha(List<Integer> pilha) {
 		return pilha.get(pilha.size() - 1);
+	}
+	
+	private void retiraTopoDaPilha(List<Integer> pilha) {
+		pilha.remove(pilha.size() - 1);
 	}
 	
 	private Tipos getInstrucaoByEndereco(int endereco) {
