@@ -165,8 +165,7 @@ public class AnalisadorSemantico {
 // 			Fim de procedure 
 			case 110:
 				int parametros = this.pilhaProcedure.pop();
-				int endereco = this.pilhaProcedure.peek();
-				this.pilhaProcedure.pop();
+				int endereco = this.pilhaProcedure.pop();
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
