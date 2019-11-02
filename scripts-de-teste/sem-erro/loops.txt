@@ -1,0 +1,21 @@
+PROGRAM p_while;
+VAR i, soma: INTEGER;
+BEGIN
+	WRITELN('WHILE');
+	i := 1;
+	WHILE i <= 5 DO BEGIN
+		WRITELN(i);
+		i := i + 1;
+	END;
+	WRITELN('FIM DO WHILE');
+
+	WRITELN('REPEAT');
+	soma := 0;
+	REPEAT
+	begin
+		soma := soma + 1;
+		WRITELN(soma);
+	end
+	Until soma > 5;
+	WRITELN('FIM DO REPEAT');
+END.
