@@ -1,0 +1,12 @@
+PROGRAM repeticao;
+VAR soma : INTEGER;
+BEGIN
+	soma := 0;
+	REPEAT
+	begin
+		soma := soma + 1;
+		WRITELN(soma);
+	end
+	Until soma > 5;
+	WRITELN('FIM DO REPEAT');
+END.
