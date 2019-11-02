@@ -46,6 +46,9 @@ public class AnalisadorSemantico {
 	private Simbolo variavelDeAtribuicao;
 	private Simbolo novaConstante;
 	
+	// Variável auxiliar utilizada pelo FOR
+	private Integer geralA;
+	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
 		this.areaInstrucoes = new AreaInstrucoes();
@@ -238,6 +241,55 @@ public class AnalisadorSemantico {
 //			WRITELN após expressão
 			case 131:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
+//			Após variável controle comando FOR
+			case 137:
+				try {
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					if (simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL) {
+						throw new AnalisadorSemanticoException(
+								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
+										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+					}
+					this.geralA = simbolo.getGeralA();
+				} catch (SimboloNaoEncontradoException e) {
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+				}
+				break;
+			
+//			Após expressão valor inicial
+			case 138:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
+				break;
+				
+//			Após expressão – valor final
+			case 139:
+				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, this.geralA);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMAI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
+				
+				break;
+				
+//			Após comando em FOR
+			case 140:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, this.geralA);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, 1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
+				
+				enderecoDSVF = this.getTopoDaPilha(pilhaFor);
+				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
+				
+				this.retiraTopoDaPilha(pilhaFor);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.getTopoDaPilha(pilhaFor));
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 				
 //			Comparação - igual
