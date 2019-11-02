@@ -1,8 +1,8 @@
 package core;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +27,13 @@ public class AnalisadorSemantico {
 	private AreaInstrucoes areaInstrucoes;
 	private AreaLiterais areaLiterais;
 	
-	private List<Integer> pilhaIf;
-	private List<Integer> pilhaWhile;
-	private List<Integer> pilhaRepeat;
-	private List<Integer> pilhaProcedure;
-	private List<Integer> pilhaCase;
-	private List<Integer> pilhaFor;
-	private List<Simbolo> pilhaSimbolo;
+	private LinkedList<Integer> pilhaIf;
+	private LinkedList<Integer> pilhaWhile;
+	private LinkedList<Integer> pilhaRepeat;
+	private LinkedList<Integer> pilhaProcedure;
+	private LinkedList<Integer> pilhaCase;
+	private LinkedList<Integer> pilhaFor;
+	private LinkedList<Simbolo> pilhaSimbolo;
 	
 	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private Integer nivelAtual;
@@ -104,7 +104,7 @@ public class AnalisadorSemantico {
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
 					Simbolo simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);
 					tabelaDeSimbolos.inserir(simboloAtual);
-					this.pilhaSimbolo.add(simboloAtual);
+					this.pilhaSimbolo.push(simboloAtual);
 					numeroParametros++;
 				}
 				break;
@@ -157,17 +157,17 @@ public class AnalisadorSemantico {
 				}
 				this.pilhaSimbolo.clear();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaProcedure.add(maquinaVirtual.enderecoProximaInstrucao - 1);
-				this.pilhaProcedure.add(numeroParametros);
+				this.pilhaProcedure.push(maquinaVirtual.enderecoProximaInstrucao - 1);
+				this.pilhaProcedure.push(numeroParametros);
 				numeroParametros = 0;
 				break;
 
 // 			Fim de procedure 
 			case 110:
-				int parametros = this.getTopoDaPilha(this.pilhaProcedure);
-				this.retiraTopoDaPilha(this.pilhaProcedure);
-				int endereco = this.getTopoDaPilha(this.pilhaProcedure);
-				this.retiraTopoDaPilha(this.pilhaProcedure);
+				int parametros = this.pilhaProcedure.peek();
+				this.pilhaProcedure.pop();
+				int endereco = this.pilhaProcedure.peek();
+				this.pilhaProcedure.pop();
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
@@ -245,52 +245,52 @@ public class AnalisadorSemantico {
 //			Após expressão num comando IF	
 			case 120:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
+				this.pilhaIf.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 			
 //			Após instrução IF
 			case 121:
-				enderecoDSVS = this.getTopoDaPilha(this.pilhaIf);
+				enderecoDSVS = this.pilhaIf.peek();
 				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
 				break;
 			
 //			Após domínio do THEN, antes do ELSE
 			case 122:
-				enderecoDSVF = this.getTopoDaPilha(this.pilhaIf);
+				enderecoDSVF = this.pilhaIf.peek();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
+				this.pilhaIf.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 
 //			Comando WHILE antes da expressão
 			case 123:
-				this.pilhaWhile.add(maquinaVirtual.enderecoProximaInstrucao);
+				this.pilhaWhile.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 			
 //			Comando WHILE depois da expressão
 			case 124:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaWhile.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
+				this.pilhaWhile.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço da instrução acima
 				break;
 				
 //			Após comando WHILE
 			case 125:
-				enderecoDSVF = this.getTopoDaPilha(pilhaWhile);
+				enderecoDSVF = this.pilhaWhile.peek();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
 				
-				this.retiraTopoDaPilha(pilhaWhile);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.getTopoDaPilha(pilhaWhile));
+				this.pilhaWhile.pop();
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.pilhaWhile.peek());
 				break;
 				
 //			Comando REPEAT - início
 			case 126:
-				this.pilhaRepeat.add(maquinaVirtual.enderecoProximaInstrucao);
+				this.pilhaRepeat.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 				
 //			Comando REPEAT - fim
 			case 127:
-				enderecoDSVF = this.getTopoDaPilha(this.pilhaRepeat);
+				enderecoDSVF = this.pilhaRepeat.peek();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, enderecoDSVF);
 				break;
 					
@@ -363,13 +363,13 @@ public class AnalisadorSemantico {
 				
 //			Após expressão - valor final
 			case 139:
-				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao);
+				this.pilhaFor.push(maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, this.geralA);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMAI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaFor.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
+				this.pilhaFor.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 				
 //			Após comando em FOR
@@ -379,11 +379,11 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
 				
-				enderecoDSVF = this.getTopoDaPilha(pilhaFor);
+				enderecoDSVF = this.pilhaFor.peek();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
 				
-				this.retiraTopoDaPilha(pilhaFor);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.getTopoDaPilha(pilhaFor));
+				this.pilhaFor.pop();
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.pilhaFor.peek());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 				
@@ -473,26 +473,18 @@ public class AnalisadorSemantico {
 		return literais;
 	}
 	
-	private int getTopoDaPilha(List<Integer> pilha) {
-		return pilha.get(pilha.size() - 1);
-	}
-	
-	private void retiraTopoDaPilha(List<Integer> pilha) {
-		pilha.remove(pilha.size() - 1);
-	}
-	
 	private Tipos getInstrucaoByEndereco(int endereco) {
 		return this.obterInstrucoes().stream().filter(instrucao -> instrucao.endereco == endereco).findFirst().orElse(null);
 	}
 	
 	private void inicializaPilhas() {
-		this.pilhaIf = new ArrayList<>();
-		this.pilhaWhile = new ArrayList<>();
-		this.pilhaRepeat = new ArrayList<>();
-		this.pilhaProcedure = new ArrayList<>();
-		this.pilhaCase = new ArrayList<>();
-		this.pilhaFor = new ArrayList<>();
-		this.pilhaSimbolo = new ArrayList<>();
+		this.pilhaIf = new LinkedList<>();
+		this.pilhaWhile = new LinkedList<>();
+		this.pilhaRepeat = new LinkedList<>();
+		this.pilhaProcedure = new LinkedList<>();
+		this.pilhaCase = new LinkedList<>();
+		this.pilhaFor = new LinkedList<>();
+		this.pilhaSimbolo = new LinkedList<>();
 	}
 	
 	private void inicializaVariaveis() {
