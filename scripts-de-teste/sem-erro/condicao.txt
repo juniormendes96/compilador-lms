@@ -1,4 +1,4 @@
-PROGRAM if_else;
+PROGRAM condicao;
 BEGIN
 	IF 3 > 2 THEN 
 		WRITELN('Maior')

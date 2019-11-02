@@ -1,5 +1,6 @@
-PROGRAM p_while;
+PROGRAM loops;
 VAR i, soma: INTEGER;
+
 BEGIN
 	WRITELN('WHILE');
 	i := 1;
