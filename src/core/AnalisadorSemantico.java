@@ -138,6 +138,28 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), variavelDeAtribuicao.getNivel(), variavelDeAtribuicao.getGeralA());
 				break;
 				
+//			Após expressão num comando IF	
+			case 120:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1);
+				break;
+			
+//			Após instrução IF
+			case 121:
+				int enderecoDSVS = this.getTopoDaPilha(this.pilhaIf);
+				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
+				break;
+			
+//			Após domínio do THEN, antes do ELSE
+			case 122:
+				int enderecoDSVF = this.getTopoDaPilha(this.pilhaIf);
+				int proximoEndereco = maquinaVirtual.enderecoProximaInstrucao + 1;
+				this.getInstrucaoByEndereco(enderecoDSVF).op2 = proximoEndereco;
+				
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaIf.add(maquinaVirtual.enderecoProximaInstrucao - 1);
+				break;
+				
 //			Comando READLN início
 			case 128:
 				contexto = ContextoEnum.READLN;
@@ -250,7 +272,7 @@ public class AnalisadorSemantico {
 	
 	public List<Tipos> obterInstrucoes() {
 		List<Tipos> lista = Arrays.asList(this.areaInstrucoes.AI).stream().filter(item -> item.codigo != Constants.VAZIO).collect(Collectors.toList());
-		int endereco = 1;
+		int endereco = 0;
 		for (Tipos instrucao : lista) {
 			instrucao.endereco = endereco;
 			endereco++;
@@ -261,12 +283,20 @@ public class AnalisadorSemantico {
 	public List<Literal> obterLiterais() {
 		List<String> lista = Arrays.asList(this.areaLiterais.AL).stream().filter(item -> !item.isEmpty()).collect(Collectors.toList());
 		List<Literal> literais = new ArrayList<>();
-		int endereco = 1;
+		int endereco = 0;
 		for (String literal : lista) {
 			literais.add(new Literal(endereco, literal));
 			endereco++;
 		}
 		return literais;
+	}
+	
+	private int getTopoDaPilha(List<Integer> pilha) {
+		return pilha.get(pilha.size() - 1);
+	}
+	
+	private Tipos getInstrucaoByEndereco(int endereco) {
+		return this.obterInstrucoes().stream().filter(instrucao -> instrucao.endereco == endereco).findFirst().orElse(null);
 	}
 	
 	private void inicializaPilhas() {
