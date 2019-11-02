@@ -49,6 +49,7 @@ public class AnalisadorSemantico {
 	private Simbolo novaConstante;
 	private Simbolo novaProcedure;
 	private boolean temParametro;
+	private boolean primeiraVez = true;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -130,23 +131,29 @@ public class AnalisadorSemantico {
 				
 //			Após nome de procedure, em declaração 		
 			case 108:
-				novaProcedure = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PROCEDURE, 0, maquinaVirtual.enderecoProximaInstrucao + 1, 0);
-				tabelaDeSimbolos.inserir(novaProcedure);
 				temParametro = false;
 				numeroParametros = 0;
-				nivelAtual++;
+				if(primeiraVez)
+					primeiraVez = false;
+				else
+					nivelAtual++;
+				
+				novaProcedure = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PROCEDURE, nivelAtual, maquinaVirtual.enderecoProximaInstrucao + 1, 0);
+				tabelaDeSimbolos.inserir(novaProcedure);
 				break;
 				
 //			Após declaração de procedure	
 			case 109:
 				if(temParametro) {
 					novaProcedure.setGeralB(numeroParametros);
+					
 					// Adicionando cada parametro ao deslocamento
 					for(int i = 0; i < numeroParametros; i++) {
-						Simbolo parametroAtual = this.pilhaSimbolo.get(i);
+						Simbolo parametroAtual = this.pilhaSimbolo.get(i);			
 						parametroAtual.setGeralA(-(numeroParametros - i));
 					}
 				}
+				this.pilhaSimbolo.clear();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				this.pilhaProcedure.add(maquinaVirtual.enderecoProximaInstrucao - 1);
 				this.pilhaProcedure.add(numeroParametros);
@@ -162,8 +169,12 @@ public class AnalisadorSemantico {
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
-				tabelaDeSimbolos.excluirPorNivel(nivelAtual);
-				nivelAtual--;
+				if(!primeiraVez) 
+					primeiraVez = true;
+				else {
+					tabelaDeSimbolos.excluirPorNivel(nivelAtual);
+					nivelAtual--;
+				}
 				break;
 
 //			Antes de parâmetros formais de procedures 		
@@ -200,11 +211,12 @@ public class AnalisadorSemantico {
 					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
 					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						novaProcedure = simboloAtual;
-					}	else {
+					}else {
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma procedure",
 										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 					}
+					numeroParametros = 0;
 				} catch (SimboloNaoEncontradoException e) {
 					throw new AnalisadorSemanticoException(
 							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
@@ -214,6 +226,7 @@ public class AnalisadorSemantico {
 				
 //			Após comando call
 			case 117:
+				System.out.println(novaProcedure +" -- "+numeroParametros);
 				if(novaProcedure.getGeralB() != numeroParametros) {
 					throw new AnalisadorSemanticoException(
 							String.format("Erro semântico na linha %s: o número de parâmetros é inválido",

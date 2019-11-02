@@ -1,0 +1,12 @@
+Program TesteProc6; 
+Procedure p1(a,b:Integer); 
+	Procedure p2(a,b,c: Integer); 
+		begin 
+			Writeln(88); 
+		end; 
+	begin 
+		Call p2(21,22,23); 
+	end; 
+Begin
+	Call p1(11,12); 
+End.
