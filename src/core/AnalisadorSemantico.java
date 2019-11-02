@@ -164,8 +164,7 @@ public class AnalisadorSemantico {
 
 // 			Fim de procedure 
 			case 110:
-				int parametros = this.pilhaProcedure.peek();
-				this.pilhaProcedure.pop();
+				int parametros = this.pilhaProcedure.pop();
 				int endereco = this.pilhaProcedure.peek();
 				this.pilhaProcedure.pop();
 				
@@ -276,10 +275,9 @@ public class AnalisadorSemantico {
 				
 //			Após comando WHILE
 			case 125:
-				enderecoDSVF = this.pilhaWhile.peek();
+				enderecoDSVF = this.pilhaWhile.pop();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
-				
-				this.pilhaWhile.pop();
+
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.pilhaWhile.peek());
 				break;
 				
@@ -379,10 +377,9 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
 				
-				enderecoDSVF = this.pilhaFor.peek();
+				enderecoDSVF = this.pilhaFor.pop();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
 				
-				this.pilhaFor.pop();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, this.pilhaFor.peek());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
