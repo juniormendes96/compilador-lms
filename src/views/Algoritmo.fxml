@@ -41,13 +41,16 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="40.0" spacing="10.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#abrirArquivo" prefHeight="30.0" prefWidth="165.0" text="Abrir" />
+                              <Button mnemonicParsing="false" onAction="#abrirArquivo" prefHeight="30.0" prefWidth="165.0" text="Abrir">
+                                 <font>
+                                    <Font name="Arial" size="15.0" />
+                                 </font></Button>
                               <Button mnemonicParsing="false" onAction="#analisarAlgoritmo" prefHeight="30.0" prefWidth="165.0" text="Compilar">
                                  <font>
                                     <Font name="Arial" size="15.0" />
                                  </font>
                               </Button>
-                              <Button layoutX="322.0" layoutY="12.0" mnemonicParsing="false" onAction="#interpretarCodigoIntermediario" prefHeight="30.0" prefWidth="240.0" text="Executar código Intermediário">
+                              <Button layoutX="322.0" layoutY="12.0" mnemonicParsing="false" onAction="#interpretarCodigoIntermediario" prefHeight="30.0" prefWidth="240.0" text="Interpretar código Intermediário">
                                  <font>
                                     <Font name="Arial" size="15.0" />
                                  </font>

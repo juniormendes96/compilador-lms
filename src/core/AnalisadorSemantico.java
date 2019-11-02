@@ -33,18 +33,22 @@ public class AnalisadorSemantico {
 	private List<Integer> pilhaProcedure;
 	private List<Integer> pilhaCase;
 	private List<Integer> pilhaFor;
+	private List<Simbolo> pilhaSimbolo;
 	
+	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private Integer nivelAtual;
 	private Integer posicaoLivre;
 	private Integer numeroVariaveis;
 	private Integer numeroParametros;
 	private Integer deslocamento;
 	private Integer ponteiroLit; 
-	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private CategoriaSimboloEnum tipoIdentificador;
 	private ContextoEnum contexto;
 	private Simbolo variavelDeAtribuicao;
 	private Simbolo novaConstante;
+	private Simbolo novaProcedure;
+	private boolean temParametro;
+	private boolean primeiraVez = true;
 	
 	// Variável auxiliar utilizada pelo FOR
 	private Integer geralA;
@@ -84,6 +88,7 @@ public class AnalisadorSemantico {
 //			Após declaração de variável
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, numeroVariaveis + deslocamento);
+				numeroVariaveis = 0;
 				break;
 				
 //			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
@@ -97,7 +102,9 @@ public class AnalisadorSemantico {
 					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
 					numeroVariaveis++;
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
-					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null));
+					Simbolo simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);
+					tabelaDeSimbolos.inserir(simboloAtual);
+					this.pilhaSimbolo.add(simboloAtual);
 					numeroParametros++;
 				}
 				break;
@@ -124,6 +131,60 @@ public class AnalisadorSemantico {
 				tipoIdentificador = CategoriaSimboloEnum.VARIAVEL;
 				break;
 				
+//			Após nome de procedure, em declaração 		
+			case 108:
+				temParametro = false;
+				numeroParametros = 0;
+				if(primeiraVez)
+					primeiraVez = false;
+				else
+					nivelAtual++;
+				
+				novaProcedure = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PROCEDURE, nivelAtual, maquinaVirtual.enderecoProximaInstrucao + 1, 0);
+				tabelaDeSimbolos.inserir(novaProcedure);
+				break;
+				
+//			Após declaração de procedure	
+			case 109:
+				if(temParametro) {
+					novaProcedure.setGeralB(numeroParametros);
+					
+					// Adicionando cada parametro ao deslocamento
+					for(int i = 0; i < numeroParametros; i++) {
+						Simbolo parametroAtual = this.pilhaSimbolo.get(i);			
+						parametroAtual.setGeralA(-(numeroParametros - i));
+					}
+				}
+				this.pilhaSimbolo.clear();
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaProcedure.add(maquinaVirtual.enderecoProximaInstrucao - 1);
+				this.pilhaProcedure.add(numeroParametros);
+				numeroParametros = 0;
+				break;
+
+// 			Fim de procedure 
+			case 110:
+				int parametros = this.getTopoDaPilha(this.pilhaProcedure);
+				this.retiraTopoDaPilha(this.pilhaProcedure);
+				int endereco = this.getTopoDaPilha(this.pilhaProcedure);
+				this.retiraTopoDaPilha(this.pilhaProcedure);
+				
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
+				if(!primeiraVez) 
+					primeiraVez = true;
+				else {
+					tabelaDeSimbolos.excluirPorNivel(nivelAtual);
+					nivelAtual--;
+				}
+				break;
+
+//			Antes de parâmetros formais de procedures 		
+			case 111:
+				tipoIdentificador = CategoriaSimboloEnum.PARAMETRO;
+				temParametro = true;
+				break;
+				
 //			Atribuição parte esquerda 				
 			case 114:
 				try {
@@ -144,6 +205,41 @@ public class AnalisadorSemantico {
 // 			Após expressão em atribuição
 			case 115:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), variavelDeAtribuicao.getNivel(), variavelDeAtribuicao.getGeralA());
+				break;
+			
+//			Chamada de procedure
+			case 116:
+				try {
+					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+						novaProcedure = simboloAtual;
+					}else {
+						throw new AnalisadorSemanticoException(
+								String.format("Erro semântico na linha %s: o simbolo %s não é uma procedure",
+										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+					}
+					numeroParametros = 0;
+				} catch (SimboloNaoEncontradoException e) {
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
+									tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
+				}
+				break;
+				
+//			Após comando call
+			case 117:
+				if(novaProcedure.getGeralB() != numeroParametros) {
+					throw new AnalisadorSemanticoException(
+							String.format("Erro semântico na linha %s: o número de parâmetros é inválido",
+									tokenAnterior.getLinha().toString()));
+				} else {
+					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CALL.getCodigo(), nivelAtual, novaProcedure.getGeralA());
+				}
+				break;
+
+//			Após expressão, em comando call
+			case 118:
+				numeroParametros++;
 				break;
 				
 //			Após expressão num comando IF	
@@ -396,6 +492,7 @@ public class AnalisadorSemantico {
 		this.pilhaProcedure = new ArrayList<>();
 		this.pilhaCase = new ArrayList<>();
 		this.pilhaFor = new ArrayList<>();
+		this.pilhaSimbolo = new ArrayList<>();
 	}
 	
 	private void inicializaVariaveis() {
