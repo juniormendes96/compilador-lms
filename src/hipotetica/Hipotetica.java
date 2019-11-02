@@ -30,12 +30,15 @@ public class Hipotetica{
 	  public static int num_impr;
 	  public static int[] S = new int[1000]; 
 	  
+	  public int enderecoProximaInstrucao; // Lc
+	  
     /**
    * Construtor sem parâmetros.
    * Os atributos "nv", "np" e "num_impr" são inicializados com valores padrões.
    */	  
 	  public Hipotetica(){
 	  	num_impr=0;
+	  	this.enderecoProximaInstrucao = 0;
 	  }
 	      		
 	  /**
@@ -66,6 +69,7 @@ public class Hipotetica{
      * hipotética.
      */
 	  public boolean IncluirAI(AreaInstrucoes AI, int c, int o1, int o2) {
+		enderecoProximaInstrucao++;
 	  	boolean aux;
 	  	if(AI.LC>=MaxInst)
 	  	{
