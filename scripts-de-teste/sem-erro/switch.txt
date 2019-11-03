@@ -1,0 +1,16 @@
+Program switch; 
+Var a,b,c,i:integer; 
+Begin 
+   Readln(a,b);
+   Readln(i);  
+   c:=0; 
+   Case i of    
+      1,4   : c:= a+b; 
+      2,3,5 : c:= a-b; 
+      11    : begin 
+                 c:= a*b; 
+                 Writeln('Último ramo'); 
+              end 
+   End; 
+   Writeln(c);    
+End.   
