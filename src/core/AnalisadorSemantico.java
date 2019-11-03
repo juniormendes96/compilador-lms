@@ -70,6 +70,7 @@ public class AnalisadorSemantico {
 		int enderecoDSVS;
 		int enderecoDSVF;
 		int diferencaDeNivel;
+		int valorDecimal = 0;
 		
 		switch (codigoDaAcaoSemantica) {
 //			Reconhecendo o nome do programa
@@ -308,7 +309,7 @@ public class AnalisadorSemantico {
 									String.format("Erro semântico na linha %s: o simbolo %s é um Procedure",
 											tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 						} else if (simbolo.getCategoria() == CategoriaSimboloEnum.CONSTANTE){ 
-							int valorDecimal = simbolo.getGeralA();
+							valorDecimal = simbolo.getGeralA();
 							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 						} else {
 							int deslocamentoDoToken = simbolo.getGeralA();
@@ -333,6 +334,52 @@ public class AnalisadorSemantico {
 //			WRITELN após expressão
 			case 131:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+
+//			Após palavra reservada CASE 
+			case 132:
+				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
+				break;
+
+//			Após comando CASE 
+			case 133:
+				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.pop());
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
+				break;
+	
+// 			Ramo do CASE após inteiro, último da lista 
+			case 134:
+				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
+				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				if(pilhaCase.isEmpty()) {
+					this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
+					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, pilhaCase.pop()+1);
+				} else {
+					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
+				}
+				break;
+				
+//	 		Após comando em CASE 	
+			case 135:
+				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.peek());
+				break;
+			
+//		 	Ramo do CASE: após inteiro 
+			case 136:
+				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
+				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 				
 //			Após variável controle comando FOR
