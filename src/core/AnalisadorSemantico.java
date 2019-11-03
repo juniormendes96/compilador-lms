@@ -413,6 +413,11 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMDF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
+//			Expressão - operando com sinal unário
+			case 147:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.INVR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
 //			Expressão – soma
 			case 148:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
@@ -421,6 +426,11 @@ public class AnalisadorSemantico {
 //			Expressão – subtração
 			case 149:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SUBT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
+//			Expressão - or
+			case 150:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DISJ.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
 //			Expressão – multiplicação
@@ -433,11 +443,22 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DIVI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 				
+//			Expressão - and
+			case 153:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CONJ.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+				
 //			Expressão – inteiro
 			case 154:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, Integer.parseInt(tokenAnterior.getToken()));
 				break;
 			
+//			Expresso - not
+			case 155:
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.NEGA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				break;
+			
+				
 //			Expressão - variável
 			case 156:
 				contexto = ContextoEnum.EXPRESSAO;
