@@ -11,7 +11,7 @@ Procedure calcula (y: integer);
 	begin 
       		Writeln('Informe o valor do divisor: ');       
 		Readln(divisor);       
-		call divide(y,divisor); 
+		call divisao(y,divisor); 
                (* ponto 2 *) 
   	end; 
 Begin 

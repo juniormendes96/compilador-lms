@@ -102,7 +102,12 @@ public class AnalisadorSemantico {
 					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
 					numeroVariaveis++;
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
-					Simbolo simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);
+					Simbolo simboloAtual;
+					if(nivelAtual != 0)
+						simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual-1, deslocamento + numeroParametros, null);
+					else
+						simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);
+					
 					tabelaDeSimbolos.inserir(simboloAtual);
 					this.pilhaSimbolo.push(simboloAtual);
 					numeroParametros++;
@@ -135,27 +140,27 @@ public class AnalisadorSemantico {
 			case 108:
 				temParametro = false;
 				numeroParametros = 0;
-				if(primeiraVez)
-					primeiraVez = false;
-				else
-					nivelAtual++;
-				
 				novaProcedure = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PROCEDURE, nivelAtual, maquinaVirtual.enderecoProximaInstrucao + 1, 0);
+				if(primeiraVez) {
+					primeiraVez = false;
+				} else {
+					nivelAtual++;
+				}
 				tabelaDeSimbolos.inserir(novaProcedure);
 				break;
 				
 //			Após declaração de procedure	
 			case 109:
 				if(temParametro) {
-					novaProcedure.setGeralB(numeroParametros);
+					tabelaDeSimbolos.atualizar(novaProcedure.getNome(), novaProcedure.getNivel(), novaProcedure.getGeralA(), numeroParametros);
 					
 					// Adicionando cada parametro ao deslocamento
 					for(int i = 0; i < numeroParametros; i++) {
-						Simbolo parametroAtual = this.pilhaSimbolo.get(i);			
+						Simbolo parametroAtual = this.pilhaSimbolo.removeLast();			
 						parametroAtual.setGeralA(-(numeroParametros - i));
+						//tabelaDeSimbolos.atualizar(parametroAtual.getNome(), parametroAtual.getNivel(), parametroAtual.getGeralA(), 0);
 					}
 				}
-				this.pilhaSimbolo.clear();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				this.pilhaProcedure.push(maquinaVirtual.enderecoProximaInstrucao - 1);
 				this.pilhaProcedure.push(numeroParametros);
@@ -169,9 +174,9 @@ public class AnalisadorSemantico {
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
-				if(!primeiraVez) 
+				if(!primeiraVez) {
 					primeiraVez = true;
-				else {
+				} else {
 					tabelaDeSimbolos.excluirPorNivel(nivelAtual);
 					nivelAtual--;
 				}
@@ -185,7 +190,7 @@ public class AnalisadorSemantico {
 				
 //			Atribuição parte esquerda 				
 			case 114:
-				try {
+				try {					
 					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
 					if(simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
 						throw new AnalisadorSemanticoException(
@@ -208,7 +213,12 @@ public class AnalisadorSemantico {
 //			Chamada de procedure
 			case 116:
 				try {
-					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					Simbolo simboloAtual;
+					if(nivelAtual != 0)
+						simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual-1);
+					else
+						simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					
 					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						novaProcedure = simboloAtual;
 					}else {
@@ -299,7 +309,12 @@ public class AnalisadorSemantico {
 //			Identificador de variável
 			case 129:
 				try {
-					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					Simbolo simbolo;
+					if(nivelAtual != 0)
+						simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual-1);
+					else
+						simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					
 					if (contexto == ContextoEnum.READLN) {
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 						int deslocamentoDoToken = simbolo.getGeralA();
