@@ -64,7 +64,7 @@ public class AnalisadorSemantico {
 		Hipotetica.Interpreta(this.areaInstrucoes, this.areaLiterais);
 	}
 	
-	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
+	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior, Token tokenAnteriorDoAnterior) {
 		
 		// Variáveis auxiliares utilizadas nos cases
 		int enderecoDSVS;
@@ -338,21 +338,18 @@ public class AnalisadorSemantico {
 
 //			Após palavra reservada CASE 
 			case 132:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
 				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 
 //			Após comando CASE 
 			case 133:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.pop());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 	
 // 			Ramo do CASE após inteiro, último da lista 
 			case 134:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
-				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
+				valorDecimal = Integer.parseInt(tokenAnteriorDoAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
@@ -366,14 +363,12 @@ public class AnalisadorSemantico {
 				
 //	 		Após comando em CASE 	
 			case 135:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
 				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.peek());
 				break;
 			
 //		 	Ramo do CASE: após inteiro 
 			case 136:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
 				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
