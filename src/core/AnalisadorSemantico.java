@@ -2,6 +2,7 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -336,14 +337,15 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 
-//			Após palavra reservada CASE 
+//			Após palavra reservada CASE
 			case 132:
 				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 
-//			Após comando CASE 
+//			Após comando CASE
 			case 133:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.pop());
+				enderecoDSVS = this.pilhaCase.peek();
+				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 	
@@ -353,18 +355,18 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				if(pilhaCase.isEmpty()) {
-					this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
-					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, pilhaCase.pop()+1);
-				} else {
-					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
-				}
+				
+				resolverPendenciasDSVT(maquinaVirtual.enderecoProximaInstrucao + 1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 				
-//	 		Após comando em CASE 	
+//	 		Após comando em CASE
 			case 135:
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.peek());
+				enderecoDSVF = this.pilhaCase.peek();
+				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 			
 //		 	Ramo do CASE: após inteiro 
@@ -373,8 +375,8 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 				
 //			Após variável controle comando FOR
@@ -532,6 +534,18 @@ public class AnalisadorSemantico {
 			endereco++;
 		}
 		return literais;
+	}
+	
+	private void resolverPendenciasDSVT(int endereco) {
+		List<Tipos> instrucoes = Arrays.asList(this.areaInstrucoes.AI)
+				.stream()
+				.filter(item -> item.codigo != -1 && item.codigo == InstrucaoEnum.DSVT.getCodigo())
+				.collect(Collectors.toList());
+		for (Tipos instrucao : instrucoes) {
+			if (instrucao.op2 == Constants.VAZIO) {
+				instrucao.op2 = endereco;
+			}
+		}
 	}
 	
 	private Tipos getInstrucaoByEndereco(int endereco) {
