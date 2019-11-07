@@ -2,7 +2,6 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,9 +35,7 @@ public class AnalisadorSemantico {
 	private LinkedList<Integer> pilhaFor;
 	private LinkedList<Simbolo> pilhaSimbolo;
 	
-	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private Integer nivelAtual;
-	private Integer posicaoLivre;
 	private Integer numeroVariaveis;
 	private Integer numeroParametros;
 	private Integer deslocamento;
@@ -345,6 +342,7 @@ public class AnalisadorSemantico {
 			case 133:
 				enderecoDSVS = this.pilhaCase.peek();
 				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVS, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 	
@@ -363,9 +361,9 @@ public class AnalisadorSemantico {
 //	 		Após comando em CASE
 			case 135:
 				enderecoDSVF = this.pilhaCase.peek();
-				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVF, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao + 1);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				this.pilhaCase.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 			
 //		 	Ramo do CASE: após inteiro 
@@ -563,8 +561,6 @@ public class AnalisadorSemantico {
 	
 	private void inicializaVariaveis() {
 		this.nivelAtual = 0;
-		this.posicaoLivre = 1;
-		this.escopo[0] = 1;
 		this.numeroVariaveis = 0;
 		this.numeroParametros = 0;
 		this.deslocamento = 3;
