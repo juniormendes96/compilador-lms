@@ -1,7 +1,0 @@
-PROGRAM condicao;
-BEGIN
-	IF 3 > 2 THEN 
-		WRITELN('Maior')
-	ELSE
-		WRITELN('Menor');
-END.

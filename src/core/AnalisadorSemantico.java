@@ -339,7 +339,6 @@ public class AnalisadorSemantico {
 
 //			Após palavra reservada CASE
 			case 132:
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 
 //			Após comando CASE
