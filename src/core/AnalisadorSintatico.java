@@ -41,6 +41,7 @@ public class AnalisadorSintatico implements Constants {
 				if (topoDaPilha == tokenAtual.getCodigo()) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
+					tokenAnterior = tokenAtual;
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro(linhaAtual);
 				}
@@ -59,7 +60,6 @@ public class AnalisadorSintatico implements Constants {
 			if (tokenAtual.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
 				linhaAtual = tokenAtual.getLinha();
 			}
-			tokenAnterior = tokenAtual;
 		}
 	}
 

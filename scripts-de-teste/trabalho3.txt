@@ -6,7 +6,7 @@ Procedure calcula (y: integer);
 	var divisor : integer; 
     	Procedure divisao (a,b: integer);       
 		begin 
-			WRITELN(a/b);
+			res := a/b;
      		end;   
 	begin 
       		Writeln('Informe o valor do divisor: ');       

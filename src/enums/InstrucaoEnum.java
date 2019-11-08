@@ -30,7 +30,7 @@ public enum InstrucaoEnum {
 	PARA(26), // finaliza a execução.
 	NADA(27), // nada faz, continua a execução.
 	COPI(28), // duplica o topo da pilha
-	DSVT(20); // desvia se verdadeiro.
+	DSVT(29); // desvia se verdadeiro.
 	
 	private int codigo;
 	

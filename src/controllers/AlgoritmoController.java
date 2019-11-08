@@ -104,6 +104,7 @@ public class AlgoritmoController implements Initializable {
 				analisadorSemantico = new AnalisadorSemantico();
 				analisadorSintatico.iniciarDescendentePreditivo(analisadorSemantico);
 				
+				instrucoes.clear();
 				instrucoes = analisadorSemantico.obterInstrucoes();
 				populaTabelaCodigoIntermediario(instrucoes);
 				

@@ -70,11 +70,14 @@ public class AnalisadorLexico {
 	}
 
 	private void adicionarEspacosNosTokens() {
-		this.algoritmo = this.algoritmo.toUpperCase();
 		for (TokenEnum token : TokenEnum.values()) {
-			if (token.getCod() != 0 && token.getCod() != TokenEnum.OR.getCod() && token.getCod() != TokenEnum.ID.getCod() && token.getDescricao() != "Palavra Reservada") {
+			if (token.getCod() != 0 && token.getCod() != 1 && token.getCod() != TokenEnum.OR.getCod() && token.getDescricao() != "Palavra Reservada") {
 				final String replacement = String.format(" %s ", token.getSimbolo());
-				this.algoritmo = this.algoritmo.replace(token.getSimbolo(), replacement);
+				if (Character.isLetter(token.getSimbolo().charAt(0))) {
+					this.algoritmo = this.algoritmo.replaceAll(String.format("(?i)%s", token.getSimbolo()), replacement);
+				} else {
+					this.algoritmo = this.algoritmo.replace(token.getSimbolo(), replacement);
+				}
 			}
 		}
 	}
@@ -163,9 +166,11 @@ public class AnalisadorLexico {
 				texto += currentToken.getToken() + " ";
 				if (this.hasFimLiteral(currentToken)) {
 					literal = false;
-					this.tokens.get(index).setCodigo(TokenEnum.LIT.getCod());
-					this.tokens.get(index).setDescricao(TokenEnum.LIT.getDescricao());
-					this.tokens.get(index).setToken(texto);
+					Token token = this.tokens.get(index);
+					token.setCodigo(TokenEnum.LIT.getCod());
+					token.setDescricao(TokenEnum.LIT.getDescricao());
+					token.setToken(texto);
+					token.setToken(token.getToken().replace("'", "").replace("\"", ""));
 					texto = "";
 				}
 				tokensIterator.remove();
@@ -175,6 +180,7 @@ public class AnalisadorLexico {
 				if (currentToken.getToken().length() > 1 && this.hasFimLiteral(currentToken)) {
 					currentToken.setCodigo(TokenEnum.LIT.getCod());
 					currentToken.setDescricao(TokenEnum.LIT.getDescricao());
+					currentToken.setToken(currentToken.getToken().replace("'", "").replace("\"", ""));
 					literal = false;
 					texto = "";
 				} else {
