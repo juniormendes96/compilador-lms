@@ -2,6 +2,7 @@ package core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -534,17 +535,14 @@ public class AnalisadorSemantico {
 		return literais;
 	}
 	
-	private void resolverPendenciasDSVT(int endereco) {
-		int numeroDeDSVT = 0;
-		for(int enderecoDSVT : pilhaCase) {
-			if(getInstrucaoByEndereco(enderecoDSVT).codigo == InstrucaoEnum.DSVT.getCodigo()) {
-				maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVT, Constants.VAZIO, endereco);
-				numeroDeDSVT++;
+	private void resolverPendenciasDSVT(int enderecoDSVT) {
+		Iterator<Integer> pilhaCaseIterator = this.pilhaCase.iterator();
+		while (pilhaCaseIterator.hasNext()) {
+			int endereco = pilhaCaseIterator.next();
+			if (getInstrucaoByEndereco(endereco).codigo == InstrucaoEnum.DSVT.getCodigo()) {
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, enderecoDSVT);
+				pilhaCaseIterator.remove();
 			}
-		}
-		while(numeroDeDSVT != 0) {
-			pilhaCase.removeLast();
-			numeroDeDSVT--;
 		}
 	}
 	
