@@ -6,12 +6,12 @@ Procedure calcula (y: integer);
 	var divisor : integer; 
     	Procedure divisao (a,b: integer);       
 		begin 
-			WRITELN(a/b);
+			res := a/b;
      		end;   
 	begin 
       		Writeln('Informe o valor do divisor: ');       
 		Readln(divisor);       
-		call divide(y,divisor); 
+		call divisao(y,divisor); 
                (* ponto 2 *) 
   	end; 
 Begin 

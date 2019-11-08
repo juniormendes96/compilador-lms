@@ -8,6 +8,7 @@ PROGRAM multiplicacao;
 			resultado := a * b;
 			WRITELN(resultado);
 		end;
+		
     BEGIN
         READLN(numero1);
         READLN(numero2);

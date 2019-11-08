@@ -35,9 +35,7 @@ public class AnalisadorSemantico {
 	private LinkedList<Integer> pilhaFor;
 	private LinkedList<Simbolo> pilhaSimbolo;
 	
-	private Integer[] escopo = new Integer[100]; // Verificar posteriormente o tamanho desse vetor e o propósito dele
 	private Integer nivelAtual;
-	private Integer posicaoLivre;
 	private Integer numeroVariaveis;
 	private Integer numeroParametros;
 	private Integer deslocamento;
@@ -48,10 +46,10 @@ public class AnalisadorSemantico {
 	private Simbolo novaConstante;
 	private Simbolo novaProcedure;
 	private boolean temParametro;
-	private boolean primeiraVez = true;
 	
 	// Variável auxiliar utilizada pelo FOR
-	private Integer geralA;
+	private Integer geralASimbolo;
+	private Integer nivelSimbolo;
 	
 	public AnalisadorSemantico() {
 		this.maquinaVirtual = new Hipotetica();
@@ -64,11 +62,12 @@ public class AnalisadorSemantico {
 		Hipotetica.Interpreta(this.areaInstrucoes, this.areaLiterais);
 	}
 	
-	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior) {
+	public void executarSemantico(int codigoDaAcaoSemantica, Token tokenAnterior, Token tokenAnteriorDoAnterior) {
 		
 		// Variáveis auxiliares utilizadas nos cases
 		int enderecoDSVS;
 		int enderecoDSVF;
+		int diferencaDeNivel;
 		int valorDecimal = 0;
 		
 		switch (codigoDaAcaoSemantica) {
@@ -89,7 +88,6 @@ public class AnalisadorSemantico {
 //			Após declaração de variável
 			case 102:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, numeroVariaveis + deslocamento);
-				numeroVariaveis = 0;
 				break;
 				
 //			Encontrado o nome de rótulo, de variável, ou de parâmetro de procedure em declaração
@@ -103,7 +101,7 @@ public class AnalisadorSemantico {
 					tabelaDeSimbolos.inserir(new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.VARIAVEL, nivelAtual, deslocamento + numeroVariaveis, null));
 					numeroVariaveis++;
 				} else if (tipoIdentificador.equals(CategoriaSimboloEnum.PARAMETRO)) {
-					Simbolo simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);
+					Simbolo simboloAtual = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PARAMETRO, nivelAtual, deslocamento + numeroParametros, null);		
 					tabelaDeSimbolos.inserir(simboloAtual);
 					this.pilhaSimbolo.push(simboloAtual);
 					numeroParametros++;
@@ -134,29 +132,26 @@ public class AnalisadorSemantico {
 				
 //			Após nome de procedure, em declaração 		
 			case 108:
-				temParametro = false;
-				numeroParametros = 0;
-				if(primeiraVez)
-					primeiraVez = false;
-				else
-					nivelAtual++;
-				
 				novaProcedure = new Simbolo(tokenAnterior.getToken(), CategoriaSimboloEnum.PROCEDURE, nivelAtual, maquinaVirtual.enderecoProximaInstrucao + 1, 0);
 				tabelaDeSimbolos.inserir(novaProcedure);
+
+				nivelAtual++;
+				temParametro = false;
+				numeroParametros = 0;
+				numeroVariaveis = 0;
 				break;
 				
 //			Após declaração de procedure	
 			case 109:
 				if(temParametro) {
-					novaProcedure.setGeralB(numeroParametros);
+					tabelaDeSimbolos.atualizar(novaProcedure.getNome(), novaProcedure.getNivel(), novaProcedure.getGeralA(), numeroParametros);
 					
 					// Adicionando cada parametro ao deslocamento
 					for(int i = 0; i < numeroParametros; i++) {
-						Simbolo parametroAtual = this.pilhaSimbolo.get(i);			
+						Simbolo parametroAtual = this.pilhaSimbolo.removeLast();			
 						parametroAtual.setGeralA(-(numeroParametros - i));
 					}
 				}
-				this.pilhaSimbolo.clear();
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				this.pilhaProcedure.push(maquinaVirtual.enderecoProximaInstrucao - 1);
 				this.pilhaProcedure.push(numeroParametros);
@@ -170,12 +165,9 @@ public class AnalisadorSemantico {
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.RETU.getCodigo(), Constants.VAZIO, parametros);
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
-				if(!primeiraVez) 
-					primeiraVez = true;
-				else {
-					tabelaDeSimbolos.excluirPorNivel(nivelAtual);
-					nivelAtual--;
-				}
+
+				tabelaDeSimbolos.excluirPorNivel(nivelAtual);
+				nivelAtual--;
 				break;
 
 //			Antes de parâmetros formais de procedures 		
@@ -186,8 +178,8 @@ public class AnalisadorSemantico {
 				
 //			Atribuição parte esquerda 				
 			case 114:
-				try {
-					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+				try {					
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
 					if(simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
@@ -203,13 +195,15 @@ public class AnalisadorSemantico {
 
 // 			Após expressão em atribuição
 			case 115:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), variavelDeAtribuicao.getNivel(), variavelDeAtribuicao.getGeralA());
+				diferencaDeNivel = nivelAtual - variavelDeAtribuicao.getNivel();
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), diferencaDeNivel, variavelDeAtribuicao.getGeralA());
 				break;
 			
 //			Chamada de procedure
 			case 116:
 				try {
 					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					
 					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						novaProcedure = simboloAtual;
 					}else {
@@ -301,10 +295,12 @@ public class AnalisadorSemantico {
 			case 129:
 				try {
 					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					
 					if (contexto == ContextoEnum.READLN) {
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 						int deslocamentoDoToken = simbolo.getGeralA();
-						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, deslocamentoDoToken);
+						diferencaDeNivel = simbolo.getNivel() - nivelAtual;
+						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), diferencaDeNivel, deslocamentoDoToken);
 					} else if (contexto == ContextoEnum.EXPRESSAO) {
 						if (simbolo.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 							throw new AnalisadorSemanticoException(
@@ -315,7 +311,8 @@ public class AnalisadorSemantico {
 							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 						} else {
 							int deslocamentoDoToken = simbolo.getGeralA();
-							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, deslocamentoDoToken);
+							diferencaDeNivel = nivelAtual - simbolo.getNivel();
+							maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), diferencaDeNivel, deslocamentoDoToken);
 						}
 					}
 				} catch (SimboloNaoEncontradoException e) {
@@ -337,62 +334,59 @@ public class AnalisadorSemantico {
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.IMPR.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
 
-//			Após palavra reservada CASE 
+//			Após palavra reservada CASE
 			case 132:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
 				break;
 
-//			Após comando CASE 
+//			Após comando CASE
 			case 133:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.pop());
+				enderecoDSVS = this.pilhaCase.peek();
+				this.getInstrucaoByEndereco(enderecoDSVS).op2 = maquinaVirtual.enderecoProximaInstrucao;
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVS, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
 	
 // 			Ramo do CASE após inteiro, último da lista 
 			case 134:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
-				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
+				valorDecimal = Integer.parseInt(tokenAnteriorDoAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				if(pilhaCase.isEmpty()) {
-					this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
-					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, pilhaCase.pop()+1);
-				} else {
-					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
-				}
+				
+				resolverPendenciasDSVT(maquinaVirtual.enderecoProximaInstrucao + 1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 				
-//	 		Após comando em CASE 	
+//	 		Após comando em CASE
 			case 135:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, pilhaCase.peek());
+				enderecoDSVF = this.pilhaCase.peek();
+				maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVF, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao + 1);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVS.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 			
 //		 	Ramo do CASE: após inteiro 
 			case 136:
-				System.out.println(codigoDaAcaoSemantica +" - " + tokenAnterior.getToken());
 				valorDecimal = Integer.parseInt(tokenAnterior.getToken());
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, valorDecimal);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMIG.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, pilhaCase.pop());
-				this.pilhaCase.push(maquinaVirtual.enderecoProximaInstrucao);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
+				this.pilhaCase.add(maquinaVirtual.enderecoProximaInstrucao - 1); // endereço instrução acima
 				break;
 				
 //			Após variável controle comando FOR
 			case 137:
 				try {
-					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
 					if (simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL) {
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
 										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
 					}
-					this.geralA = simbolo.getGeralA();
+					this.geralASimbolo = simbolo.getGeralA();
+					this.nivelSimbolo = simbolo.getNivel();
 				} catch (SimboloNaoEncontradoException e) {
 					throw new AnalisadorSemanticoException(
 							String.format("Erro semântico na linha %s: o simbolo %s não foi declarado",
@@ -402,14 +396,15 @@ public class AnalisadorSemantico {
 			
 //			Após expressão - valor inicial
 			case 138:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), this.nivelSimbolo, this.geralASimbolo);
 				break;
 				
 //			Após expressão - valor final
 			case 139:
+				diferencaDeNivel = this.nivelSimbolo - nivelAtual;
 				this.pilhaFor.push(maquinaVirtual.enderecoProximaInstrucao);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.COPI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, this.geralA);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), diferencaDeNivel, this.geralASimbolo);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CMAI.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.DSVF.getCodigo(), Constants.VAZIO, Constants.VAZIO);
@@ -418,10 +413,11 @@ public class AnalisadorSemantico {
 				
 //			Após comando em FOR
 			case 140:
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), nivelAtual, this.geralA);
+				diferencaDeNivel = this.nivelSimbolo - nivelAtual;
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRVL.getCodigo(), diferencaDeNivel, this.geralASimbolo);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CRCT.getCodigo(), Constants.VAZIO, 1);
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.SOMA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
-				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), nivelAtual, this.geralA);
+				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.ARMZ.getCodigo(), diferencaDeNivel, this.geralASimbolo);
 				
 				enderecoDSVF = this.pilhaFor.pop();
 				this.getInstrucaoByEndereco(enderecoDSVF).op2 = maquinaVirtual.enderecoProximaInstrucao + 1; // LC + 1
@@ -537,6 +533,18 @@ public class AnalisadorSemantico {
 		return literais;
 	}
 	
+	private void resolverPendenciasDSVT(int endereco) {
+		List<Tipos> instrucoes = Arrays.asList(this.areaInstrucoes.AI)
+				.stream()
+				.filter(item -> item.codigo != -1 && item.codigo == InstrucaoEnum.DSVT.getCodigo())
+				.collect(Collectors.toList());
+		for (Tipos instrucao : instrucoes) {
+			if (instrucao.op2 == Constants.VAZIO) {
+				instrucao.op2 = endereco;
+			}
+		}
+	}
+	
 	private Tipos getInstrucaoByEndereco(int endereco) {
 		return this.obterInstrucoes().stream().filter(instrucao -> instrucao.endereco == endereco).findFirst().orElse(null);
 	}
@@ -553,8 +561,6 @@ public class AnalisadorSemantico {
 	
 	private void inicializaVariaveis() {
 		this.nivelAtual = 0;
-		this.posicaoLivre = 1;
-		this.escopo[0] = 1;
 		this.numeroVariaveis = 0;
 		this.numeroParametros = 0;
 		this.deslocamento = 3;

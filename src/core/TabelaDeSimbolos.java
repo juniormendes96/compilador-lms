@@ -72,7 +72,9 @@ public class TabelaDeSimbolos {
 	public void excluirPorNivel(int nivel) {
 		for(int i=0; i<simbolos.length-1; i++) {
 			if(Objects.nonNull(simbolos[i]) && simbolos[i].getNivel() == nivel) {
-				simbolos[i] = null;
+				while(Objects.nonNull(simbolos[i].getProximo()) && simbolos[i].getNivel() == nivel) {
+					simbolos[i] = simbolos[i].getProximo();
+				}
 			}
 		}
 	}
