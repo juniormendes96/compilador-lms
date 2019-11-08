@@ -29,7 +29,6 @@ public class AnalisadorSintatico implements Constants {
 		int linhaAtual = 1;
 		Token tokenAtual;
 		Token tokenAnterior = null;
-		Token tokenAnteriorDoAnterior = null;
 
 		int valorMatrizDeParsing;
 		
@@ -42,7 +41,6 @@ public class AnalisadorSintatico implements Constants {
 				if (topoDaPilha == tokenAtual.getCodigo()) {
 					this.retiraTopoDaPilha();
 					this.retiraPrimeiroDaFila();
-					tokenAnteriorDoAnterior = tokenAnterior;
 					tokenAnterior = tokenAtual;
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro(linhaAtual);
@@ -56,7 +54,7 @@ public class AnalisadorSintatico implements Constants {
 					this.lancaErro(linhaAtual);
 				}
 			} else { // é uma ação semântica
-				analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior, tokenAnteriorDoAnterior);
+				analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.retiraTopoDaPilha();			
 			}
 			if (tokenAtual.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
