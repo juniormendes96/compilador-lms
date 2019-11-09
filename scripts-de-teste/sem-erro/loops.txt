@@ -2,30 +2,30 @@ PROGRAM loops;
 VAR i, soma: INTEGER;
 
 BEGIN
-	WRITELN('WHILE');
-	i := 1;
-	WHILE i <= 5 DO BEGIN
-		WRITELN(i);
-		i := i + 1;
-	END;
-	WRITELN('FIM DO WHILE');
+    WRITELN('WHILE');
+    i := 1;
+    WHILE i <= 5 DO BEGIN
+        WRITELN(i);
+        i := i + 1;
+    END;
+    WRITELN('FIM DO WHILE');
 
-	WRITELN('REPEAT');
-	soma := 0;
-	REPEAT
-	begin
-		soma := soma + 1;
-		WRITELN(soma);
-	end
-	Until soma > 5;
-	WRITELN('FIM DO REPEAT');
+    WRITELN('REPEAT');
+    soma := 0;
+    REPEAT
+        BEGIN
+            soma := soma + 1;
+	    WRITELN(soma);
+        END
+    UNTIL soma > 5;
+    WRITELN('FIM DO REPEAT');
 
-	WRITELN('FOR');
-	soma := 0;
-	For i:= 10 to 20 do
-	begin
-		soma:= soma+2*i;
-		Writeln(soma);
-	end;
-	WRITELN('FIM DO FOR');
+    WRITELN('FOR');
+    soma := 0;
+    FOR i := 10 TO 20 DO
+        BEGIN
+            soma := soma + 2 * i;
+	    WRITELN(soma);
+        END;
+    WRITELN('FIM DO FOR');
 END.

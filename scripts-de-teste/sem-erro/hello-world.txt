@@ -1,13 +1,13 @@
 PROGRAM hello_world;
 CONST aux = 20;
-VAR a,b : INTEGER;
+VAR a, b: INTEGER;
 BEGIN
-	WRITELN(1+aux);
-	WRITELN(5-2);
-	WRITELN(10*10);
-	WRITELN(5/5);
-	WRITELN('Hello world!');
-	READLN(a,b);
-	b := 99;
-	WRITELN(a,b);
+    WRITELN(1 + aux);
+    WRITELN(5 - 2);
+    WRITELN(10 * 10);
+    WRITELN(5 / 5);
+    WRITELN('Hello world!');
+    READLN(a, b);
+    b := 99;
+    WRITELN(a, b);
 END.

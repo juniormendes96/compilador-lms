@@ -1,16 +1,15 @@
 PROGRAM multiplicacao;
+VAR numero1, numero2: INTEGER;
 
-    VAR numero1, numero2 : INTEGER;
-
-	Procedure multiplica(a,b:integer); 
-		var resultado : integer;
-		begin
-			resultado := a * b;
-			WRITELN(resultado);
-		end;
+PROCEDURE multiplica(a,b:integer); 
+VAR resultado: integer;
+BEGIN
+    resultado := a * b;
+    WRITELN(resultado);
+END;
 		
-    BEGIN
-        READLN(numero1);
-        READLN(numero2);
-        Call multiplica(numero1, numero2);
-	END.
+BEGIN
+    READLN(numero1);
+    READLN(numero2);
+    CALL multiplica(numero1, numero2);
+END.
