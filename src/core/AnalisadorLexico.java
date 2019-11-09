@@ -71,7 +71,7 @@ public class AnalisadorLexico {
 
 	private void adicionarEspacosNosTokens() {
 		for (TokenEnum token : TokenEnum.values()) {
-			if (token.getCod() != 0 && token.getCod() != 1 && token.getCod() != TokenEnum.OR.getCod() && token.getDescricao() != "Palavra Reservada") {
+			if (token.getCod() != 0 && token.getCod() != 1 && token.getCod() != TokenEnum.ID.getCod() && token.getCod() != TokenEnum.OR.getCod() && token.getDescricao() != "Palavra Reservada") {
 				final String replacement = String.format(" %s ", token.getSimbolo());
 				if (Character.isLetter(token.getSimbolo().charAt(0))) {
 					this.algoritmo = this.algoritmo.replaceAll(String.format("(?i)%s", token.getSimbolo()), replacement);

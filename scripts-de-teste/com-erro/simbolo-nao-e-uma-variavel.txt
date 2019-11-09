@@ -1,0 +1,13 @@
+PROGRAM nao_e_uma_variavel;
+VAR i, j: INTEGER;
+
+PROCEDURE soma(a, b: INTEGER);
+VAR s: INTEGER;
+BEGIN
+    s := a + b;
+    WRITELN(s);
+END;
+
+BEGIN
+    soma := 1; (* aqui deve ocorrer o erro *)
+END.

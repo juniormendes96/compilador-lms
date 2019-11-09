@@ -1,0 +1,17 @@
+PROGRAM fibonacci;
+VAR x, y, z, i: INTEGER;
+BEGIN
+
+    x := 0;
+    y := 1;
+    z := 0;
+	
+    WRITELN(1);
+    FOR i := 0 TO 10 DO
+    BEGIN
+        soma := x + y;
+        x := y;
+        y := z;
+        WRITELN(z);    
+    END;
+END.
