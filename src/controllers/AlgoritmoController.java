@@ -117,8 +117,12 @@ public class AlgoritmoController implements Initializable {
 				populaTabelaTokens(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
+				populaTabelaCodigoIntermediario(null);
+				populaTabelaLiterais(null);
+				instrucoes.clear();
 				printErro(analisadorSintaticoException.getMessage());
 			} catch (AnalisadorSemanticoException analisadorSemanticoException) {
+				instrucoes.clear();
 				printErro(analisadorSemanticoException.getMessage());
 			}
 			
