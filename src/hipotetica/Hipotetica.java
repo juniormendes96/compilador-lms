@@ -365,8 +365,8 @@ public class Hipotetica{
 			       		}
 			       		topo=topo-1;
 			    }//fim do case
-			}//fim do while
-		}//fim do procedimento interpreta
+	  		}//fim do while
+	}//fim do procedimento interpreta
 
 	public static void mostraAreaDados() {
 		for (int i=topo; i>=0; i--) {

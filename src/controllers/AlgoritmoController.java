@@ -124,6 +124,8 @@ public class AlgoritmoController implements Initializable {
 			} catch (AnalisadorSemanticoException analisadorSemanticoException) {
 				instrucoes.clear();
 				printErro(analisadorSemanticoException.getMessage());
+			} catch (Exception e) {
+				printErro("JAVA ERROR: "+e);
 			}
 			
 		} else {
