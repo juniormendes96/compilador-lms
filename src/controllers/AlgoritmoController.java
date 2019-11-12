@@ -153,9 +153,12 @@ public class AlgoritmoController implements Initializable {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Texto","*.txt")); 	
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		File textoSelec = fileChooser.showOpenDialog(null);
+		File arquivoSelecionado = fileChooser.showOpenDialog(null);
 		
-		BufferedReader reader = new BufferedReader(new FileReader (textoSelec));
+		if (Objects.isNull(arquivoSelecionado)) {
+			return;
+		}
+		BufferedReader reader = new BufferedReader(new FileReader (arquivoSelecionado));
 		
 		try {
 			StringBuilder sb = new StringBuilder();
