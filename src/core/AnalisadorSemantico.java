@@ -11,6 +11,7 @@ import constants.Constants;
 import enums.CategoriaSimboloEnum;
 import enums.ContextoEnum;
 import enums.InstrucaoEnum;
+import enums.TokenEnum;
 import exceptions.AnalisadorSemanticoException;
 import exceptions.SimboloNaoEncontradoException;
 import hipotetica.AreaInstrucoes;
@@ -71,7 +72,12 @@ public class AnalisadorSemantico {
 		int diferencaDeNivel;
 		int valorDecimal = 0;
 		
+		if(tokenAnterior.getCodigo() == TokenEnum.ID.getCod()) {
+			tokenAnterior.setToken(tokenAnterior.getToken().toLowerCase());
+		}
+		
 		switch (codigoDaAcaoSemantica) {
+		
 //			Reconhecendo o nome do programa
 			case 100:
 				inicializaPilhas();
