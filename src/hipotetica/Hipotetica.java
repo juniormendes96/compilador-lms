@@ -309,6 +309,9 @@ public class Hipotetica{
 			       		topo=topo+1;
 			       		leitura = JOptionPane.showInputDialog(null,"Informe o valor:","Leitura",JOptionPane.QUESTION_MESSAGE);
 			       		//System.out.print("Leia: "); A
+			       		if (leitura == null) {
+			       			return;
+			       		}
 			       		(S[topo])=Integer.parseInt(leitura); //problema aqui A
 			       		break;
 			       		
