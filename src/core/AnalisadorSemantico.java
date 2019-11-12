@@ -337,13 +337,15 @@ public class AnalisadorSemantico {
 
 //			Após palavra reservada CASE
 			case 132:
+				this.pilhaCase.push(-1);
 				break;
 
 //			Após comando CASE
 			case 133:
-				while(!pilhaCase.isEmpty()) {
-					enderecoDSVS = this.pilhaCase.pop();
+				enderecoDSVS = this.pilhaCase.pop();
+				while (enderecoDSVS != -1) {
 					maquinaVirtual.AlterarAI(this.areaInstrucoes, enderecoDSVS, Constants.VAZIO, maquinaVirtual.enderecoProximaInstrucao);
+					enderecoDSVS = this.pilhaCase.pop();
 				}
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.AMEM.getCodigo(), Constants.VAZIO, -1);
 				break;
@@ -502,7 +504,6 @@ public class AnalisadorSemantico {
 			case 155:
 				maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.NEGA.getCodigo(), Constants.VAZIO, Constants.VAZIO);
 				break;
-			
 				
 //			Expressão - variável
 			case 156:
@@ -539,7 +540,7 @@ public class AnalisadorSemantico {
 		Iterator<Integer> pilhaCaseIterator = this.pilhaCase.iterator();
 		while (pilhaCaseIterator.hasNext()) {
 			int endereco = pilhaCaseIterator.next();
-			if (getInstrucaoByEndereco(endereco).codigo == InstrucaoEnum.DSVT.getCodigo()) {
+			if (endereco != -1 && getInstrucaoByEndereco(endereco).codigo == InstrucaoEnum.DSVT.getCodigo()) {
 				maquinaVirtual.AlterarAI(this.areaInstrucoes, endereco, Constants.VAZIO, enderecoDSVT);
 				pilhaCaseIterator.remove();
 			}
