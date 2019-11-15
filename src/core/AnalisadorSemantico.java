@@ -209,7 +209,7 @@ public class AnalisadorSemantico {
 //			Chamada de procedure
 			case 116:
 				try {
-					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
 					
 					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						novaProcedure = simboloAtual;
@@ -233,7 +233,8 @@ public class AnalisadorSemantico {
 							String.format("Erro semântico na linha %s: o número de parâmetros é inválido",
 									tokenAnterior.getLinha().toString()));
 				} else {
-					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CALL.getCodigo(), nivelAtual, novaProcedure.getGeralA());
+					diferencaDeNivel = nivelAtual - novaProcedure.getNivel();
+					maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.CALL.getCodigo(), diferencaDeNivel, novaProcedure.getGeralA());
 				}
 				break;
 
@@ -300,7 +301,7 @@ public class AnalisadorSemantico {
 //			Identificador de variável
 			case 129:
 				try {
-					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken(), nivelAtual);
+					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
 					
 					if (contexto == ContextoEnum.READLN) {
 						maquinaVirtual.IncluirAI(this.areaInstrucoes, InstrucaoEnum.LEIT.getCodigo(), Constants.VAZIO, Constants.VAZIO);
