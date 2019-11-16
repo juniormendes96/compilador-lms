@@ -54,6 +54,16 @@ public class Simbolo {
 		this.geralB = geralB;
 	}
 	
+	public void excluir(Integer nivel) {
+		Simbolo simbolo = this;
+		while (Objects.nonNull(simbolo)) {
+			if (simbolo.proximo.nivel == nivel) {
+				simbolo.proximo = simbolo.proximo.proximo;
+			}
+			simbolo = simbolo.proximo;
+		}
+	}
+	
 	public void excluir(String nome, Integer nivel) {
 		 Optional<Simbolo> simboloAnterior = this.getProximosSimbolos()
 			.stream()

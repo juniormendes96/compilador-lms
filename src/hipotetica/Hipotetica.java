@@ -1,5 +1,7 @@
 package hipotetica;
 
+import java.util.Arrays;
+
 //Maquina_virtual para a linguagem LMS
 //Equipe:Maicon, reinaldo e Fabio - 2003A
 //Adaptado e corrigido por Rogério Cortina e Charbel Szymanski - 2003B
@@ -372,8 +374,8 @@ public class Hipotetica{
 	}//fim do procedimento interpreta
 
 	public static void mostraAreaDados() {
-		for (int i=topo; i>=0; i--) {
-			System.out.println(i+"["+S[i]+"]");
-		}
+		System.out.println("Topo: " + topo);
+		System.out.println("Base: " + b);
+		System.out.println(Arrays.toString(S));
 	}
 }		               	                 	 
