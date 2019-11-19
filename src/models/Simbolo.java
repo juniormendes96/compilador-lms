@@ -13,12 +13,12 @@ public class Simbolo {
 
 	private String nome;
 	private CategoriaSimboloEnum categoria;
-	private int nivel;
-	private int geralA;
-	private int geralB;
+	private Integer nivel;
+	private Integer geralA;
+	private Integer geralB;
 	private Simbolo proximo;
 	
-	public Simbolo(String nome, CategoriaSimboloEnum categoria, int nivel, int geralA, int geralB) {
+	public Simbolo(String nome, CategoriaSimboloEnum categoria, Integer nivel, Integer geralA, Integer geralB) {
 		this.nome = nome;
 		this.categoria = categoria;
 		this.nivel = nivel;
@@ -34,7 +34,7 @@ public class Simbolo {
 				.max(Comparator.comparing(simbolo -> simbolo.nivel));
 	}
 	
-	public Optional<Simbolo> buscarPorNivel(String nome, int nivel) {
+	public Optional<Simbolo> buscarPorNivel(String nome, Integer nivel) {
 		return this.getProximosSimbolos()
 				.stream()
 				.filter(simbolo -> simbolo.nome.equals(nome) && simbolo.nivel == nivel)
@@ -49,12 +49,22 @@ public class Simbolo {
 		}
 	}
 	
-	public void atualizar(int geralA, int geralB) {
+	public void atualizar(int geralA, Integer geralB) {
 		this.geralA = geralA;
 		this.geralB = geralB;
 	}
 	
-	public void excluir(String nome, int nivel) {
+	public void excluir(Integer nivel) {
+		Simbolo simbolo = this;
+		while (Objects.nonNull(simbolo)) {
+			if (simbolo.proximo.nivel == nivel) {
+				simbolo.proximo = simbolo.proximo.proximo;
+			}
+			simbolo = simbolo.proximo;
+		}
+	}
+	
+	public void excluir(String nome, Integer nivel) {
 		 Optional<Simbolo> simboloAnterior = this.getProximosSimbolos()
 			.stream()
 			.filter(simbolo -> simbolo.proximo.nome.equals(nome) && simbolo.proximo.nivel == nivel)
@@ -82,9 +92,18 @@ public class Simbolo {
 		return geralA;
 	}
 	
+	public void setGeralA(Integer geralA) {
+		this.geralA = geralA;
+	}
+
 	public int getGeralB() {
 		return geralB;
 	}
+	
+	public void setGeralB(Integer geralB) {
+		this.geralB = geralB;
+	}
+
 	
 	public Simbolo getProximo() {
 		return proximo;

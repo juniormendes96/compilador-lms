@@ -1,0 +1,16 @@
+PROGRAM switch;
+VAR a, b, c, i: INTEGER;
+BEGIN
+   READLN(a, b);
+   READLN(i);
+   c := 0;
+   CASE i OF
+      1, 4: c := a + b;
+      2, 3, 5: c := a - b;
+      11: BEGIN
+             c := a * b;
+             WRITELN('Último ramo');
+          END
+   END;
+   WRITELN(c);   
+END.

@@ -1,0 +1,14 @@
+PROGRAM switch;
+VAR a, b : INTEGER;
+BEGIN
+   READLN(a, b);
+   CASE a OF
+      11: BEGIN
+             CASE b OF
+             		20 : WRITELN('Case b 20')
+		END;
+		WRITELN('Case a 11')
+          END;
+	12 : WRITELN('Case a 12')
+   END;
+END.

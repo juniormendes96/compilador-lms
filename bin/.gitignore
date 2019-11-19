@@ -1,2 +1,10 @@
-/application/
 /core/
+/enums/
+/exceptions/
+/hipotetica/
+/models/
+/utils/
+/controllers/
+/views/
+/constants/
+/application/

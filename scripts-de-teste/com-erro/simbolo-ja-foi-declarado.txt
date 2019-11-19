@@ -1,0 +1,6 @@
+PROGRAM simbolo_ja_declarado;
+VAR x, x: INTEGER; (* aqui deve ocorrer o erro *)
+BEGIN
+    x := 1;
+    WRITELN(x);
+END.

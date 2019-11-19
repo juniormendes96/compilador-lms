@@ -1,0 +1,5 @@
+PROGRAM nao_e_uma_procedure;
+VAR i: INTEGER;
+BEGIN
+    CALL i(); (* aqui deve ocorrer o erro *)
+END.

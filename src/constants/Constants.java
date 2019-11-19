@@ -2,6 +2,8 @@ package constants;
 
 public interface Constants extends ParserConstants
 {
+    int VAZIO = -99; // "-"
+    
     int EPSILON  = 0;
     int DOLLAR   = 1;
 
@@ -49,5 +51,4 @@ public interface Constants extends ParserConstants
     int t_TOKEN_43 = 43; //"FOR"
     int t_TOKEN_44 = 44; //"TO"
     int t_TOKEN_45 = 45; //"CASE"
-
 }

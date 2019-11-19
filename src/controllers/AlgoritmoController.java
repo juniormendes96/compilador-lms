@@ -5,32 +5,37 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 import core.AnalisadorLexico;
+import core.AnalisadorSemantico;
 import core.AnalisadorSintatico;
 import exceptions.AnalisadorLexicoException;
+import exceptions.AnalisadorSemanticoException;
 import exceptions.AnalisadorSintaticoException;
+import hipotetica.Tipos;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import models.Literal;
 import models.Token;
 
 public class AlgoritmoController implements Initializable {
 
+	/* TABELA LEXICO */
 	@FXML
-	private TableView<Token> tableViewResultado;
+	private TableView<Token> tableViewTokens;
 	@FXML
 	private TableColumn<Token, Integer> columnCodigo;
 	@FXML
@@ -39,21 +44,51 @@ public class AlgoritmoController implements Initializable {
 	private TableColumn<Token, String> columnDescricao;
 	@FXML
 	private TableColumn<Token, Integer> columnLinha;
+	
+	/* TABELA CODIGO INTERMEDIARIO */
+	@FXML
+	private TableView<Tipos> tableViewCodigoIntermediario;
+	@FXML
+	private TableColumn<Tipos, Integer> columnEndereco;
+	@FXML
+	private TableColumn<Tipos, Integer> columnInstrucao;
+	@FXML
+	private TableColumn<Tipos, String> columnOperacao1;	
+	@FXML
+	private TableColumn<Tipos, String> columnOperacao2;
+	
+	/* AREA DE LITERAL */
+	@FXML
+	private TableView<Literal> tableViewAreaDeLiteral;
+	@FXML
+	private TableColumn<Literal, Integer> columnEnderecoLiteral;
+	@FXML
+	private TableColumn<Literal, String> columnLiteral;
+	
 	@FXML
 	private TextArea textAreaErros;
 	@FXML
 	private TextArea txtAreaAlgoritmo;
 	@FXML
 	private TabPane tabPane;
-	@FXML
-	private Tab tabResultado;
 
+	private AnalisadorSemantico analisadorSemantico;
+	private List<Tipos> instrucoes = new ArrayList<Tipos>();
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		columnCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
 		columnToken.setCellValueFactory(new PropertyValueFactory<>("token"));
 		columnDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 		columnLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
+		
+		columnEndereco.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnInstrucao.setCellValueFactory(new PropertyValueFactory<>("nome"));
+		columnOperacao1.setCellValueFactory(new PropertyValueFactory<>("displayOp1"));
+		columnOperacao2.setCellValueFactory(new PropertyValueFactory<>("displayOp2"));
+		
+		columnEnderecoLiteral.setCellValueFactory(new PropertyValueFactory<>("endereco"));
+		columnLiteral.setCellValueFactory(new PropertyValueFactory<>("nome"));
 	}
 	
 	@FXML
@@ -63,18 +98,34 @@ public class AlgoritmoController implements Initializable {
 				AnalisadorLexico analisadorLexico = new AnalisadorLexico(txtAreaAlgoritmo.getText());
 				List<Token> tokens = analisadorLexico.iniciarAnalise();	
 				
-				populaTabela(tokens);
-				
+				populaTabelaTokens(tokens);
+						
 				AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
-				analisadorSintatico.iniciarDescendentePreditivo();			
-			
+				analisadorSemantico = new AnalisadorSemantico();
+				analisadorSintatico.iniciarDescendentePreditivo(analisadorSemantico);
+				
+				instrucoes.clear();
+				instrucoes = analisadorSemantico.obterInstrucoes();
+				populaTabelaCodigoIntermediario(instrucoes);
+				
+				List<Literal> literais = analisadorSemantico.obterLiterais();
+				populaTabelaLiterais(literais);	
+				
 				printMensagemSucesso();
 			
 			} catch (AnalisadorLexicoException analisadorLexicoException) {
-				populaTabela(null);
+				populaTabelaTokens(null);
 				printErro(analisadorLexicoException.getMessage());
 			} catch (AnalisadorSintaticoException analisadorSintaticoException) {
+				populaTabelaCodigoIntermediario(null);
+				populaTabelaLiterais(null);
+				instrucoes.clear();
 				printErro(analisadorSintaticoException.getMessage());
+			} catch (AnalisadorSemanticoException analisadorSemanticoException) {
+				instrucoes.clear();
+				printErro(analisadorSemanticoException.getMessage());
+			} catch (Exception e) {
+				printErro("JAVA ERROR: "+e);
 			}
 			
 		} else {
@@ -86,13 +137,28 @@ public class AlgoritmoController implements Initializable {
 	}
 
 	@FXML
+	public void interpretarCodigoIntermediario() {
+		if(!instrucoes.isEmpty()) {
+			analisadorSemantico.interpretarMaquinaVirtual();
+		}else{
+			exibeMsg("Compile o Algoritmo", 
+					"Antes de interpretar é necessário compilar o algoritmo primeiro", 
+					"Não foi possível interpretar o código intermediário.", 
+					AlertType.WARNING);
+		}
+	}
+	
+	@FXML
 	public void abrirArquivo() throws IOException {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Texto","*.txt")); 	
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		File textoSelec = fileChooser.showOpenDialog(null);
+		File arquivoSelecionado = fileChooser.showOpenDialog(null);
 		
-		BufferedReader reader = new BufferedReader(new FileReader (textoSelec));
+		if (Objects.isNull(arquivoSelecionado)) {
+			return;
+		}
+		BufferedReader reader = new BufferedReader(new FileReader (arquivoSelecionado));
 		
 		try {
 			StringBuilder sb = new StringBuilder();
@@ -110,16 +176,22 @@ public class AlgoritmoController implements Initializable {
 		}
 	}
 	
-	private void populaTabela(List<Token> linhasTabela) {
-		tableViewResultado.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	private void populaTabelaTokens(List<Token> linhasTabela) {
+		tableViewTokens.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaCodigoIntermediario(List<Tipos> linhasTabela) {
+		tableViewCodigoIntermediario.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
+	}
+	
+	private void populaTabelaLiterais(List<Literal> linhasTabela) {
+		tableViewAreaDeLiteral.setItems(Objects.nonNull(linhasTabela) ? FXCollections.observableArrayList(linhasTabela) : null);
 	}
 	
 	private void setStyles(boolean erro) {
 		if (erro) {
-			tabResultado.setStyle("-fx-text-fill: red;");
 			textAreaErros.setStyle("-fx-text-inner-color: red;");
 		} else {
-			tabResultado.setStyle("-fx-text-fill: green;");
 			textAreaErros.setStyle("-fx-text-inner-color: green;");
 		}
 	}
@@ -127,13 +199,11 @@ public class AlgoritmoController implements Initializable {
 	private void printErro(String erro) {
 		setStyles(true);
 		textAreaErros.setText(erro);
-		tabPane.getSelectionModel().select(tabResultado);
 	}
 	
 	private void printMensagemSucesso() {
 		setStyles(false);
 		textAreaErros.setText("Código sem erro. Compilado com sucesso!");
-		tabPane.getSelectionModel().select(tabResultado);
 	}
 	
 	private void exibeMsg(String titulo, String cabecalho, String msg, AlertType tipo) {

@@ -17,6 +17,15 @@ public class TabelaDeSimbolos {
 		this.simbolos = new Simbolo[this.tableSize];
 	}
 	
+	public boolean existe(String nome, int nivel) {
+		try {
+			this.buscar(nome, nivel);
+			return true;
+		} catch (SimboloNaoEncontradoException e) {
+			return false;
+		}
+	}
+	
 	public Simbolo buscar(String nome) {
 		Simbolo primeiroSimboloDaPosicao = this.simbolos[this.getValorHash(nome)];
 		if (Objects.nonNull(primeiroSimboloDaPosicao)) {
@@ -57,6 +66,21 @@ public class TabelaDeSimbolos {
 			this.simbolos[index] = primeiroSimboloDaPosicao.getProximo();
 		} else {
 			primeiroSimboloDaPosicao.excluir(nome, nivel);
+		}
+	}
+	
+	public void excluirPorNivel(int nivel) {
+		for (int i = 0; i < simbolos.length - 1; i++) {
+			Simbolo simbolo = simbolos[i];
+			if (Objects.nonNull(simbolo)) {
+				if (simbolo.getNivel() == nivel && Objects.isNull(simbolo.getProximo())) {
+					simbolos[i] = null;
+				} else {
+					if (Objects.nonNull(simbolo.getProximo())) {
+						simbolo.excluir(nivel);
+					}
+				}
+			}
 		}
 	}
 	

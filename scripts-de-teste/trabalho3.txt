@@ -1,0 +1,31 @@
+Program programaTrabalho3; 
+Const max_nums = 5; 
+VAR x,res,cont,soma : INTEGER; 
+(* ponto 1 *)
+Procedure calcula (y: integer);    
+	var divisor : integer; 
+    	Procedure divisao (a,b: integer);       
+		begin 
+			res := a/b;
+     		end;   
+	begin 
+      		Writeln('Informe o valor do divisor: ');       
+		Readln(divisor);       
+		call divisao(y,divisor); 
+               (* ponto 2 *) 
+  	end; 
+Begin 
+	Writeln('Iniciando programa...'); 
+	Writeln('Informe o valor do dividendo: ');    
+	Readln(x);    
+	soma := 0; 
+	(* ponto 3 *)
+  	for cont := 1 to max_nums do 
+	begin      
+		cont := cont + 1;       
+		call calcula(x); 
+      		Writeln('Resultado do cálculo: ', res);      
+		soma := soma + res;    
+	end; 
+   Writeln('Resultado da soma dos cálculos: ', soma); 
+End. 

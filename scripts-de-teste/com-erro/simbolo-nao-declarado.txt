@@ -1,0 +1,10 @@
+PROGRAM simbolo_nao_declarado;
+VAR x: INTEGER;
+BEGIN	
+    WRITELN(1);
+    FOR i := 0 TO 10 DO (* aqui deve ocorrer o erro *)
+    BEGIN
+        x := x + 1;
+        WRITELN(x);    
+    END;
+END.

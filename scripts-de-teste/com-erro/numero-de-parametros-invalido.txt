@@ -1,0 +1,13 @@
+PROGRAM num_parametros_invalido;
+VAR i, j: INTEGER;
+
+PROCEDURE soma(a, b: INTEGER);
+VAR s: INTEGER;
+BEGIN
+    s := a + b;
+    WRITELN(s);
+END;
+
+BEGIN
+    CALL soma(1); (* aqui deve ocorrer o erro *)
+END.
