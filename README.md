@@ -1,4 +1,4 @@
-### Compilador LMS
+# Compilador LMS
 Este projeto se trata de um compilador desenvolvido para a disciplina de Tradução de Linguagens de Programação (Compiladores), 
 professor Charbel Szymanski, pelo curso de Ciência da Computação - UNISUL. A linguagem LMS serve apenas para fins didáticos.
 
