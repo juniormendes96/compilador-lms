@@ -13,16 +13,16 @@ import models.Token;
 public class AnalisadorSintatico implements Constants {
 
 	private LinkedList<Integer> pilha;
-	private List<Token> tokens;
+	private LinkedList<Token> tokens;
 
 	public AnalisadorSintatico(List<Token> tokens) {
-		// Cria a pilha e a fila
 		this.pilha = new LinkedList<>();
-		this.tokens = tokens;
+		this.tokens = new LinkedList<Token>();
+		this.tokens.addAll(tokens);
 	}
 	
 	public void iniciarDescendentePreditivo(AnalisadorSemantico analisadorSemantico) {
-		this.empilhaValoresIniciais(); // Empilhando a pilha
+		this.empilhaValoresIniciais();
 
 		int topoDaPilha;
 		int linhaAtual = 1;
@@ -34,12 +34,12 @@ public class AnalisadorSintatico implements Constants {
 		while (!condicaoParada()) {		// Termina quando o topo da pilha for $ ou quando a fila de tokens estiver vazia
 			
 			topoDaPilha = this.pilha.peekLast();
-			tokenAtual = this.getPrimeiroDaFila();
+			tokenAtual = this.tokens.peek();
 			
 			if (isTerminal(topoDaPilha) || condicaoParada()) {
 				if (topoDaPilha == tokenAtual.getCodigo()) {
 					this.pilha.removeLast();
-					this.retiraPrimeiroDaFila();
+					this.tokens.removeFirst();
 					tokenAnterior = tokenAtual;
 				} else { // Topo da pilha não é igual ao simbolo da entrada atual, entao lança erro
 					this.lancaErro(linhaAtual);
@@ -52,8 +52,8 @@ public class AnalisadorSintatico implements Constants {
 				} else { // Valor retornado da matriz de parsing é -1, então lança erro
 					this.lancaErro(linhaAtual);
 				}
-			} else { // é uma ação semântica
-				analisadorSemantico.executarSemantico(codigoDaAcaoSemantica(topoDaPilha), tokenAnterior);
+			} else { // É uma ação semântica
+				analisadorSemantico.executarSemantico(getCodigoAcaoSemantica(topoDaPilha), tokenAnterior);
 				this.pilha.removeLast();			
 			}
 			if (tokenAtual.getToken() != TokenEnum.FIM_ARQUIVO.getSimbolo()) {
@@ -81,28 +81,21 @@ public class AnalisadorSintatico implements Constants {
 	}
 
 	private void lancaErro(int linha) {
-		if(this.pilha.peekLast() < FIRST_NON_TERMINAL) { // Caso topo da pilha seja terminal, lança o erro com token do topo da pilha
+		if (this.pilha.peekLast() < FIRST_NON_TERMINAL) {
 			throw new AnalisadorSintaticoException(PARSER_ERROR[this.pilha.peekLast()], linha);
-		} else { // Caso topo da pilha seja um não terminal, avaliar as colunas da Matriz de Parsing
-			StringBuilder mensagemDeErro = new StringBuilder("Era esperado o(s) seguinte(s) token(s):");
-			for(int i = 0; i < FIRST_NON_TERMINAL - 1; i++) {
-				if(PARSER_TABLE[this.pilha.peekLast() - FIRST_NON_TERMINAL][i] != -1) {  // Coleta a linha correspondente ao topo da pilha na matriz de parsing com valores diferentes de -1
-					final int codigoTokenEsperado = i + 1;		// O token esperado é baseado na coluna atual
-					TokenEnum tokenEnum = Arrays.asList(TokenEnum.values()).stream().filter(value -> value.getCod() == codigoTokenEsperado).findFirst().orElse(null); // Compara o id com tabela de tokens
-					if (Objects.nonNull(tokenEnum)) 
-						mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));	// Cria a mensagem de erro para ser enviada
-				}
-			}
-			throw new AnalisadorSintaticoException(mensagemDeErro.toString(), linha);
 		}
-	}
-
-	private Token getPrimeiroDaFila() {
-		return this.tokens.get(0);
-	}
-
-	private void retiraPrimeiroDaFila() {
-		this.tokens.remove(0);
+		// Caso topo da pilha seja um não terminal, avaliar as colunas da Matriz de Parsing
+		StringBuilder mensagemDeErro = new StringBuilder("Era esperado o(s) seguinte(s) token(s):");
+		for (int i = 0; i < FIRST_NON_TERMINAL - 1; i++) {
+			if (PARSER_TABLE[this.pilha.peekLast() - FIRST_NON_TERMINAL][i] != -1) {  // Coleta a linha correspondente ao topo da pilha na matriz de parsing com valores diferentes de -1
+				final int codigoTokenEsperado = i + 1;		// O token esperado é baseado na coluna atual
+				TokenEnum tokenEnum = Arrays.asList(TokenEnum.values()).stream().filter(value -> value.getCod() == codigoTokenEsperado).findFirst().orElse(null); // Compara o id com tabela de tokens
+				if (Objects.nonNull(tokenEnum)) 
+					mensagemDeErro.append(String.format(" %s", tokenEnum.getSimbolo()));
+			}
+		}
+		throw new AnalisadorSintaticoException(mensagemDeErro.toString(), linha);
+		
 	}
 
 	private boolean isTerminal(int topoDaPilha) {
@@ -113,12 +106,12 @@ public class AnalisadorSintatico implements Constants {
 		return topoDaPilha >= FIRST_SEMANTIC_ACTION;
 	}
 
-	public int codigoDaAcaoSemantica(int topoDaPilha) {
+	public int getCodigoAcaoSemantica(int topoDaPilha) {
 		return topoDaPilha - FIRST_SEMANTIC_ACTION;
 	}
 	
 	private boolean condicaoParada() {
-		return this.pilha.peekLast() == DOLLAR && this.getPrimeiroDaFila().getCodigo() == DOLLAR;
+		return this.pilha.peekLast() == DOLLAR && this.tokens.peek().getCodigo() == DOLLAR;
 	}
 
 }
