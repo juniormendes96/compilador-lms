@@ -15,6 +15,8 @@ public class AnalisadorLexico {
 	
 	private static final String ASPAS_SIMPLES = "'";
 	private static final String ASPAS_DUPLAS = "\"";
+	private static final String VAZIO = "";
+	private static final String ESPACO = " ";
 	
 	private String algoritmo;
 	private List<Token> tokens;
@@ -35,7 +37,7 @@ public class AnalisadorLexico {
 	}
 	
 	private void removerComentarios() {
-		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\*\\)", "");
+		this.algoritmo = this.algoritmo.replaceAll("\\(\\*.*?\\*\\)", VAZIO);
 	}
 	
 	private void adicionarTokensNaLista() {
@@ -155,39 +157,41 @@ public class AnalisadorLexico {
 	}
 	
 	private void handleLiterais() {
-		Iterator<Token> tokensIterator = this.tokens.iterator();
+		final Iterator<Token> tokensIterator = this.tokens.iterator();
 		Token currentToken = null;
 		int index = 0;
-		boolean literal = false;
-		String texto = "";
+		boolean isLiteral = false;
+		String texto = VAZIO;
 		while (tokensIterator.hasNext()) {
 			currentToken = tokensIterator.next();
-			if (literal) {
-				texto += currentToken.getToken() + " ";
+			if (isLiteral) {
+				texto += currentToken.getToken() + ESPACO;
 				if (this.hasFimLiteral(currentToken)) {
-					literal = false;
+					isLiteral = false;
 					Token token = this.tokens.get(index);
-					token.setCodigo(TokenEnum.LIT.getCod());
-					token.setDescricao(TokenEnum.LIT.getDescricao());
 					token.setToken(texto);
-					token.setToken(token.getToken().replace("'", "").replace("\"", ""));
-					texto = "";
+					setAtributosTokenLiteral(token);
+					texto = VAZIO;
 				}
 				tokensIterator.remove();
 			} else if (this.hasInicioLiteral(currentToken)) {
-				literal = true;
+				isLiteral = true;
 				index = this.tokens.indexOf(currentToken);
 				if (currentToken.getToken().length() > 1 && this.hasFimLiteral(currentToken)) {
-					currentToken.setCodigo(TokenEnum.LIT.getCod());
-					currentToken.setDescricao(TokenEnum.LIT.getDescricao());
-					currentToken.setToken(currentToken.getToken().replace("'", "").replace("\"", ""));
-					literal = false;
-					texto = "";
+					setAtributosTokenLiteral(currentToken);
+					isLiteral = false;
+					texto = VAZIO;
 				} else {
-					texto += currentToken.getToken() + " ";
+					texto += currentToken.getToken() + ESPACO;
 				}
 			}
 		}
+	}
+	
+	private void setAtributosTokenLiteral(Token token) {
+		token.setCodigo(TokenEnum.LIT.getCod());
+		token.setDescricao(TokenEnum.LIT.getDescricao());
+		token.setToken(token.getToken().replace(ASPAS_SIMPLES, VAZIO).replace(ASPAS_DUPLAS, VAZIO));
 	}
 	
 	private boolean hasInicioLiteral(Token token) {

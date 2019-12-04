@@ -51,6 +51,7 @@ public class AnalisadorSemantico {
 	
 	// Variável auxiliar utilizada pelo FOR
 	private Integer geralASimbolo;
+	
 	private Integer nivelSimbolo;
 	
 	public AnalisadorSemantico() {
@@ -72,7 +73,7 @@ public class AnalisadorSemantico {
 		int diferencaDeNivel;
 		int valorDecimal = 0;
 		
-		if(tokenAnterior.getCodigo() == TokenEnum.ID.getCod()) {
+		if (tokenAnterior.getCodigo() == TokenEnum.ID.getCod()) {
 			tokenAnterior.setToken(tokenAnterior.getToken().toLowerCase());
 		}
 		
@@ -150,11 +151,11 @@ public class AnalisadorSemantico {
 				
 //			Após declaração de procedure	
 			case 109:
-				if(temParametro) {
+				if (temParametro) {
 					tabelaDeSimbolos.atualizar(novaProcedure.getNome(), novaProcedure.getNivel(), novaProcedure.getGeralA(), numeroParametros);
 					
 					// Adicionando cada parametro ao deslocamento
-					for(int i = 0; i < numeroParametros; i++) {
+					for (int i = 0; i < numeroParametros; i++) {
 						Simbolo parametroAtual = this.pilhaSimbolo.removeLast();			
 						parametroAtual.setGeralA(-(numeroParametros - i));
 					}
@@ -187,7 +188,7 @@ public class AnalisadorSemantico {
 			case 114:
 				try {					
 					Simbolo simbolo = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
-					if(simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL)	{
+					if (simbolo.getCategoria() != CategoriaSimboloEnum.VARIAVEL) {
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma variável",
 										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
@@ -211,9 +212,9 @@ public class AnalisadorSemantico {
 				try {
 					Simbolo simboloAtual = tabelaDeSimbolos.buscar(tokenAnterior.getToken());
 					
-					if(simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
+					if (simboloAtual.getCategoria() == CategoriaSimboloEnum.PROCEDURE) {
 						novaProcedure = simboloAtual;
-					}else {
+					} else {
 						throw new AnalisadorSemanticoException(
 								String.format("Erro semântico na linha %s: o simbolo %s não é uma procedure",
 										tokenAnterior.getLinha().toString(), tokenAnterior.getToken()));
@@ -228,7 +229,7 @@ public class AnalisadorSemantico {
 				
 //			Após comando call
 			case 117:
-				if(novaProcedure.getGeralB() != numeroParametros) {
+				if (novaProcedure.getGeralB() != numeroParametros) {
 					throw new AnalisadorSemanticoException(
 							String.format("Erro semântico na linha %s: o número de parâmetros é inválido",
 									tokenAnterior.getLinha().toString()));
